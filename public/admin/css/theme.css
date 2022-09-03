@@ -1,0 +1,28 @@
+/*!
+ * Theme Name: Default
+ * Package : DashLite
+ * Author: Softnio
+ * Author URI: http://themeforest.net/user/softnio
+ * Version	 :	1.0.0
+ * Updated	 :	07.23.2020
+**/
+footerbar {
+  width: 100%;
+  position: fixed;
+  background: #d15151;
+  bottom: 0;
+  left: 0;
+  line-height: 35px;
+  font-size: larger;
+  color: #fff;
+}
+
+table.dataTable.dtr-inline.collapsed > tbody > tr:not(.child) > td:first-child:before, table.dataTable.dtr-inline.collapsed > tbody > tr:not(.child) > th:first-child:before {
+  background: #00ff37;
+  border-radius: 50px;
+  color: #fff;
+}
+table.dataTable.dtr-inline.collapsed > tbody > tr:not(.child) > td:first-child, table.dataTable.dtr-inline.collapsed > tbody > tr:not(.child) > th:first-child {
+  font-size: 15px;
+  font-weight: bold;
+}

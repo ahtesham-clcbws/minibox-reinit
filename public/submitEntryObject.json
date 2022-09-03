@@ -1,0 +1,59 @@
+{
+    "submitter_name": "Ahtesham",
+    "email_id": "ahtesham2000@gmail.com",
+    "mobile": "+919873350509",
+    "country": "101",
+    "movie_name": "some movie",
+    "director": "Some director",
+    "movie_preview_link": "http://google.com",
+    "password": "",
+    "producer": "Some Producer",
+    "production_company": "Broadway Web Services",
+    "duration": "150",
+    "debut_film": "Yes",
+    "language": "40",
+    "synopsis": "v khvkjkhkhm",
+    "occupation": "professional",
+    "project": "1",
+    "project_type": "Feature",
+    "currency": "INR",
+    "festival_deadline": "2022-09-16",
+    "award": {
+        "feature": {
+            "0": {
+                "award": "Production",
+                "sub_awards": [
+                    "Best Animation",
+                    "Best Feature Documentary",
+                    "Best Debut Director",
+                    "Honorable Jury Mention"
+                ]
+            },
+            "1": {
+                "award": "Creative",
+                "sub_awards": [
+                    "Best Cinematography",
+                    "Best Screenplay"
+                ]
+            },
+            "3": {
+                "award": "Music",
+                "sub_awards": [
+                    "Best Original Music",
+                    "Best Background Music"
+                ]
+            }
+        }
+    },
+    "totalPricingArray": {
+        "awards": [
+            "1",
+            "2",
+            "4"
+        ],
+        "total": 14376,
+        "final": 16963.68,
+        "tax": 18
+    },
+    "submitEntryForm": "true"
+}
