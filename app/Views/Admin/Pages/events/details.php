@@ -6,7 +6,7 @@
         display: none;
     }
 
-    .buttons-copy-ticket:before {
+    .buttons-copy-new:before {
         content: "\e9fb";
     }
 
@@ -29,13 +29,8 @@
 
         <ul class="nav nav-tabs mt-n3">
             <li class="nav-item">
-                <a class="nav-link active" data-bs-toggle="tab" href="#tickets">
-                    <em class="icon ni ni-user"></em><span>Tickets</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" data-bs-toggle="tab" href="#contacts">
-                    <em class="icon ni ni-lock-alt"></em><span>Contacts</span>
+                <a class="nav-link active" data-bs-toggle="tab" href="#tickets_contacts">
+                    <em class="icon ni ni-user"></em><span>Tickets & Contacts</span>
                 </a>
             </li>
             <li class="nav-item">
@@ -45,45 +40,79 @@
             </li>
         </ul>
         <div class="tab-content">
-            <div class="tab-pane active" id="tickets">
+            <div class="tab-pane active" id="tickets_contacts">
+                <div class="card-header bg-primary text-white fw-bold text-center mb-3">
+                    EVENT TICKETS
+                </div>
                 <table class="table nk-tb-list nk-tb-ulist" id="tickets_table">
                     <thead>
                         <tr>
                             <th></th>
-                            <th>Name</th>
-                            <th>Total Events</th>
+                            <th>INR</th>
+                            <th>EUR</th>
+                            <th>Details</th>
                             <th class="text-end"></th>
                         </tr>
                     </thead>
                     <tbody>
-                    </tbody>
-                </table>
-            </div>
-            <div class="tab-pane" id="contacts">
-                <table class="table nk-tb-list nk-tb-ulist" id="contacts_table">
-                    <thead>
-                        <tr>
-                            <th></th>
-                            <th>Name</th>
-                            <th>Total Events</th>
-                            <th class="text-end"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach (getAllCountries() as $key => $entity) : ?>
+                        <?php foreach ($tickets as $key => $ticket) : ?>
                             <tr class="nk-tb-item">
                                 <td class="nk-tb-col">
                                     <span><?= $key + 1 ?></span>
                                 </td>
                                 <td class="nk-tb-col">
-                                    <span><?= $entity['name'] ?></span>
+                                    <span><?= number_to_currency($ticket['inr'], 'INR', 'en_US', 2) ?></span>
                                 </td>
                                 <td class="nk-tb-col">
-                                    <span><?= $entity['name'] ?></span>
+                                    <span><?= number_to_currency($ticket['eur'], 'EUR', 'en_US', 2) ?></span>
+                                </td>
+                                <td class="nk-tb-col">
+                                    <span><?= $ticket['details'] ?></span>
                                 </td>
                                 <td class="nk-tb-col text-end" style="min-width:70px;padding:0;">
-                                    <button type="button" onclick="editData(<?= $entity['id'] ?>, '<?= $entity['name'] ?>')" class="btn btn-round btn-icon btn-sm btn-info"><em class="icon ni ni-edit"></em></button>
-                                    <button type="button" onclick="deleteData(<?= $entity['id'] ?>, <?= $entity['name'] ?>)" class="btn btn-round btn-icon btn-sm btn-danger"><em class="icon ni ni-trash"></em></button>
+                                    <button type="button" onclick="editTicket(<?= $ticket['id'] ?>, '<?= $ticket['details'] ?>', '<?= $ticket['inr'] ?>', '<?= $ticket['eur'] ?>')" class="btn btn-round btn-icon btn-sm btn-info"><em class="icon ni ni-edit"></em></button>
+                                    <button type="button" onclick="deleteTicket(<?= $ticket['id'] ?>)" class="btn btn-round btn-icon btn-sm btn-danger"><em class="icon ni ni-trash"></em></button>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+                <hr>
+                <div class="card-header bg-primary text-white fw-bold text-center mb-3">
+                    EVENT CONTACTS
+                </div>
+                <table class="table nk-tb-list nk-tb-ulist" id="contacts_table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>WhatsApp</th>
+                            <th class="text-end"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($contacts as $key => $contact) : ?>
+                            <tr class="nk-tb-item">
+                                <td class="nk-tb-col">
+                                    <span><?= $key + 1 ?></span>
+                                </td>
+                                <td class="nk-tb-col">
+                                    <span><?= $contact['name'] ?></span>
+                                </td>
+                                <td class="nk-tb-col">
+                                    <span><?= $contact['email'] ?></span>
+                                </td>
+                                <td class="nk-tb-col">
+                                    <span><?= $contact['phone'] ?></span>
+                                </td>
+                                <td class="nk-tb-col">
+                                    <span><?= $contact['whatsapp'] ?></span>
+                                </td>
+                                <td class="nk-tb-col text-end" style="min-width:70px;padding:0;">
+                                    <button type="button" onclick="editContact(<?= $contact['id'] ?>, '<?= $contact['name'] ?>', '<?= $contact['email'] ?>', '<?= $contact['phone'] ?>', '<?= $contact['whatsapp'] ?>')" class="btn btn-round btn-icon btn-sm btn-info"><em class="icon ni ni-edit"></em></button>
+                                    <button type="button" onclick="deleteContact(<?= $contact['id'] ?>)" class="btn btn-round btn-icon btn-sm btn-danger"><em class="icon ni ni-trash"></em></button>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -285,6 +314,63 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('js') ?>
+<div class="modal fade zoom" id="copyTicketModal">
+    <div class="modal-dialog modal-lg" role="document">
+        <form class="modal-content" id="copyTicket" action="" method="post">
+            <a href="#" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <em class="icon ni ni-cross"></em>
+            </a>
+            <div class="modal-header">
+                <h5 class="modal-title">TCopy icket</h5>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label" for="copyTicketInput">Select Ticket</label>
+                    <div class="form-control-wrap">
+                        <select class="form-select js-select2" id="copyTicketInput" name="copyTicket">
+                            <option value="0" selected disabled></option>
+                            <?php foreach ($globalTickets as $key => $value) : ?>
+                                <option value="<?= $value['id'] ?>" title="<?= $value['details'] ?>"><?= number_to_currency($ticket['inr'], 'INR', 'en_US', 2) ?>/<?= number_to_currency($ticket['eur'], 'EUR', 'en_US', 2) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="modal fade zoom" id="copyContactModal">
+    <div class="modal-dialog modal-lg" role="document">
+        <form class="modal-content" id="copyContact" action="" method="post">
+            <a href="#" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <em class="icon ni ni-cross"></em>
+            </a>
+            <div class="modal-header">
+                <h5 class="modal-title">Copy Contact</h5>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label" for="copyContactInput">Select Contact</label>
+                    <div class="form-control-wrap">
+                        <select class="form-select js-select2" id="copyContactInput" name="copyContact">
+                            <option value="0" selected disabled></option>
+                            <?php foreach ($globalContacts as $key => $value) : ?>
+                                <option value="<?= $value['id'] ?>" title="<?= $value['email'] . ' / ' . $value['phone'] . ' / ' . $value['whatsapp'] ?>"><?= $value['name'] ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <link rel="stylesheet" href="/public/admin/css/editors/tinymce.css?ver=3.0.0">
 <script src="/public/admin/js/libs/editors/tinymce.js?ver=3.0.0"></script>
 <script src="/public/admin/js/editors.js?ver=3.0.0"></script>
@@ -294,26 +380,39 @@
     NioApp.DataTable('#tickets_table', {
         buttons: [{
             titleAttr: 'Copy Ticket',
-            action: function(e, dt, node, config) {
-                copyTicket();
+            attr: {
+                'data-bs-toggle': 'modal',
+                'data-bs-target': '#copyTicketModal'
             },
-            className: "buttons-copy-ticket"
+            className: "buttons-copy-new"
         }, {
             titleAttr: 'Add Ticket',
-            action: function(e, dt, node, config) {
-                addTicket();
+            attr: {
+                'data-bs-toggle': 'modal',
+                'data-bs-target': '#modalTicket'
             },
+            // action: function(e, dt, node, config) {
+            //     addTicket();
+            // },
             className: "buttons-add-new"
         }],
     });
     NioApp.DataTable('#contacts_table', {
         buttons: [{
+            titleAttr: 'Copy Contact',
+            attr: {
+                'data-bs-toggle': 'modal',
+                'data-bs-target': '#copyContactModal'
+            },
+            className: "buttons-copy-new"
+        }, {
             titleAttr: 'Add Contact',
-            action: function(e, dt, node, config) {
-                addContact();
+            attr: {
+                'data-bs-toggle': 'modal',
+                'data-bs-target': '#modalContact'
             },
             className: "buttons-add-new"
-        }],
+        }]
     });
     // $('.dt-export-title').text('');
     $.fn.DataTable.ext.pager.numbers_length = 7;
@@ -442,6 +541,7 @@
     $('#addUpdateForm').submit(function(ev) {
         ev.preventDefault();
         const formData = new FormData($(this)[0]);
+        formData.append('addEvent', 'true');
         console.log(Array.from(formData));
         $.ajax({
             url: '',
@@ -473,18 +573,83 @@
         })
     })
 
-    function copyTicket() {}
+    function addTicket() {
+        modalShow('modalTicket');
+    }
 
-    function addTicket() {}
+    function addContact() {
+        modalShow('modalTicket');
+    }
 
-    function deleteTicket() {}
-
-    function editTicket() {}
-
-    function addContact() {}
-
-    function editContact() {}
-
-    function deleteContact() {}
+    $('#copyTicket').submit(function(ev) {
+        ev.preventDefault();
+        const formData = new FormData($(this)[0]);
+        console.log(Array.from(formData));
+        $.ajax({
+            url: '',
+            type: 'post',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response, textStatus, jqXHR) {
+                console.log(response);
+                var data = {};
+                try {
+                    data = JSON.parse(response);
+                    console.log(data);
+                    if (data.success == true) {
+                        alert('', data.message).then(() => {
+                            location.reload();
+                        })
+                    } else {
+                        alert(data.message, 'Error', 'error');
+                    }
+                } catch (e) {
+                    console.log(e);
+                    alert('Undefined error, please try after some time.', 'Error', 'error');
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert('Server error', 'Error', 'error');
+            },
+        })
+    })
+    $('#copyContact').submit(function(ev) {
+        ev.preventDefault();
+        const formData = new FormData($(this)[0]);
+        console.log(Array.from(formData));
+        $.ajax({
+            url: '',
+            type: 'post',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response, textStatus, jqXHR) {
+                console.log(response);
+                var data = {};
+                try {
+                    data = JSON.parse(response);
+                    console.log(data);
+                    if (data.success == true) {
+                        alert('', data.message).then(() => {
+                            location.reload();
+                        })
+                    } else {
+                        alert(data.message, 'Error', 'error');
+                    }
+                } catch (e) {
+                    console.log(e);
+                    alert('Undefined error, please try after some time.', 'Error', 'error');
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert('Server error', 'Error', 'error');
+            },
+        })
+    })
 </script>
+
+<?= view('Admin/Pages/events/tickets_component'); ?>
+<?= view('Admin/Pages/events/contacts_component'); ?>
+
 <?= $this->endSection() ?>

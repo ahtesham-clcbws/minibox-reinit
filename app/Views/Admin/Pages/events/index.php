@@ -35,13 +35,59 @@
                     <th></th>
                     <th>Title</th>
                     <th>Type</th>
-                    <th>Topic</th>
-                    <th>Media</th>
-                    <th>Featured</th>
+                    <th>Category</th>
+                    <th>State</th>
+                    <th>Start</th>
+                    <th>End</th>
+                    <th>Status</th>
                     <th class="text-end"></th>
                 </tr>
             </thead>
             <tbody>
+                <?php foreach ($events as $key => $event) : ?>
+                    <tr class="nk-tb-item">
+                        <td class="nk-tb-col">
+                            <span><?= $key + 1 ?></span>
+                        </td>
+                        <td class="nk-tb-col">
+                            <span><?= $event['title'] ?></span>
+                        </td>
+                        <td class="nk-tb-col">
+                            <?php if ($event['type'] == 'festival') : ?>
+                                <span><?= $event['festival_name'] ?></span>
+                            <?php else : ?>
+                                <span>Global</span>
+                            <?php endif; ?>
+                        </td>
+                        <td class="nk-tb-col">
+                            <span><?= $event['categoryName'] ?></span>
+                        </td>
+                        <td class="nk-tb-col">
+                            <span><?= $event['stateName'] ?></span>
+                        </td>
+                        <td class="nk-tb-col">
+                            <span><?= date('d M, Y', strtotime($event['from_date'])) ?></span>
+                        </td>
+                        <td class="nk-tb-col">
+                            <span><?= date('d M, Y', strtotime($event['to_date'])) ?></span>
+                        </td>
+                        <td class="nk-tb-col">
+                            <?php if (strtotime($event['from_date']) > strtotime(date('Y-m-d'))) {
+                                echo 'Future';
+                            } ?>
+                            <?php if (strtotime($event['from_date']) < strtotime(date('Y-m-d')) && strtotime($event['to_date']) > strtotime(date('Y-m-d'))) {
+                                echo 'Ongoing';
+                            } ?>
+                            <?php if (strtotime($event['to_date']) < strtotime(date('Y-m-d'))) {
+                                echo 'Expired';
+                            } ?>
+                        </td>
+                        <td class="nk-tb-col text-end" style="min-width:70px;padding:0;">
+                            <a type="button" href="<?= route_to('admin_event_update', $event['id']) ?>" class="btn btn-round btn-icon btn-sm btn-info"><em class="icon ni ni-edit"></em></a>
+                            <button type="button" onclick="deleteEvent(<?= $event['id'] ?>)" class="btn btn-round btn-icon btn-sm btn-danger"><em class="icon ni ni-trash"></em></button>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
             </tbody>
         </table>
     </div>
@@ -51,49 +97,11 @@
 
 <?= $this->section('js') ?>
 <script>
-    $('#addFestival').submit(function(e) {
-        e.preventDefault();
-        var formData = new FormData($(this)[0]);
-        formData.append('festival_add', 'true');
-        console.log(Array.from(formData));
-        $.ajax({
-            url: '',
-            type: 'post',
-            data: formData,
-            contentType: false,
-            processData: false,
-            success: function(response, textStatus, jqXHR) {
-                console.log(response);
-                var data = {};
-                try {
-                    data = JSON.parse(response);
-                    console.log(data);
-                    if (data.success == true) {
-                        alert('Successfully added/updated festival').then(() => {
-                            location.reload();
-                        })
-                    } else {
-                        alert(data.message, 'Error', 'error');
-                    }
-                } catch (e) {
-                    console.log(e);
-                    alert('Undefined error, please try after some time.', 'Error', 'error');
-                }
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                // console.log(errorThrown);
-                // console.log(textStatus);
-                // console.log(jqXHR);
-                alert('Server error', 'Error', 'error');
-            },
-        })
-    });
-    async function deleteFestival(id) {
-        alert('This action will not revert back, as it will delete all festival files and content also.', 'Are you sure!', 'warning', 'text', 'Yes', true).then((result) => {
+    async function deleteEvent(id) {
+        alert('', 'Are you sure!', 'warning', 'text', 'Yes', true).then((result) => {
             if (result.isConfirmed) {
                 var formData = {
-                    id: id,
-                    deleteFestival: true
+                    deleteEvent: id
                 };
                 $.ajax({
                     url: '',
@@ -105,7 +113,7 @@
                         try {
                             data = JSON.parse(response);
                             if (data.success == true) {
-                                alert('', 'Festival Deleted!', 'info').then(() => {
+                                alert('', 'Deleted!', 'info').then(() => {
                                     location.reload()
                                 })
                             } else {
@@ -125,48 +133,5 @@
             }
         })
     }
-    // statusSwitch
-    $('.statusSwitch').on('click', function() {
-        var dataId = $(this).attr('data_id');
-        var data_status = $(this).attr('data_status');
-        var formData = {
-            id: dataId,
-            status: data_status == '0' ? '1' : '0',
-            changeStatus: true
-        };
-        console.log(formData)
-        $.ajax({
-            url: '',
-            type: 'post',
-            data: formData,
-            success: function(response, textStatus, jqXHR) {
-                console.log(response);
-                var data = {};
-                try {
-                    data = JSON.parse(response);
-                    if (data.success == true) {
-                        alert('', 'Status updated.', 'info').then(() => {
-                            // location.reload()
-                            if (data_status == 0) {
-                                $(this).attr('checked', 'checked');
-                            } else {
-                                $(this).removeAttr('checked');
-                            }
-                        })
-                    } else {
-                        alert(data.message, 'Warning', 'warning').then(() => {
-                            location.reload();
-                        })
-                    }
-                } catch (e) {
-                    console.log(e);
-                    alert('Undefined error, please try after some time.', 'Error', 'error');
-                }
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                alert('Server error', 'Error', 'error');
-            },
-        })
-    });
 </script>
 <?= $this->endSection() ?>

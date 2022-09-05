@@ -16,7 +16,7 @@
                 <div class="toggle-expand-content" data-content="pageMenu">
                     <ul class="nk-block-tools g-3">
                         <li class="nk-block-tools-opt">
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalDefault">
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalContact">
                                 <em class="icon ni ni-plus"></em>
                                 <span>Add New</span>
                             </a>
@@ -34,135 +34,43 @@
                 <tr>
                     <th></th>
                     <th>Name</th>
-                    <th>Events</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>WhatsApp</th>
                     <th class="text-end"></th>
                 </tr>
             </thead>
             <tbody>
+                <?php foreach ($contacts as $key => $contact) : ?>
+                    <tr class="nk-tb-item">
+                        <td class="nk-tb-col">
+                            <span><?= $key + 1 ?></span>
+                        </td>
+                        <td class="nk-tb-col">
+                            <span><?= $contact['name'] ?></span>
+                        </td>
+                        <td class="nk-tb-col">
+                            <span><?= $contact['email'] ?></span>
+                        </td>
+                        <td class="nk-tb-col">
+                            <span><?= $contact['phone'] ?></span>
+                        </td>
+                        <td class="nk-tb-col">
+                            <span><?= $contact['whatsapp'] ?></span>
+                        </td>
+                        <td class="nk-tb-col text-end" style="min-width:70px;padding:0;">
+                            <button type="button" onclick="editContact(<?= $contact['id'] ?>, '<?= $contact['name'] ?>', '<?= $contact['email'] ?>', '<?= $contact['phone'] ?>', '<?= $contact['whatsapp'] ?>')" class="btn btn-round btn-icon btn-sm btn-info"><em class="icon ni ni-edit"></em></button>
+                            <button type="button" onclick="deleteContact(<?= $contact['id'] ?>)" class="btn btn-round btn-icon btn-sm btn-danger"><em class="icon ni ni-trash"></em></button>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
             </tbody>
         </table>
     </div>
 </div>
 
-<div class="modal fade zoom" id="modalDefault">
-    <div class="modal-dialog modal-lg" role="document">
-        <form class="modal-content" id="modalDefaultForm" action="" method="post">
-            <a href="#" class="close" data-bs-dismiss="modal" aria-label="Close">
-                <em class="icon ni ni-cross"></em>
-            </a>
-            <div class="modal-header">
-                <h5 class="modal-title">Add/Update Topic</h5>
-            </div>
-            <div class="modal-body">
-                <input hidden type="hidden" class="form-control" id="topic_id" name="id" value="0">
-                <div class="form-group">
-                    <label class="form-label" for="name">Name</label>
-                    <div class="form-control-wrap">
-                        <input type="text" class="form-control" maxlength="200" id="topic_name" name="name" required>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="color">Color</label>
-                    <div class="form-control-wrap">
-                        <input type="color" class="form-control" id="topic_color" name="color" required>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer bg-light">
-                <button type="submit" class="btn btn-primary">Save</button>
-            </div>
-        </form>
-    </div>
-</div>
 <?= $this->endSection() ?>
 
 <?= $this->section('js') ?>
-<script>
-    var modalDefault = document.getElementById('modalDefault');
-    modalDefault.addEventListener('hidden.bs.modal', function(event) {
-        topic_id.val(0);
-        topic_name.val('');
-        topic_color.val('');
-    });
-    function editData(id, dataName, dataColor) {
-        topic_id.val(id);
-        topic_name.val(dataName);
-        topic_color.val(dataColor);
-        modalShow('modalDefault');
-    }
-    $('#addUpdate').submit(function(e) {
-        e.preventDefault();
-        var formData = new FormData($(this)[0]);
-        formData.append('festival_add', 'true');
-        console.log(Array.from(formData));
-        $.ajax({
-            url: '',
-            type: 'post',
-            data: formData,
-            contentType: false,
-            processData: false,
-            success: function(response, textStatus, jqXHR) {
-                console.log(response);
-                var data = {};
-                try {
-                    data = JSON.parse(response);
-                    console.log(data);
-                    if (data.success == true) {
-                        alert('Successfully added/updated festival').then(() => {
-                            location.reload();
-                        })
-                    } else {
-                        alert(data.message, 'Error', 'error');
-                    }
-                } catch (e) {
-                    console.log(e);
-                    alert('Undefined error, please try after some time.', 'Error', 'error');
-                }
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                // console.log(errorThrown);
-                // console.log(textStatus);
-                // console.log(jqXHR);
-                alert('Server error', 'Error', 'error');
-            },
-        })
-    });
-    async function deleteData(id) {
-        alert('This action will not revert back, as it will delete all festival files and content also.', 'Are you sure!', 'warning', 'text', 'Yes', true).then((result) => {
-            if (result.isConfirmed) {
-                var formData = {
-                    id: id,
-                    deleteFestival: true
-                };
-                $.ajax({
-                    url: '',
-                    type: 'post',
-                    data: formData,
-                    success: function(response, textStatus, jqXHR) {
-                        console.log(response);
-                        var data = {};
-                        try {
-                            data = JSON.parse(response);
-                            if (data.success == true) {
-                                alert('', 'Festival Deleted!', 'info').then(() => {
-                                    location.reload()
-                                })
-                            } else {
-                                alert(data.message, 'Error', 'error');
-                            }
-                        } catch (e) {
-                            console.log(e);
-                            alert('Undefined error, please try after some time.', 'Error', 'error');
-                        }
-                    },
-                    error: function(jqXHR, textStatus, errorThrown) {
-                        alert('Server error', 'Error', 'error');
-                    },
-                })
-            } else {
-                alert('You saved a day.', 'Good choice!', 'success')
-            }
-        })
-    }
-</script>
+<?= view('Admin/Pages/events/contacts_component'); ?>
 <?= $this->endSection() ?>
