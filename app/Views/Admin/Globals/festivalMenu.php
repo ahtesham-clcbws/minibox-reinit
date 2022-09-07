@@ -10,18 +10,36 @@
     </a>
 </li>
 <li class="nk-menu-item">
+    <a href="<?= route_to('admin_festival_details_banners', $id) ?>" class="nk-menu-link">
+        <span class="nk-menu-text">Festival Banners</span>
+    </a>
+</li>
+<li class="nk-menu-item">
+    <a href="<?= route_to('admin_festival_details_filmzine', $id) ?>" class="nk-menu-link">
+        <span class="nk-menu-text">Festival FilmZine</span>
+    </a>
+</li>
+<li class="nk-menu-item">
+    <a href="<?= route_to('admin_festival_details_events', $id) ?>" class="nk-menu-link">
+        <span class="nk-menu-text">Festival Events</span>
+    </a>
+</li>
+
+<hr>
+
+<li class="nk-menu-item">
     <a href="<?= route_to('admin_festival_details_about', $id) ?>" class="nk-menu-link">
         <span class="nk-menu-text">About Page</span>
     </a>
 </li>
 <li class="nk-menu-item">
-    <a href="<?= route_to('admin_festival_details_sponsorship', $id) ?>" class="nk-menu-link">
-        <span class="nk-menu-text">Sponsorship & Promotion</span>
+    <a href="<?= route_to('admin_festival_details_team', $id) ?>" class="nk-menu-link">
+        <span class="nk-menu-text">Festival Teams</span>
     </a>
 </li>
 <li class="nk-menu-item">
-    <a href="<?= route_to('admin_festival_details_awards', $id) ?>" class="nk-menu-link">
-        <span class="nk-menu-text">Awards Page</span>
+    <a href="<?= route_to('admin_festival_details_sponsorship', $id) ?>" class="nk-menu-link">
+        <span class="nk-menu-text">Sponsorship & Promotion</span>
     </a>
 </li>
 <li class="nk-menu-item">
@@ -35,31 +53,21 @@
     </a>
 </li>
 <li class="nk-menu-item">
-    <a href="<?= route_to('admin_festival_details_pages_data', $id) ?>" class="nk-menu-link">
-        <span class="nk-menu-text">All Other Pages</span>
+    <a href="<?= route_to('admin_festival_details_delegate_packages', $id) ?>" class="nk-menu-link">
+        <span class="nk-menu-text">Delegate Packages</span>
     </a>
 </li>
+
 <hr>
-<!-- <li class="nk-menu-heading">
-    <h6 class="overline-title text-primary-alt">
-        Dynamic Content
-    </h6>
-</li> -->
 
 <li class="nk-menu-item">
-    <a href="<?= route_to('admin_festival_details_events', $id) ?>" class="nk-menu-link">
-        <span class="nk-menu-text">Festival Events</span>
+    <a href="<?= route_to('admin_festival_details_awards', $id) ?>" class="nk-menu-link">
+        <span class="nk-menu-text">Awards Page</span>
     </a>
 </li>
 <li class="nk-menu-item">
-    <a href="<?= route_to('admin_festival_details_filmzine', $id) ?>" class="nk-menu-link">
-        <span class="nk-menu-text">Festival FilmZine</span>
-    </a>
-</li>
-<hr>
-<li class="nk-menu-item">
-    <a href="<?= route_to('admin_festival_details_team', $id) ?>" class="nk-menu-link">
-        <span class="nk-menu-text">Festival Teams</span>
+    <a href="<?= route_to('admin_festival_details_pages_data', $id) ?>" class="nk-menu-link">
+        <span class="nk-menu-text">All Other Pages</span>
     </a>
 </li>
 <li class="nk-menu-item">
@@ -78,13 +86,9 @@
         <span class="nk-menu-text">Festival Press</span>
     </a>
 </li>
-<!-- <li class="nk-menu-heading">
-    <h6 class="overline-title text-primary-alt">
-        Form Submitions
-    </h6>
-</li> -->
 
 <hr>
+
 <li class="nk-menu-item">
     <a href="<?= route_to('admin_festival_details_submitions', $id) ?>" class="nk-menu-link">
         <span class="nk-menu-text">Movie Submitions</span>
@@ -96,20 +100,11 @@
     </a>
 </li>
 <li class="nk-menu-item">
-    <a href="<?= route_to('admin_festival_details_delegate_packages', $id) ?>" class="nk-menu-link">
-        <span class="nk-menu-text">Delegate Packages</span>
-    </a>
-</li>
-<li class="nk-menu-item">
     <a href="<?= route_to('admin_festival_details_volunteer', $id) ?>" class="nk-menu-link">
         <span class="nk-menu-text">Volunteer Submitions</span>
     </a>
 </li>
-<!-- <li class="nk-menu-heading">
-    <h6 class="overline-title text-primary-alt">
-        Administration
-    </h6>
-</li> -->
+
 <hr>
 
 <li class="nk-menu-item">

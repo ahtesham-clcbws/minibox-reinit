@@ -12,32 +12,6 @@
 		background: grey;
 	}
 
-	.ticket_counter input,
-	.ticket_counter icon,
-	.ticket_counter span,
-	.ticket_counter svg {
-		display: inline;
-	}
-
-	.ticket_counter input,
-	.ticket_counter span {
-		font-size: 30px;
-	}
-
-	.ticket_counter input {
-		font-size: 30px;
-	}
-
-	.ticket_counter svg {
-		background-color: #d8b069 !important;
-		color: #fff;
-		border-radius: 50%;
-		cursor: pointer;
-		padding: 1px;
-		width: 22px;
-		height: 22px;
-	}
-
 	* {
 		-webkit-user-select: none;
 		/* Safari */

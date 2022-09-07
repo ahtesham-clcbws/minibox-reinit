@@ -4,10 +4,15 @@ namespace App\Controllers\Web;
 
 use App\Controllers\BaseController;
 use App\Models\Common\FilmzinetoModule;
+use App\Models\Common\TestimonialModel;
+use App\Models\Events\Events;
+use App\Models\Events\EventsContacts;
+use App\Models\Events\EventsTickets;
 use App\Models\Festival\DynamicPagesData;
 use App\Models\Festival\FestivalAbout;
 use App\Models\Festival\FestivalAwards;
 use App\Models\Festival\FestivalAwardsPage;
+use App\Models\Festival\FestivalBanners;
 use App\Models\Festival\FestivalDeadlines;
 use App\Models\Festival\FestivalDelegatePackages;
 use App\Models\Festival\FestivalGallery;
@@ -22,6 +27,7 @@ use App\Models\Festival\FestivalTypeOfFilms;
 use App\Models\Festival\FestivalVenueItem;
 use App\Models\Festival\FestivalVenues;
 use App\Models\Festival\FestivalVolunteer;
+use DateTime;
 
 class FilmFestival extends BaseController
 {
@@ -86,7 +92,11 @@ class FilmFestival extends BaseController
         $this->data['optionalJs'] = true;
         $this->data['pageName'] = $this->festival_details['name'];
 
-        $filmzineSelect = 'filmzinetomodules.news_id, filmzinetomodules.data_id, filmzine.title, filmzine.slug, filmzine.featured, filmzine.media_url, filmzine.media_type, filmzine.video_type, filmzine.topic_id, filmzine.topic_name, filmzine.total_likes, filmzine.total_dislikes, filmzine.movie_rating, filmzine.total_views, filmzine.created_at';
+        $bannersDb = new FestivalBanners();
+        $this->data['banners'] = $bannersDb->getFestivalHomeBanners($this->festival_details['id']);
+
+
+        $filmzineSelect = 'filmzinetomodules.news_id, filmzinetomodules.data_id, filmzine.title,, filmzine.summary, filmzine.slug, filmzine.featured, filmzine.media_url, filmzine.media_type, filmzine.video_type, filmzine.topic_id, filmzine.topic_name, filmzine.total_likes, filmzine.total_dislikes, filmzine.movie_rating, filmzine.total_views, filmzine.created_at';
         $filmzineModule = new FilmzinetoModule();
         $filmzineHeadlines = $filmzineModule->distinct()
             ->select($filmzineSelect)
@@ -95,15 +105,17 @@ class FilmFestival extends BaseController
             ->where('filmzinetomodules.data_id', $this->festival_details['id'])
             ->whereNotIn('filmzine.type_id', [3, 4])
             ->orderBy('filmzinetomodules.id', 'RANDOM')->findAll(3);
+
         $filmzineTrailers = $filmzineModule->distinct()
-        ->select($filmzineSelect)
+            ->select($filmzineSelect)
             ->join('filmzine', 'filmzine.id = filmzinetomodules.news_id')
             ->where('filmzinetomodules.table_name', 'festival')
             ->where('filmzinetomodules.data_id', $this->festival_details['id'])
             ->where('filmzine.type_id', '4')
             ->orderBy('filmzinetomodules.id', 'RANDOM')->findAll(6);
+
         $filmzineInterviews = $filmzineModule->distinct()
-        ->select($filmzineSelect)
+            ->select($filmzineSelect)
             ->join('filmzine', 'filmzine.id = filmzinetomodules.news_id')
             ->where('filmzinetomodules.table_name', 'festival')
             ->where('filmzinetomodules.data_id', $this->festival_details['id'])
@@ -113,8 +125,21 @@ class FilmFestival extends BaseController
         $this->data['headlines'] = $filmzineHeadlines;
         $this->data['trailers'] = $filmzineTrailers;
         $this->data['interviews'] = $filmzineInterviews;
+        $testimonialsDb = new TestimonialModel();
+        $testimonials = $testimonialsDb->where(['type' => 'festival', 'module_id' => $this->festival_details['id']])->orderBy('id', 'RANDOM')->findAll(6);
+        $this->data['testimonials'] = $testimonials;
 
-        // return print_r($this->data);
+        $eventDb = new Events();
+        $events = $eventDb->distinct()
+            ->select('events.*, events_categories.name as categoryName, states.name as stateName')
+            ->join('events_categories', 'events_categories.id = events.category')
+            ->join('states', 'states.id = events.state')
+            ->where('events.type', 'festival')
+            ->where('events.module_id', $this->festival_details['id'])
+            ->orderBy('events.id', 'desc')->findAll();
+        $this->data['events'] = $events;
+
+        // return print_r($filmzineInterviews);
 
         return view('Web/Filmfestival/festival_details', $this->data);
     }
@@ -286,8 +311,67 @@ class FilmFestival extends BaseController
     }
     public function festival_events()
     {
-        $this->data['pageName'] = 'Meet our team';
-        return view('Web/Filmfestival/festival_team', $this->data);
+        $this->data['pageName'] = 'Our Events';
+
+        return view('Web/Events/index', $this->data);
+    }
+    public function festival_event_details($slug, $decodedId)
+    {
+        $country = getUserCountry();
+        $eventId = base64_decode($decodedId);
+        $eventMd = new Events();
+        if ($event = $eventMd->find($eventId)) {
+            $this->data['pageName'] = $event['title'];
+
+            $earlier = new DateTime($event['from_date']);
+            $later = new DateTime($event['to_date']);
+
+            $abs_diff = $later->diff($earlier)->format("%a");
+
+            $event['eventDays'] = $abs_diff;
+            $contactDb = new EventsContacts();
+            $contact = $contactDb->where('event_id', $event['id'])->findAll();
+            if (count($contact)) {
+                $contacts = $contact;
+            } else {
+                $contacts = $contactDb->where('type', 'global')->findAll();
+            }
+            $this->data['contacts'] = $contacts;
+
+            $ticketsDb = new EventsTickets();
+            $ticket = $ticketsDb->where('event_id', $event['id'])->findAll();
+            if (count($ticket)) {
+                $tickets = $ticket;
+            } else {
+                $tickets = $ticketsDb->where('type', 'global')->findAll();
+            }
+            $this->data['currency_symbol'] = getCurrencySymbol();
+            foreach ($tickets as $key => $package) {
+                if ($country == 'IN') {
+                    $tickets[$key]['fee'] = $package['inr'];
+                    $tickets[$key]['currency'] = 'INR';
+                    $tickets[$key]['currency_symbol'] = '&#8377;';
+                } else {
+                    $tickets[$key]['fee'] = $package['eur'];
+                    $tickets[$key]['currency'] = 'EUR';
+                    $tickets[$key]['currency_symbol'] = '&#8364;';
+                }
+                $tickets[$key]['tickets'] = 0;
+                $tickets[$key]['total'] = 0;
+                unset($tickets[$key]['inr']);
+                unset($tickets[$key]['eur']);
+                unset($tickets[$key]['created_at']);
+                unset($tickets[$key]['updated_at']);
+                unset($tickets[$key]['deleted_at']);
+                unset($tickets[$key]['event_id']);
+            }
+            $this->data['tickets'] = $tickets;
+
+            $this->data['event'] = $event;
+            return view('Web/Events/single_event', $this->data);
+        } else {
+            return redirect()->route('events');
+        }
     }
     public function festival_schedule()
     {
@@ -402,18 +486,16 @@ class FilmFestival extends BaseController
 
         $packagesDb = new FestivalDelegatePackages();
         $allPackages = $packagesDb->where('festival_id', $this->festival_details['id'])->findAll();
-        $this->data['currency_symbol'] = '&#8377;';
+        $this->data['currency_symbol'] = getCurrencySymbol();
         foreach ($allPackages as $key => $package) {
             if ($country == 'IN') {
                 $allPackages[$key]['fee'] = $package['fee_inr'];
                 $allPackages[$key]['currency'] = 'INR';
                 $allPackages[$key]['currency_symbol'] = '&#8377;';
-                $this->data['currency_symbol'] = '&#8377;';
             } else {
                 $allPackages[$key]['fee'] = $package['fee_eur'];
                 $allPackages[$key]['currency'] = 'EUR';
                 $allPackages[$key]['currency_symbol'] = '&#8364;';
-                $this->data['currency_symbol'] = '&#8364;';
             }
             $allPackages[$key]['tickets'] = 0;
             $allPackages[$key]['total'] = 0;
@@ -439,6 +521,21 @@ class FilmFestival extends BaseController
     }
 
 
+    // media
+    public function festival_gallery()
+    {
+        $this->data['pageName'] = 'Gallery';
+
+        $pageData = $this->getPageData('gallery', $this->festival_details['id']);
+        $this->data['pagedata'] = $pageData;
+
+        $galleryDb = new FestivalGallery();
+        $gallery = $galleryDb->where('festival_id', $this->festival_details['id'])->orderBy('id', 'RANDOM')->findAll();
+
+        $this->data['gallery'] = $gallery;
+
+        return view('Web/Filmfestival/festival_gallery', $this->data);
+    }
     public function festival_press()
     {
         $this->data['pageName'] = 'Press';
@@ -463,20 +560,48 @@ class FilmFestival extends BaseController
 
         return view('Web/Filmfestival/festival_press', $this->data);
     }
-    public function festival_gallery()
+    public function festival_media($slug, $type)
     {
-        $this->data['pageName'] = 'Gallery';
+        $limit = 6;
+        if ($type == 'interviews') {
+            $this->data['pageName'] = 'Interviews';
+        } else if ($type == 'trailers') {
+            $this->data['pageName'] = 'Video Trailers';
+        } else if ($type == 'knowledge-center') {
+            $this->data['pageName'] = 'Knowledge Center';
+        } else if ($type == 'headlines') {
+            $this->data['pageName'] = 'Headlines';
+            $limit = 3;
+        } else {
+            // redirect to festival homepage
+        }
 
-        $pageData = $this->getPageData('gallery', $this->festival_details['id']);
-        $this->data['pagedata'] = $pageData;
+        $entityDb = new FilmzinetoModule();
+        $entities = $entityDb->getWebData($type, $this->festival_details['id'], $limit);
 
-        $galleryDb = new FestivalGallery();
-        $gallery = $galleryDb->where('festival_id', $this->festival_details['id'])->orderBy('id', 'RANDOM')->findAll();
+        // return print_r($entities);
 
-        $this->data['gallery'] = $gallery;
+        $this->data['entities'] = $entities;
+        $this->data['entityType'] = $type;
 
-        return view('Web/Filmfestival/festival_gallery', $this->data);
+        return view('Web/Filmfestival/filmzine_media', $this->data);
     }
+    public function festival_media_single($slug, $type, $id)
+    {
+        // return print_r($type);
+        $entityDb = new FilmzinetoModule();
+        $entities = $entityDb->getSingleWebData($type, $this->festival_details['id'], $id);
+
+        $this->data['pageName'] = $entities['current']['title'];
+
+        // return print_r($entities);
+
+        $this->data['entities'] = $entities;
+        $this->data['entityType'] = $type;
+
+        return view('Web/Filmfestival/filmzine_media_single', $this->data);
+    }
+
 
     // other pages
     public function festival_winners()

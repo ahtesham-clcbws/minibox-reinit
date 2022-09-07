@@ -5,12 +5,8 @@
 <div class="nk-block-head nk-block-head-sm">
     <div class="nk-block-between">
         <div class="nk-block-head-content">
-            <div class="nk-block-head-sub">
-                <a class="back-to" href="<?= route_to('admin_festival_details', $festival['id']) ?>">
-                    <em class="icon ni ni-arrow-left"></em>
-                    <span>Festivals</span>
-                </a>
-            </div>
+            <div class="nk-block-head-sub"><a class="back-to" href="<?= route_to('admin_settings') ?>"><em class="icon ni ni-arrow-left"></em><span>Main Settings</span></a></div>
+            <h3 class="nk-block-title page-title"><?= isset($pagename) && $pagename ? $pagename : 'Settings' ?></h3>
         </div>
         <div class="nk-block-head-content">
             <div class="nk-block-head-sub">
@@ -89,7 +85,6 @@
                                     <option value="headlines">Headlines</option>
                                     <option value="trailers">Trailers</option>
                                     <option value="interviews">Interviews</option>
-                                    <option value="knowledgecenter">Knowledge Center</option>
                                 </select>
                             </div>
                         </div>

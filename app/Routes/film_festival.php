@@ -27,9 +27,14 @@ $routes->group('(:segment)', [Web\FilmFestival::class], static function ($routes
     $routes->add('gallery', 'Web\FilmFestival::festival_gallery',  ['as' => 'festival_gallery']);
     $routes->add('awards', 'Web\FilmFestival::festival_awards',  ['as' => 'festival_awards']);
     $routes->add('entry-form', 'Web\FilmFestival::festival_entry_form',  ['as' => 'festival_entry_form']);
-
     // $routes->add('jury/(:any)', 'Web\FilmFestival::festival_jury_single/$1/$2',  ['as' => 'festival_jury_details']);
+    $routes->add('events', 'Web\FilmFestival::festival_events',  ['as' => 'festival_events']);
 });
+// media
+$routes->add('(:segment)/media/(:any)/(:any)', 'Web\FilmFestival::festival_media_single/$1/$2/$3',  ['as' => 'festival_filmzine_media_single']);
+$routes->add('(:segment)/media/(:any)', 'Web\FilmFestival::festival_media/$1/$2',  ['as' => 'festival_filmzine_media']);
+
+$routes->add('(:segment)/event-details/(:any)', 'Web\FilmFestival::festival_event_details/$1/$2',  ['as' => 'festival_event_details']);
 
 $routes->add('(:segment)/jury/(:any)', 'Web\FilmFestival::festival_jury_single/$1/$2',  ['as' => 'festival_jury_details']);
 

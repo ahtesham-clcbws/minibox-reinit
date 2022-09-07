@@ -64,7 +64,7 @@
                         </td>
                         <td class="nk-tb-col nk-tb-col-tools" style="min-width:70px;padding:0;">
                             <a href="<?= route_to('admin_film_zine_update', $news['id']) ?>" class="btn btn-round btn-icon btn-sm btn-info"><em class="icon ni ni-edit"></em></a>
-                            <button type="button" onclick="deleteNews(<?= $news['id'] ?>)" class="btn btn-round btn-icon btn-sm btn-danger"><em class="icon ni ni-trash"></em></button>
+                            <button type="button" onclick="deleteData(<?= $news['id'] ?>)" class="btn btn-round btn-icon btn-sm btn-danger"><em class="icon ni ni-trash"></em></button>
                         </td>
                     </tr>
                 <?php endforeach; ?>
@@ -77,49 +77,11 @@
 
 <?= $this->section('js') ?>
 <script>
-    $('#addFestival').submit(function(e) {
-        e.preventDefault();
-        var formData = new FormData($(this)[0]);
-        formData.append('festival_add', 'true');
-        console.log(Array.from(formData));
-        $.ajax({
-            url: '',
-            type: 'post',
-            data: formData,
-            contentType: false,
-            processData: false,
-            success: function(response, textStatus, jqXHR) {
-                console.log(response);
-                var data = {};
-                try {
-                    data = JSON.parse(response);
-                    console.log(data);
-                    if (data.success == true) {
-                        alert('Successfully added/updated festival').then(() => {
-                            location.reload();
-                        })
-                    } else {
-                        alert(data.message, 'Error', 'error');
-                    }
-                } catch (e) {
-                    console.log(e);
-                    alert('Undefined error, please try after some time.', 'Error', 'error');
-                }
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                // console.log(errorThrown);
-                // console.log(textStatus);
-                // console.log(jqXHR);
-                alert('Server error', 'Error', 'error');
-            },
-        })
-    });
-    async function deleteFestival(id) {
-        alert('This action will not revert back, as it will delete all festival files and content also.', 'Are you sure!', 'warning', 'text', 'Yes', true).then((result) => {
+    async function deleteData(id) {
+        alert('', 'Are you sure!', 'warning', 'text', 'Yes', true).then((result) => {
             if (result.isConfirmed) {
                 var formData = {
-                    id: id,
-                    deleteFestival: true
+                    deleteData: id
                 };
                 $.ajax({
                     url: '',
@@ -131,7 +93,7 @@
                         try {
                             data = JSON.parse(response);
                             if (data.success == true) {
-                                alert('', 'Festival Deleted!', 'info').then(() => {
+                                alert('', 'Deleted!', 'info').then(() => {
                                     location.reload()
                                 })
                             } else {

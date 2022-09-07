@@ -1,37 +1,22 @@
 <?php
 
-namespace App\Models\Filmzine;
+namespace App\Models\Festival;
 
 use CodeIgniter\Model;
 
-class NewsModel extends Model
+class FestivalBanners extends Model
 {
-    protected $table            = 'filmzine';
+    protected $DBGroup          = 'default';
+    protected $table            = 'festival_banners';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $insertID         = 0;
     protected $returnType       = 'array';
-    protected $useSoftDeletes   = true;
+    protected $useSoftDeletes   = false;
     protected $protectFields    = true;
     protected $allowedFields    = [
-        'user_id',
-        'type_id',
-        'type_name',
-        'slug',
-        'featured',
-        'title',
-        'summary',
-        'content',
-        'media_url',
-        'media_type', // image / video
-        'video_type', // youtube / vimeo
-        'topic_id',
-        'topic_name',
-        'total_likes',
-        'total_dislikes',
-        'movie_rating',
-        'total_views',
-        'status'
+        'festival_id',
+        'image'
     ];
 
     // Dates
@@ -58,13 +43,7 @@ class NewsModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
-    public function allAdminNews()
-    {
-        $news = $this->distinct()
-            ->select('*')
-            // ->join()
-            // ->orderBy()
-            ->findAll();
-        return $news;
+    public function getFestivalHomeBanners($festivalId) {
+        return $this->where('festival_id', $festivalId)->orderBy('id', 'RANDOM')->findAll();
     }
 }

@@ -59,6 +59,12 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label class="form-label" for="summary">Summary</label>
+                        <div class="form-control-wrap">
+                            <input type="text" class="form-control" maxlength="200" id="summary" name="summary" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label class="form-label" for="media_type">Media Type</label>
                         <div class="form-control-wrap">
                             <select class="form-select js-select2" id="media_type" name="media_type" required>
@@ -311,6 +317,10 @@
         // 'title',
         <?php if (isset($news['title']) && !empty($news['title'])) : ?>
             $('#title').val('<?= $news['title'] ?>');
+        <?php endif; ?>
+        // 'summary',
+        <?php if (isset($news['summary']) && !empty($news['summary'])) : ?>
+            $('#summary').val('<?= $news['summary'] ?>');
         <?php endif; ?>
         // 'topic_id',
         <?php if (isset($news['topic_id']) && !empty($news['topic_id'])) : ?>

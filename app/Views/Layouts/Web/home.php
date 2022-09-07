@@ -26,15 +26,28 @@
 
 <body>
 	<?= view('Globals/main_header') ?>
+
 	<?= $this->renderSection('content') ?>
 
 	<?= view('Globals/main_footer') ?>
 
+	<div id="youtubeModal" class="uk-modal-container" uk-modal>
+		<div class="uk-modal-dialog uk-width-auto uk-margin-auto-vertical">
+			<button class="uk-modal-close-outside" type="button" uk-close></button>
+			<iframe id="youtubeModalIframe" src="" width="1280" height="720" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen uk-video uk-responsive></iframe>
+		</div>
+	</div>
+
+	<div id="vimeoModal" class="uk-modal-container" uk-modal>
+		<div class="uk-modal-dialog uk-width-auto uk-margin-auto-vertical">
+			<button class="uk-modal-close-outside" type="button" uk-close></button>
+			<iframe id="vimeoModalIframe" src="" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen width="1280" height="720" uk-video uk-responsive></iframe>
+		</div>
+	</div>
 	<!-- JS FILES -->
 	<script defer src="/public/libs/fontawesome/js/all.js"></script>
 	<?= view('Globals/load_global_libraries') ?>
-	<?php
-	if (isset($optionalJs) && $optionalJs == true) {
+	<?php if (isset($optionalJs) && $optionalJs == true) {
 		echo view('Globals/load_extra_libraries'); ?>
 		<script>
 			$('.youtube').lazyTube({

@@ -44,6 +44,7 @@ $routes->group('film-festivals', static function ($routes) {
 
         $routes->add('jury/(:num)', 'Admin\FilmFestivalController::festivalJuries/$1', ['as' => 'admin_festival_details_jury']);
         $routes->add('gallery/(:num)', 'Admin\FilmFestivalController::festivalGallery/$1', ['as' => 'admin_festival_details_gallery']);
+        $routes->add('banners/(:num)', 'Admin\FilmFestivalController::festivalBanners/$1', ['as' => 'admin_festival_details_banners']);
         $routes->add('press/(:num)', 'Admin\FilmFestivalController::festivalPress/$1', ['as' => 'admin_festival_details_press']);
 
         $routes->add('support-submission/(:num)', 'Admin\FilmFestivalController::festivalSupport/$1', ['as' => 'admin_festival_details_support']);
@@ -99,4 +100,6 @@ $routes->group('settings', static function ($routes) {
     $routes->add('support-forms', 'Admin\SettingsController::supportForms', ['as' => 'admin_settings_support_forms']);
     $routes->add('awards', 'Admin\SettingsController::filmFestivalAwards', ['as' => 'admin_settings_festival_awards']);
     $routes->add('film-types', 'Admin\SettingsController::filmTypes', ['as' => 'admin_settings_film_types']);
+    $routes->add('homepage-filmzine', 'Admin\SettingsController::homepageFilmzine', ['as' => 'admin_settings_homepage_filmzine']);
+    $routes->add('testimonials', 'Admin\SettingsController::testimonials', ['as' => 'admin_settings_testimonials']);
 });

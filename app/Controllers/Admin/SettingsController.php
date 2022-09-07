@@ -5,8 +5,12 @@ namespace App\Controllers\Admin;
 use App\Controllers\BaseController;
 use App\Models\AwardsCategoryModel;
 use App\Models\AwardsModel;
+use App\Models\Common\FilmzinetoModule;
 use App\Models\Common\SupportModel;
+use App\Models\Common\TestimonialModel;
+use App\Models\Festival\FestivalModel;
 use App\Models\Festival\FestivalTypeOfFilms;
+use App\Models\Filmzine\NewsModel;
 use App\Models\HomePageBannersModel;
 
 class SettingsController extends BaseController
@@ -246,5 +250,142 @@ class SettingsController extends BaseController
         $this->data['forms'] = $forms;
 
         return view('Admin/Pages/Settings/support_forms', $this->data);
+    }
+    public function homepageFilmzine()
+    {
+        $this->data['pagename'] = 'Homepage FilmZine Content';
+        $response = ['success' => false, 'message' => '', 'data' => []];
+
+        $filmzineModule = new FilmzinetoModule();
+        $filmzineData = $filmzineModule->distinct()
+            ->select('filmzinetomodules.*, filmzine.title, filmzine.type_id')
+            ->join('filmzine', 'filmzine.id = filmzinetomodules.news_id')
+            ->where('filmzinetomodules.table_name', 'homepage')
+            ->orderBy('filmzinetomodules.id', 'desc')->findAll();
+        $this->data['entities'] = $filmzineData;
+
+        if ($this->request->getPost('getFilmzines')) {
+            $type = $this->request->getPost('getFilmzines');
+
+            $filmZineIds = [0];
+            foreach ($filmzineData as $key => $filmzineId) {
+                $filmZineIds[$key] = $filmzineId['news_id'];
+            }
+
+            $newsMd = new NewsModel();
+
+            $getFilmzines = $newsMd->select('id, title as text')->whereNotIn('id', $filmZineIds);
+            if ($type == 'headlines') {
+                $getFilmzines = $getFilmzines->whereNotIn('type_id', [2, 3, 4]);
+            }
+            if ($type == 'trailers') {
+                $getFilmzines = $getFilmzines->where('type_id', 4);
+            }
+            if ($type == 'interviews') {
+                $getFilmzines = $getFilmzines->where('type_id', 3);
+            }
+            if ($type == 'knowledgecenter') {
+                $getFilmzines = $getFilmzines->where('type_id', 5);
+            }
+            $getFilmzines = $getFilmzines->orderBy('id', 'desc')->findAll();
+            $response['message'] = 'No Data Found with this type, please try after add some articles in this type.';
+            // if ($getFilmzines) {
+            $response['success'] = true;
+            $response['data'] = $getFilmzines;
+            $response['message'] = 'Data Found.';
+            // }
+            return json_encode($response);
+        }
+        if ($this->request->getPost('addFilmzines')) {
+            $articleData = array(
+                'news_id' => $this->request->getPost('news_id'),
+                'table_name' => 'homepage'
+            );
+            $response['message'] = 'Unable to attach article, please try after add some articles in this type.';
+            if ($filmzineModule->save($articleData)) {
+                $response['success'] = true;
+                $response['data'] = $articleData;
+                $response['message'] = 'Data Found.';
+            }
+            return json_encode($response);
+        }
+        if ($this->request->getPost('deleteData')) {
+            $response['message'] = 'Unable to Un-Attach article, please try after add some articles in this type.';
+            if ($filmzineModule->delete($this->request->getPost('deleteData'))) {
+                $response['success'] = true;
+                $response['data'] = $this->request->getPost('deleteData');
+                $response['message'] = 'Data Found.';
+            }
+            return json_encode($response);
+        }
+
+        return view('Admin/Pages/Settings/homepage_filmzine', $this->data);
+    }
+    public function testimonials()
+    {
+        $this->data['pagename'] = 'Testimonials';
+        $response = ['success' => false, 'message' => '', 'data' => []];
+        $entityDb = new TestimonialModel();
+
+        if ($this->request->getPost()) {
+            if ($this->request->getPost('getmoduleData')) {
+                $type = $this->request->getPost('getmoduleData');
+                $moduleData = array();
+                if ($type == 'festival') {
+                    $festivalDb = new FestivalModel();
+                    $moduleData = $festivalDb->select('id, name')->orderBy('name', 'asc')->findAll();
+                }
+                if (count($moduleData)) {
+                    $response['data'] = $moduleData;
+                    $response['success'] = true;
+                } else {
+                    $response['message'] = 'unable to find data';
+                    $response['success'] = false;
+                }
+            }
+            if ($this->request->getPost('addTestimonial')) {
+                $postData = array(
+                    'type' => $this->request->getPost('type'),
+                    'rating' => $this->request->getPost('rating'),
+                    'name' => $this->request->getPost('name'),
+                    'content' => htmlentities($this->request->getPost('content')),
+                    'designation' => $this->request->getPost('designation')
+                );
+                if ($this->request->getPost('type') == 'global') {
+                    $postData['module_id'] = NULL;
+                } else {
+                    $postData['module_id'] = $this->request->getPost('module_id');
+                }
+                if ($this->request->getPost('id') > '0' || $this->request->getPost('id') > 0) {
+                    $postData['id'] = $this->request->getPost('id');
+                } else {
+                    $postData['id'] = NULL;
+                }
+
+                if ($entityDb->save($postData)) {
+                    $response['message'] = 'Data Added succesfully';
+                    $response['success'] = true;
+                } else {
+                    $response['message'] = 'Unable to add data, please try after some time.';
+                    $response['success'] = false;
+                }
+            }
+            return json_encode($response);
+        }
+
+        $testimonials = $entityDb->orderBy('id', 'desc')->findAll();
+        foreach ($testimonials as $key => $testimonial) {
+            if ($testimonial['type'] == 'festival') {
+                $festivalDb = new FestivalModel();
+                $data = $festivalDb->select('name')->find($testimonial['module_id']);
+                if ($data) {
+                    $testimonials[$key]['festival_name'] = $data['name'];
+                } else {
+                    $testimonials[$key]['festival_name'] = 'N/A';
+                }
+            }
+        }
+        $this->data['testimonials'] = $testimonials;
+        return view('Admin/Pages/Settings/testimonials', $this->data);
     }
 }

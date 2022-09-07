@@ -329,8 +329,8 @@
                     <div class="form-control-wrap">
                         <select class="form-select js-select2" id="copyTicketInput" name="copyTicket">
                             <option value="0" selected disabled></option>
-                            <?php foreach ($globalTickets as $key => $value) : ?>
-                                <option value="<?= $value['id'] ?>" title="<?= $value['details'] ?>"><?= number_to_currency($ticket['inr'], 'INR', 'en_US', 2) ?>/<?= number_to_currency($ticket['eur'], 'EUR', 'en_US', 2) ?></option>
+                            <?php foreach ($globalTickets as $key => $ticket) : ?>
+                                <option value="<?= $ticket['id'] ?>" title="<?= $ticket['details'] ?>"><?= number_to_currency($ticket['inr'], 'INR', 'en_US', 2) ?>/<?= number_to_currency($ticket['eur'], 'EUR', 'en_US', 2) ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>

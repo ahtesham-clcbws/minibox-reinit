@@ -32,6 +32,19 @@ $homeBanners = array(
 $banners = $homeBanners;
 $banners = count(getHomepageBanners()) ? getHomepageBanners() : $homeBanners;
 ?>
+<?php if (count($headlines) < 2) : ?>
+    <style>
+        .headlines-section article>iframe,
+        .headlines-section article>figure {
+            height: 345px;
+        }
+
+        .headlines-section article.smallArticle>figure,
+        .headlines-section article.smallArticle>iframe {
+            height: 190px !important;
+        }
+    </style>
+<?php endif; ?>
 
 <!-- HERO -->
 <section class="uk-section-small clearfix uk-padding-remove-bottom uk-padding-remove-top">
@@ -66,492 +79,295 @@ $banners = count(getHomepageBanners()) ? getHomepageBanners() : $homeBanners;
         </div>
     </div>
 </section>
+
 <!--IN THE HEADLINES-->
-<div class="uk-section-small uk-section-default">
-    <div class="uk-container">
-        <h4 class="uk-heading-line uk-text-bold uk-text-center uk-animation-slide-bottom-medium"><span>IN THE
-                HEADLINES</span></h4>
-        <div class="uk-grid" data-ukgrid="">
-            <div class="uk-width-2-3@m">
-                <article class="uk-section uk-section-small uk-padding-remove-top uk-animation-slide-bottom-medium set-img">
-                    <figure>
-                        <div uk-slider="" class="uk-slider uk-slider-container">
-                            <div class="uk-position-relative uk-visible-toggle uk-light" tabindex="-1">
-                                <ul class="uk-slider-items uk-child-width-1-2 uk-child-width-1-3@s uk-child-width-1-1@m" style="transform: translate3d(0px, 0px, 0px);">
-                                    <li tabindex="-1" class="uk-active">
-                                        <img src="/public/images/1615984438-b_730_d44d80bc-b199-4f03-9256-ba2c6c17b61b.jpg" alt="">
-
-                                    </li>
-                                </ul>
-                                <a class="uk-position-center-left uk-position-small uk-hidden-hover uk-icon uk-slidenav-previous uk-slidenav uk-invisible" href="http://sky360.in/mini_box_office/#" uk-slidenav-previous="" uk-slider-item="previous" hidden=""><svg width="14" height="24" viewBox="0 0 14 24" xmlns="http://www.w3.org/2000/svg">
-                                        <polyline fill="none" stroke="#000" stroke-width="1.4" points="12.775,1 1.225,12 12.775,23 "></polyline>
-                                    </svg></a>
-                                <a class="uk-position-center-right uk-position-small uk-hidden-hover uk-icon uk-slidenav-next uk-slidenav uk-invisible" href="http://sky360.in/mini_box_office/#" uk-slidenav-next="" uk-slider-item="next" hidden=""><svg width="14" height="24" viewBox="0 0 14 24" xmlns="http://www.w3.org/2000/svg">
-                                        <polyline fill="none" stroke="#000" stroke-width="1.4" points="1.225,23 12.775,12 1.225,1 "></polyline>
-                                    </svg></a>
-                            </div>
-                        </div>
-                    </figure>
-                    <header>
-                        <h2 class="uk-margin-remove-adjacent uk-text-bold uk-margin-small-bottom">
-                            <a title="Fusce facilisis tempus magna ac dignissim." class="uk-link-reset" href="http://sky360.in/mini_box_office/stories-detail.php?id=8">Fusce facilisis
-                                tempus magna ac dignissim.</a>
-                        </h2>
-                        <p class="uk-article-meta uk-text-center text-color">March 17, 2021</p>
-                    </header>
-                    <p>Description 5</p>
-                    <a href="http://sky360.in/mini_box_office/stories-detail.php?id=8" title="Read More" class="uk-button uk-button-default uk-width uk-read-more uk-button-large">READ MORE</a>
-                </article>
-            </div>
-            <div class="uk-width-1-3@m">
-                <article class="uk-section uk-section-small uk-padding-remove-top uk-animation-slide-bottom-medium">
-                    <figure>
-                        <img src="/public/images/1615984392-slide26.jpg" width="840" height="440" alt="" class="lazy">
-                    </figure>
-                    <header>
-                        <h2 class="uk-margin-remove-adjacent uk-margin-small-bottom uk-text-center"><a title="Story 4" class="uk-link-reset" href="http://sky360.in/mini_box_office/stories-detail.php?id=7">Story 4</a></h2>
-                        <p class="uk-article-meta uk-text-center text-color">March 17, 2021 </p>
-                    </header>
-                    <hr>
-                </article>
-                <article class="uk-section uk-section-small uk-padding-remove-top uk-animation-slide-bottom-medium">
-                    <figure>
-                        <img src="/public/images/1618396918-article-1.jpg" width="840" height="440" alt="office Photo" class="lazy">
-                    </figure>
-                    <header>
-                        <h2 class="uk-margin-remove-adjacent uk-margin-small-bottom uk-text-center"><a title="title" class="uk-link-reset" href="http://sky360.in/mini_box_office/stories-detail.php?id=27">title</a></h2>
-                        <p class="uk-article-meta uk-text-center text-color">April 14, 2021 </p>
-                    </header>
-                </article>
-            </div>
-        </div>
-    </div>
-</div>
-<!--EVENTS-->
-<div class="uk-section-small uk-animation-slide-bottom-medium uk-padding-remove-top uk-padding-remove-bottom">
-    <div class="uk-container">
-        <a href="http://sky360.in/mini_box_office/filmzine/index.html" target="_blank" title="Read More" class="uk-button uk-button-default uk-align-center uk-width-1-3@m uk-read-more ">FilmZine</a>
-        <h4 class="uk-heading-line uk-text-bold uk-text-center  "><span>EVENTS</span></h4>
-        <div class="uk-text-center uk-grid" uk-grid="">
-            <div class="uk-width-1-3@m">
-                <div class="uk-card uk-card-default">
-                    <div class="ct-fancybox-layout4">
-                        <div class="ct-fancybox-front">
-                            <img src="/public/images/events-1.jpg">
-                            <h2>14 <span>Apr 2021</span></h2>
-                            <h3>ICFF</h3>
-                        </div>
-                        <div class="ct-fancybox-back">
-                            <h2>ICFF</h2>
-                            <h3>6th Indian Cine Film</h3>
-                            <a href="http://sky360.in/mini_box_office/events-page?id=MTQ=" title="View Detail" class="uk-button uk-button-secondary">View Detail</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="uk-width-1-3@m">
-                <div class="uk-card uk-card-default">
-                    <div class="ct-fancybox-layout4">
-                        <div class="ct-fancybox-front">
-                            <img src="/public/images/1618988349-events-2.jpg">
-                            <h2>04 <span>Apr 2021</span></h2>
-                            <h3>ICFF</h3>
-                        </div>
-                        <div class="ct-fancybox-back">
-                            <h2>ICFF</h2>
-                            <h3>some test heading for discussion</h3>
-                            <a href="http://sky360.in/mini_box_office/events-page?id=MTU=" title="View Detail" class="uk-button uk-button-secondary">View Detail</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="uk-width-1-3@m">
-                <div class="uk-card uk-card-default">
-                    <div class="ct-fancybox-layout4">
-                        <div class="ct-fancybox-front">
-                            <img src="/public/images/events-1.jpg">
-                            <h2>14 <span>Apr 2021</span></h2>
-                            <h3>ICFF</h3>
-                        </div>
-                        <div class="ct-fancybox-back">
-                            <h2>ICFF</h2>
-                            <h3>6th Indian Cine Film</h3>
-                            <a href="http://sky360.in/mini_box_office/events-page?id=MTQ=" title="View Detail" class="uk-button uk-button-secondary">View Detail</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- Video Trailer -->
-<section class="uk-section-small uk-padding-remove-bottom">
-    <div class="uk-container uk-position-z-index uk-section uk-animation-slide-bottom-medium uk-padding-remove-bottom">
-        <h4 class="uk-heading-line uk-text-bold uk-text-center uk-text-uppercase   ">
-            <span>Video Trailer</span>
-        </h4>
+<?php if (count($headlines)) : ?>
+    <div class="uk-section-small uk-section-default headlines-section">
         <div class="uk-container">
-            <div class="uk-text-center uk-grid" uk-grid="">
-                <div class="uk-width-1-3@m uk-first-column">
-                    <article class="gridlove-post gridlove-post-a gridlove-box">
-                        <div data-id="UWEjxkkB8Xs" data-target="magnificPopup" data-thumbnail="mqdefault" class="youtube"><a href="http://sky360.in/mini_box_office/#" class="preview"></a></div>
-
-                        <div class="box-inner-p">
-                            <div class="box-inner-ellipsis">
-                                <div style="margin: 0px; padding: 0px; border: 0px;">
-                                    <h2 class="entry-title h3">
-                                        <a href="http://sky360.in/mini_box_office/video-trailer?id=MTM=">
-                                            Why Buster Keaton’s visual comedy is still the best in a century-plus of
-                                            cinema </a>
-                                    </h2>
-                                    <p class="uk-text-left">From the meticulous geometric framing of Wes Anderson to
-                                        the droll deadpan of Bill Murray, the influ... </p>
-                                </div>
+            <h4 class="uk-heading-line uk-text-bold uk-text-center uk-animation-slide-bottom-medium">
+                <span>IN THE HEADLINES</span>
+            </h4>
+            <div class="uk-grid uk-grid-column-large uk-grid-divider" data-ukgrid="">
+                <div class="<?= count($headlines) > 1 ? 'uk-width-2-3@m' : 'uk-width-1-1' ?>">
+                    <article class="uk-section uk-section-small uk-text-center uk-padding-remove-top uk-animation-slide-bottom-medium">
+                        <?php if ($headlines[0]['media_type'] === 'image') : ?>
+                            <figure style="background-image:url(<?= $headlines[0]['media_url'] ?>);"></figure>
+                        <?php endif; ?>
+                        <?php if ($headlines[0]['media_type'] === 'video') : ?>
+                            <?php if ($headlines[0]['video_type'] === 'youtube') : ?>
+                                <figure class="videoThumb" style="background-image:url(https://img.youtube.com/vi/<?= $headlines[0]['media_url'] ?>/hqdefault.jpg);"></figure>
+                                <a href="<?= route_to('film_zine_article',  base64_encode($headlines[0]['news_id'])) ?>" uk-icon="icon: play-circle; ratio: 3.5" class="videoIcon youtubeIcon" data-video="<?= $headlines[0]['media_url'] ?>"></a>
+                            <?php endif; ?>
+                            <?php if ($headlines[0]['video_type'] === 'vimeo') : ?>
+                                <figure class="videoThumb" style="background-image:url(https://vumbnail.com/<?= $headlines[0]['media_url'] ?>.jpg);"></figure>
+                                <a href="<?= route_to('film_zine_article',  base64_encode($headlines[0]['news_id'])) ?>" uk-icon="icon: play-circle; ratio: 3.5" class="videoIcon vimeoIcon" data-video="<?= $headlines[0]['media_url'] ?>"></a>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                        <header>
+                            <h3 class="uk-margin-remove-adjacent uk-text-bold uk-margin-small-bottom">
+                                <a class="uk-link-reset" href="<?= route_to('film_zine_article',  base64_encode($headlines[0]['news_id'])) ?>">
+                                    <?= $headlines[0]['title'] ?>
+                                </a>
+                            </h3>
+                            <div class="uk-article-meta uk-text-center text-color">
+                                <?= date('F d, Y', strtotime($headlines[0]['created_at'])); ?>
                             </div>
-                        </div>
+                            <p class="post-excerpt">
+                                <?= $headlines[0]['summary'] ?>
+                            </p>
+                        </header>
+                        <!-- <p>Description 2</p> -->
                     </article>
+                    <a href="<?= route_to('film_zine_article',  base64_encode($headlines[0]['news_id'])) ?>" title="Read More" class="uk-button uk-button-default uk-width uk-read-more uk-button-large">READ MORE</a>
                 </div>
-                <div class="uk-width-1-3@m">
-                    <article class="gridlove-post gridlove-post-a gridlove-box">
-                        <div data-id="462692105" class="vimeo" data-target="magnificPopup" data-thumbnail="462692105_780x440"><a href="http://sky360.in/mini_box_office/#" class="preview"></a></div>
-
-                        <div class="box-inner-p">
-                            <div class="box-inner-ellipsis">
-                                <div style="margin: 0px; padding: 0px; border: 0px;">
-                                    <h2 class="entry-title h3">
-                                        <a href="http://sky360.in/mini_box_office/video-trailer?id=MTI=">
-                                            Are rock concerts really coming back into fashion? </a>
-                                    </h2>
-                                    <p class="uk-text-left">Monotonectally pursue backward-compatible ideas without
-                                        empowered imperatives. Interactively predomi... </p>
+                <?php if (count($headlines) > 1) : ?>
+                    <div class="uk-width-1-3@m">
+                        <article class="uk-section uk-section-small uk-text-center uk-padding-remove-top uk-animation-slide-bottom-medium smallArticle">
+                            <?php if ($headlines[1]['media_type'] === 'image') : ?>
+                                <figure style="background-image:url(<?= $headlines[1]['media_url'] ?>);"></figure>
+                            <?php endif; ?>
+                            <?php if ($headlines[1]['media_type'] === 'video') : ?>
+                                <?php if ($headlines[1]['video_type'] === 'youtube') : ?>
+                                    <figure class="videoThumb" style="background-image:url(https://img.youtube.com/vi/<?= $headlines[1]['media_url'] ?>/hqdefault.jpg);"></figure>
+                                    <a href="<?= route_to('film_zine_article',  base64_encode($headlines[1]['news_id'])) ?>" uk-icon="icon: play-circle; ratio: 3.5" class="videoIcon youtubeIcon" data-video="<?= $headlines[1]['media_url'] ?>"></a>
+                                <?php endif; ?>
+                                <?php if ($headlines[1]['video_type'] === 'vimeo') : ?>
+                                    <figure class="videoThumb" style="background-image:url(https://vumbnail.com/<?= $headlines[1]['media_url'] ?>.jpg);"></figure>
+                                    <a href="<?= route_to('film_zine_article',  base64_encode($headlines[1]['news_id'])) ?>" uk-icon="icon: play-circle; ratio: 3.5" class="videoIcon vimeoIcon" data-video="<?= $headlines[1]['media_url'] ?>"></a>
+                                <?php endif; ?>
+                            <?php endif; ?>
+                            <header>
+                                <h4 class="uk-margin-remove-adjacent uk-margin-small-bottom">
+                                    <a class="uk-link-reset onlyTwoTitleLines" href="<?= route_to('film_zine_article',  base64_encode($headlines[1]['news_id'])) ?>">
+                                        <?= $headlines[1]['title'] ?>
+                                    </a>
+                                </h4>
+                                <div class="uk-article-meta uk-text-center text-color">
+                                    <?= date('F d, Y', strtotime($headlines[1]['created_at'])); ?>
                                 </div>
-                            </div>
-                        </div>
-                    </article>
-                </div>
-                <div class="uk-width-1-3@m">
-                    <article class="gridlove-post gridlove-post-a gridlove-box">
-                        <div data-id="DsqFL6_Q_cI" data-target="magnificPopup" data-thumbnail="mqdefault" class="youtube"><a href="http://sky360.in/mini_box_office/#" class="preview"></a></div>
-
-                        <div class="box-inner-p">
-                            <div class="box-inner-ellipsis">
-                                <div style="margin: 0px; padding: 0px; border: 0px;">
-                                    <h2 class="entry-title h3">
-                                        <a href="http://sky360.in/mini_box_office/video-trailer?id=MTE=">
-                                            Are rock concerts really coming back into fashion? </a>
-                                    </h2>
-                                    <p class="uk-text-left">Monotonectally pursue backward-compatible ideas without
-                                        empowered imperatives. Interactively predomi... </p>
-                                </div>
-                            </div>
-                        </div>
-                    </article>
-                </div>
-                <div class="uk-width-1-3@m uk-grid-margin uk-first-column">
-                    <article class="gridlove-post gridlove-post-a gridlove-box">
-                        <div data-id="DsqFL6_Q_cI" data-target="magnificPopup" data-thumbnail="mqdefault" class="youtube"><a href="http://sky360.in/mini_box_office/#" class="preview"></a></div>
-
-                        <div class="box-inner-p">
-                            <div class="box-inner-ellipsis">
-                                <div style="margin: 0px; padding: 0px; border: 0px;">
-                                    <h2 class="entry-title h3">
-                                        <a href="http://sky360.in/mini_box_office/video-trailer?id=MTA=">
-                                            Are rock concerts really coming back into fashion? </a>
-                                    </h2>
-                                    <p class="uk-text-left">Monotonectally pursue backward-compatible ideas without
-                                        empowered imperatives. Interactively predomi... </p>
-                                </div>
-                            </div>
-                        </div>
-                    </article>
-                </div>
-                <div class="uk-width-1-3@m uk-grid-margin">
-                    <article class="gridlove-post gridlove-post-a gridlove-box">
-                        <div data-id="DsqFL6_Q_cI" data-target="magnificPopup" data-thumbnail="mqdefault" class="youtube"><a href="http://sky360.in/mini_box_office/#" class="preview"></a></div>
-
-                        <div class="box-inner-p">
-                            <div class="box-inner-ellipsis">
-                                <div style="margin: 0px; padding: 0px; border: 0px;">
-                                    <h2 class="entry-title h3">
-                                        <a href="http://sky360.in/mini_box_office/video-trailer?id=OQ==">
-                                            Are rock concerts really coming back into fashion? </a>
-                                    </h2>
-                                    <p class="uk-text-left">Monotonectally pursue backward-compatible ideas without
-                                        empowered imperatives. Interactively predomi... </p>
-                                </div>
-                            </div>
-                        </div>
-                    </article>
-                </div>
-                <div class="uk-width-1-3@m uk-grid-margin">
-                    <article class="gridlove-post gridlove-post-a gridlove-box">
-                        <div data-id="DsqFL6_Q_cI" data-target="magnificPopup" data-thumbnail="mqdefault" class="youtube"><a href="http://sky360.in/mini_box_office/#" class="preview"></a></div>
-
-                        <div class="box-inner-p">
-                            <div class="box-inner-ellipsis">
-                                <div style="margin: 0px; padding: 0px; border: 0px;">
-                                    <h2 class="entry-title h3">
-                                        <a href="http://sky360.in/mini_box_office/video-trailer?id=OA==">
-                                            Are rock concerts really coming back into fashion? </a>
-                                    </h2>
-                                    <p class="uk-text-left">Monotonectally pursue backward-compatible ideas without
-                                        empowered imperatives. Interactively predomi... </p>
-                                </div>
-                            </div>
-                        </div>
-                    </article>
-                </div>
+                            </header>
+                        </article>
+                        <?php if (count($headlines) == 3) : ?>
+                            <article class="uk-section uk-section-small uk-text-center uk-padding-remove-top uk-animation-slide-bottom-medium smallArticle">
+                                <?php if ($headlines[2]['media_type'] === 'image') : ?>
+                                    <figure style="background-image:url(<?= $headlines[2]['media_url'] ?>);"></figure>
+                                <?php endif; ?>
+                                <?php if ($headlines[2]['media_type'] === 'video') : ?>
+                                    <?php if ($headlines[2]['video_type'] === 'youtube') : ?>
+                                        <figure class="videoThumb" style="background-image:url(https://img.youtube.com/vi/<?= $headlines[2]['media_url'] ?>/hqdefault.jpg);"></figure>
+                                        <a href="<?= route_to('film_zine_article',  base64_encode($headlines[2]['news_id'])) ?>" uk-icon="icon: play-circle; ratio: 3.5" class="videoIcon youtubeIcon" data-video="<?= $headlines[2]['media_url'] ?>"></a>
+                                    <?php endif; ?>
+                                    <?php if ($headlines[2]['video_type'] === 'vimeo') : ?>
+                                        <figure class="videoThumb" style="background-image:url(https://vumbnail.com/<?= $headlines[2]['media_url'] ?>.jpg);"></figure>
+                                        <a href="<?= route_to('film_zine_article',  base64_encode($headlines[2]['news_id'])) ?>" uk-icon="icon: play-circle; ratio: 3.5" class="videoIcon vimeoIcon" data-video="<?= $headlines[2]['media_url'] ?>"></a>
+                                    <?php endif; ?>
+                                <?php endif; ?>
+                                <header>
+                                    <h4 class="uk-margin-remove-adjacent uk-margin-small-bottom">
+                                        <a class="uk-link-reset onlyTwoTitleLines" href="<?= route_to('film_zine_article',  base64_encode($headlines[2]['news_id'])) ?>">
+                                            <?= $headlines[2]['title'] ?>
+                                        </a>
+                                    </h4>
+                                    <div class="uk-article-meta uk-text-center text-color">
+                                        <?= date('F d, Y', strtotime($headlines[2]['created_at'])); ?>
+                                    </div>
+                                </header>
+                            </article>
+                        <?php endif; ?>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>
+<?php endif; ?>
 
-</section>
+<!--EVENTS-->
+<?php if (count($events)) : ?>
+    <div class="uk-section-small uk-animation-slide-bottom-medium uk-padding-remove-top uk-padding-remove-bottom">
+        <div class="uk-container">
+            <h4 class="uk-heading-line uk-text-bold uk-text-center">
+                <span>EVENTS</span>
+            </h4>
+            <div class="uk-text-center uk-grid" uk-grid="">
+                <?php foreach ($events as $key => $event) : ?>
+                    <div class="uk-width-1-3@m">
+                        <div class="uk-card uk-card-default">
+                            <div class="ct-fancybox-layout4">
+                                <div class="ct-fancybox-front">
+                                    <figure class="eventShowcaseImage" style="background-image:url(<?= $event['image'] ?>);">
+                                    </figure>
+                                    <h2><?= date('d', strtotime($event['from_date'])) ?> <span><?= date('M Y', strtotime($event['from_date'])) ?></span></h2>
+                                    <h3><?= $event['categoryName'] ?></h3>
+                                </div>
+                                <div class="ct-fancybox-back">
+                                    <h2 class="text"><?= $event['categoryName'] ?></h2>
+                                    <h4 class="text"><?= $event['title'] ?></h4>
+                                    <a href="<?= route_to('event_details',  base64_encode($event['id'])) ?>" title="View Detail" class="uk-button uk-button-secondary">View Detail</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </div>
+<?php endif; ?>
+
+<!-- Video Trailer -->
+<?php if (count($trailers)) : ?>
+    <section class="uk-section-small uk-padding-remove-bottom">
+        <div class="uk-container uk-position-z-index uk-section uk-animation-slide-bottom-medium uk-padding-remove-bottom">
+            <h4 class="uk-heading-line uk-text-bold uk-text-center uk-text-uppercase   ">
+                <span>Video Trailer</span>
+            </h4>
+            <div class="uk-container">
+                <div class="uk-text-center uk-grid" uk-grid="">
+                    <?php foreach ($trailers as $tKey => $trailer) : ?>
+                        <div class="uk-width-1-3@m uk-grid-margin">
+                            <article class="gridlove-post gridlove-post-a gridlove-box smallArticle">
+                                <?php if ($trailer['media_type'] === 'image') : ?>
+                                    <figure style="background-image:url(<?= $trailer['media_url'] ?>);"></figure>
+                                <?php endif; ?>
+                                <?php if ($trailer['media_type'] === 'video') : ?>
+                                    <?php if ($trailer['video_type'] === 'youtube') : ?>
+                                        <figure class="videoThumb" style="background-image:url(https://img.youtube.com/vi/<?= $trailer['media_url'] ?>/hqdefault.jpg);"></figure>
+                                        <a href="<?= route_to('film_zine_article', base64_encode($trailer['news_id'])) ?>" uk-icon="icon: play-circle; ratio: 3.5" class="videoIcon youtubeIcon" data-video="<?= $trailer['media_url'] ?>"></span>
+                                        <?php endif; ?>
+                                        <?php if ($trailer['video_type'] === 'vimeo') : ?>
+                                            <figure class="videoThumb" style="background-image:url(https://vumbnail.com/<?= $trailer['media_url'] ?>.jpg);"></figure>
+                                            <a href="<?= route_to('film_zine_article', base64_encode($trailer['news_id'])) ?>" uk-icon="icon: play-circle; ratio: 3.5" class="videoIcon vimeoIcon" data-video="<?= $trailer['media_url'] ?>"></a>
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+                                    <div class="box-inner-p">
+                                        <div class="box-inner-ellipsis">
+                                            <div style="margin: 0px; padding: 0px; border: 0px;">
+                                                <h2 class="entry-title h3">
+                                                    <a href="<?= route_to('film_zine_article', base64_encode($trailer['news_id'])) ?>">
+                                                        <?= $trailer['title'] ?>
+                                                    </a>
+                                                </h2>
+                                                <!-- <p class="uk-text-left">som e Description :... </p> -->
+                                            </div>
+                                        </div>
+                                    </div>
+                            </article>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </div>
+    </section>
+<?php endif; ?>
 
 <!--testimonials-->
-<div class="uk-container uk-position-z-index uk-section uk-animation-slide-bottom-medium uk-padding-remove-bottom">
-    <h4 class="uk-heading-line uk-text-bold uk-text-center uk-text-uppercase   "><span>Testimonial</span></h4>
-    <div data-uk-slider="velocity: 5" class="uk-slider">
-        <div class="uk-position-relative">
-            <div class="uk-slider-container">
-                <ul class="uk-slider-items uk-child-width-1-1" style="transform: translate3d(0px, 0px, 0px);">
-                    <li tabindex="-1" class="uk-active uk-text-center" style="">
-                        <div class="testimonial-content">
-                            <div class="text-testimonial">
-                                <p class="">
-                                    <span class="">Flash Filmis an award winning creative production company working
-                                        for various clients and agencies in both New York &amp; LA</span>
-                                </p>
-                            </div>
-                            <div class="testimonial-rating">
-                                <span class="fa fa-star"></span>
-                                <span class="fa fa-star"></span>
-                                <span class="fa fa-star"></span>
-                                <span class="fa fa-star"></span>
-                                <span class="fa fa-star"></span>
-                            </div>
-                            <div class="testimonial-author-meta">
-                                <h3 class="testimonial-title">Alan Spider</h3>
-                                <p class="testimonial-position">/ Manager</p>
-                            </div>
-                        </div>
-                    </li>
-                    <li tabindex="-1" class="uk-text-center" style="">
-                        <div class="testimonial-content">
-                            <div class="text-testimonial">
-                                <p class="">
-                                    <span class="">Flash Filmis an award winning creative production company working
-                                        for various clients and agencies in both New York &amp; LA</span>
-                                </p>
-                            </div>
-                            <div class="testimonial-rating">
-                                <span class="fa fa-star"></span>
-                                <span class="fa fa-star"></span>
-                                <span class="fa fa-star-o"></span>
-                                <span class="fa fa-star-o"></span>
-                                <span class="fa fa-star-o"></span>
-                            </div>
-                            <div class="testimonial-author-meta">
-                                <h3 class="testimonial-title">Alan Spider</h3>
-                                <p class="testimonial-position">/ Manager</p>
-                            </div>
-                        </div>
-                    </li>
-                    <li tabindex="-1" class="uk-text-center" style="">
-                        <div class="testimonial-content">
-                            <div class="text-testimonial">
-                                <p class="">
-                                    <span class="">Flash Filmis an award winning creative production company working
-                                        for various clients and agencies in both New York &amp; LA</span>
-                                </p>
-                            </div>
-                            <div class="testimonial-rating">
-                                <span class="fa fa-star"></span>
-                                <span class="fa fa-star-o"></span>
-                                <span class="fa fa-star-o"></span>
-                                <span class="fa fa-star-o"></span>
-                                <span class="fa fa-star-o"></span>
-                            </div>
-                            <div class="testimonial-author-meta">
-                                <h3 class="testimonial-title">Alan Spider</h3>
-                                <p class="testimonial-position">/ Manager</p>
-                            </div>
-                        </div>
-                    </li>
-                    <li tabindex="-1" class="uk-text-center" style="">
-                        <div class="testimonial-content">
-                            <div class="text-testimonial">
-                                <p class="">
-                                    <span class="">Her face has the flawless sheen of Photoshop-adjusted models in
-                                        cosmetics ads – an uncanny smoothness that leads us to make our own
-                                        inferences about her character</span>
-                                </p>
-                            </div>
-                            <div class="testimonial-rating">
-                                <span class="fa fa-star"></span>
-                                <span class="fa fa-star"></span>
-                                <span class="fa fa-star"></span>
-                                <span class="fa fa-star"></span>
-                                <span class="fa fa-star-o"></span>
-                            </div>
-                            <div class="testimonial-author-meta">
-                                <h3 class="testimonial-title">Jonathan Romney</h3>
-                                <p class="testimonial-position">/ Author of Atom Egoyan (2003)</p>
-                            </div>
-                        </div>
-                    </li>
-
-                </ul>
-            </div>
-            <div class="uk-hidden@l uk-light">
-                <a class="uk-position-center-left uk-position-small uk-icon uk-slidenav-previous uk-slidenav" href="http://sky360.in/mini_box_office/#" data-uk-slidenav-previous="" data-uk-slider-item="previous"><svg width="14" height="24" viewBox="0 0 14 24" xmlns="http://www.w3.org/2000/svg">
-                        <polyline fill="none" stroke="#000" stroke-width="1.4" points="12.775,1 1.225,12 12.775,23 "></polyline>
-                    </svg></a>
-                <a class="uk-position-center-right uk-position-small uk-icon uk-slidenav-next uk-slidenav" href="http://sky360.in/mini_box_office/#" data-uk-slidenav-next="" data-uk-slider-item="next"><svg width="14" height="24" viewBox="0 0 14 24" xmlns="http://www.w3.org/2000/svg">
-                        <polyline fill="none" stroke="#000" stroke-width="1.4" points="1.225,23 12.775,12 1.225,1 ">
-                        </polyline>
-                    </svg></a>
-            </div>
-            <div class="uk-visible@l">
-                <a class="uk-position-center-left-out uk-position-small uk-icon uk-slidenav-previous uk-slidenav" href="http://sky360.in/mini_box_office/#" data-uk-slidenav-previous="" data-uk-slider-item="previous"><svg width="14" height="24" viewBox="0 0 14 24" xmlns="http://www.w3.org/2000/svg">
-                        <polyline fill="none" stroke="#000" stroke-width="1.4" points="12.775,1 1.225,12 12.775,23 "></polyline>
-                    </svg></a>
-                <a class="uk-position-center-right-out uk-position-small uk-icon uk-slidenav-next uk-slidenav" href="http://sky360.in/mini_box_office/#" data-uk-slidenav-next="" data-uk-slider-item="next"><svg width="14" height="24" viewBox="0 0 14 24" xmlns="http://www.w3.org/2000/svg">
-                        <polyline fill="none" stroke="#000" stroke-width="1.4" points="1.225,23 12.775,12 1.225,1 ">
-                        </polyline>
-                    </svg></a>
+<?php if (count($testimonials)) : ?>
+    <div class="uk-container uk-position-z-index uk-section uk-animation-slide-bottom-medium uk-padding-remove-bottom">
+        <h4 class="uk-heading-line uk-text-bold uk-text-center uk-text-uppercase"><span>Testimonial</span></h4>
+        <div data-uk-slider="velocity: 5" class="uk-slider">
+            <div class="uk-position-relative">
+                <div class="uk-slider-container">
+                    <ul class="uk-slider-items uk-child-width-1-1" style="transform: translate3d(0px, 0px, 0px);">
+                        <?php foreach ($testimonials as $key => $testimonial) : ?>
+                            <li class="<?= $key == 0 ? 'uk-active' : '' ?> uk-text-center">
+                                <div class="testimonial-content">
+                                    <div class="text-testimonial">
+                                        <p class=""><?= html_entity_decode($testimonial['content']) ?></p>
+                                    </div>
+                                    <div class="testimonial-rating">
+                                        <?php foreach (getStars('2.5') as $star) {
+                                            echo $star;
+                                        } ?>
+                                    </div>
+                                    <div class="testimonial-author-meta">
+                                        <h3 class="testimonial-title"><?= $testimonial['name'] ?></h3>
+                                        <?php if ($testimonial['designation'] && !empty($testimonial['designation'])) : ?>
+                                            <p class="testimonial-position">/ <?= $testimonial['designation'] ?></p>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+                <div class="uk-hidden@l uk-light">
+                    <a class="uk-position-center-left uk-position-small uk-icon uk-slidenav-previous uk-slidenav" href="#" data-uk-slidenav-previous="" data-uk-slider-item="previous">
+                        <svg width="14" height="24" viewBox="0 0 14 24" xmlns="http://www.w3.org/2000/svg">
+                            <polyline fill="none" stroke="#000" stroke-width="1.4" points="12.775,1 1.225,12 12.775,23 "></polyline>
+                        </svg>
+                    </a>
+                    <a class="uk-position-center-right uk-position-small uk-icon uk-slidenav-next uk-slidenav" href="#" data-uk-slidenav-next="" data-uk-slider-item="next">
+                        <svg width="14" height="24" viewBox="0 0 14 24" xmlns="http://www.w3.org/2000/svg">
+                            <polyline fill="none" stroke="#000" stroke-width="1.4" points="1.225,23 12.775,12 1.225,1 ">
+                            </polyline>
+                        </svg>
+                    </a>
+                </div>
+                <div class="uk-visible@l">
+                    <a class="uk-position-center-left-out uk-position-small uk-icon uk-slidenav-previous uk-slidenav" href="#" data-uk-slidenav-previous="" data-uk-slider-item="previous">
+                        <svg width="14" height="24" viewBox="0 0 14 24" xmlns="http://www.w3.org/2000/svg">
+                            <polyline fill="none" stroke="#000" stroke-width="1.4" points="12.775,1 1.225,12 12.775,23 "></polyline>
+                        </svg>
+                    </a>
+                    <a class="uk-position-center-right-out uk-position-small uk-icon uk-slidenav-next uk-slidenav" href="#" data-uk-slidenav-next="" data-uk-slider-item="next">
+                        <svg width="14" height="24" viewBox="0 0 14 24" xmlns="http://www.w3.org/2000/svg">
+                            <polyline fill="none" stroke="#000" stroke-width="1.4" points="1.225,23 12.775,12 1.225,1 ">
+                            </polyline>
+                        </svg>
+                    </a>
+                </div>
             </div>
         </div>
-        <ul class="uk-slider-nav uk-dotnav uk-flex-center uk-margin">
-            <li uk-slider-item="0" class="uk-active"><a href="http://sky360.in/mini_box_office/"></a></li>
-            <li uk-slider-item="1" class=""><a href="http://sky360.in/mini_box_office/"></a></li>
-            <li uk-slider-item="2" class=""><a href="http://sky360.in/mini_box_office/"></a></li>
-            <li uk-slider-item="3" class=""><a href="http://sky360.in/mini_box_office/"></a></li>
-        </ul>
     </div>
-</div>
+<?php endif; ?>
+
 
 <!-- Interviews -->
-<section class="uk-section-small uk-padding-remove-bottom">
-    <div class="uk-container uk-position-z-index uk-animation-slide-bottom-medium">
-        <h4 class="uk-heading-line uk-text-bold uk-text-center uk-text-uppercase   ">
-            <span>Interviews</span>
-        </h4>
-        <div class="uk-container">
-            <div class="uk-text-center uk-grid" uk-grid="">
-                <div class="uk-width-1-3@m uk-first-column">
-                    <article class="gridlove-post gridlove-post-a gridlove-box">
-                        <div data-id="9y6Bkizc46o" data-target="magnificPopup" data-thumbnail="mqdefault" class="youtube"><a href="http://sky360.in/mini_box_office/#" class="preview"></a></div>
-
-                        <div class="box-inner-p">
-                            <div class="box-inner-ellipsis">
-                                <div style="margin: 0px; padding: 0px; border: 0px;">
-                                    <h2 class="entry-title h3">
-                                        <a href="http://sky360.in/mini_box_office/interviews-detail?id=MTQ=">
-                                            For millennia, we’d never seen anything like film cuts. How do we
-                                            process them so easily? </a>
-                                    </h2>
-                                    <p class="uk-text-left">Before the emergence and rapid proliferation of film
-                                        editing at the dawn of the 20th century, humans... </p>
+<?php if (count($interviews)) : ?>
+    <section class="uk-section-small uk-padding-remove-bottom">
+        <div class="uk-container uk-position-z-index uk-animation-slide-bottom-medium">
+            <h4 class="uk-heading-line uk-text-bold uk-text-center uk-text-uppercase   ">
+                <span>Interviews</span>
+            </h4>
+            <div class="uk-container">
+                <div class="uk-text-center uk-grid" uk-grid="">
+                    <?php foreach ($interviews as $tKey => $interview) : ?>
+                        <div class="uk-width-1-3@m uk-grid-margin">
+                            <article class="gridlove-post gridlove-post-a gridlove-box smallArticle">
+                                <?php if ($interview['media_type'] === 'image') : ?>
+                                    <figure style="background-image:url(<?= $interview['media_url'] ?>);"></figure>
+                                <?php endif; ?>
+                                <?php if ($interview['media_type'] === 'video') : ?>
+                                    <?php if ($interview['video_type'] === 'youtube') : ?>
+                                        <figure class="videoThumb" style="background-image:url(https://img.youtube.com/vi/<?= $interview['media_url'] ?>/hqdefault.jpg);"></figure>
+                                        <a href="<?= route_to('film_zine_article',  base64_encode($interview['news_id'])) ?>" uk-icon="icon: play-circle; ratio: 3.5" class="videoIcon youtubeIcon" data-video="<?= $interview['media_url'] ?>"></a>
+                                    <?php endif; ?>
+                                    <?php if ($interview['video_type'] === 'vimeo') : ?>
+                                        <figure class="videoThumb" style="background-image:url(https://vumbnail.com/<?= $interview['media_url'] ?>.jpg);"></figure>
+                                        <a href="<?= route_to('film_zine_article',  base64_encode($interview['news_id'])) ?>" uk-icon="icon: play-circle; ratio: 3.5" class="videoIcon vimeoIcon" data-video="<?= $interview['media_url'] ?>"></a>
+                                    <?php endif; ?>
+                                <?php endif; ?>
+                                <div class="box-inner-p">
+                                    <div class="box-inner-ellipsis">
+                                        <div style="margin: 0px; padding: 0px; border: 0px;">
+                                            <h2 class="entry-title h3">
+                                                <a href="<?= route_to('film_zine_article',  base64_encode($interview['news_id'])) ?>">
+                                                    <?= $interview['title'] ?>
+                                                </a>
+                                            </h2>
+                                            <!-- <p class="uk-text-left">som e Description :... </p> -->
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
+                            </article>
                         </div>
-                    </article>
-                </div>
-                <div class="uk-width-1-3@m">
-                    <article class="gridlove-post gridlove-post-a gridlove-box">
-                        <div data-id="DsqFL6_Q_cI" data-target="magnificPopup" data-thumbnail="mqdefault" class="youtube"><a href="http://sky360.in/mini_box_office/#" class="preview"></a></div>
-
-                        <div class="box-inner-p">
-                            <div class="box-inner-ellipsis">
-                                <div style="margin: 0px; padding: 0px; border: 0px;">
-                                    <h2 class="entry-title h3">
-                                        <a href="http://sky360.in/mini_box_office/interviews-detail?id=MTM=">
-                                            test </a>
-                                    </h2>
-                                    <p class="uk-text-left">som e Description :... </p>
-                                </div>
-                            </div>
-                        </div>
-                    </article>
-                </div>
-                <div class="uk-width-1-3@m">
-                    <article class="gridlove-post gridlove-post-a gridlove-box">
-                        <div data-id="DsqFL6_Q_cI" data-target="magnificPopup" data-thumbnail="mqdefault" class="youtube"><a href="http://sky360.in/mini_box_office/#" class="preview"></a></div>
-
-                        <div class="box-inner-p">
-                            <div class="box-inner-ellipsis">
-                                <div style="margin: 0px; padding: 0px; border: 0px;">
-                                    <h2 class="entry-title h3">
-                                        <a href="http://sky360.in/mini_box_office/interviews-detail?id=Nw==">
-                                            Are rock concerts really coming back into fashion? </a>
-                                    </h2>
-                                    <p class="uk-text-left">Monotonectally pursue backward-compatible ideas without
-                                        empowered imperatives. Interactively predomi... </p>
-                                </div>
-                            </div>
-                        </div>
-                    </article>
-                </div>
-                <div class="uk-width-1-3@m uk-grid-margin uk-first-column">
-                    <article class="gridlove-post gridlove-post-a gridlove-box">
-                        <div data-id="DsqFL6_Q_cI" data-target="magnificPopup" data-thumbnail="mqdefault" class="youtube"><a href="http://sky360.in/mini_box_office/#" class="preview"></a></div>
-
-                        <div class="box-inner-p">
-                            <div class="box-inner-ellipsis">
-                                <div style="margin: 0px; padding: 0px; border: 0px;">
-                                    <h2 class="entry-title h3">
-                                        <a href="http://sky360.in/mini_box_office/interviews-detail?id=NQ==">
-                                            Are rock concerts really coming back into fashion? </a>
-                                    </h2>
-                                    <p class="uk-text-left">Monotonectally pursue backward-compatible ideas without
-                                        empowered imperatives. Interactively predomi... </p>
-                                </div>
-                            </div>
-                        </div>
-                    </article>
-                </div>
-                <div class="uk-width-1-3@m uk-grid-margin">
-                    <article class="gridlove-post gridlove-post-a gridlove-box">
-                        <div data-id="DsqFL6_Q_cI" data-target="magnificPopup" data-thumbnail="mqdefault" class="youtube"><a href="http://sky360.in/mini_box_office/#" class="preview"></a></div>
-
-                        <div class="box-inner-p">
-                            <div class="box-inner-ellipsis">
-                                <div style="margin: 0px; padding: 0px; border: 0px;">
-                                    <h2 class="entry-title h3">
-                                        <a href="http://sky360.in/mini_box_office/interviews-detail?id=NA==">
-                                            Are rock concerts really coming back into fashion? </a>
-                                    </h2>
-                                    <p class="uk-text-left">Monotonectally pursue backward-compatible ideas without
-                                        empowered imperatives. Interactively predomi... </p>
-                                </div>
-                            </div>
-                        </div>
-                    </article>
-                </div>
-                <div class="uk-width-1-3@m uk-grid-margin">
-                    <article class="gridlove-post gridlove-post-a gridlove-box">
-                        <div data-id="DsqFL6_Q_cI" data-target="magnificPopup" data-thumbnail="mqdefault" class="youtube"><a href="http://sky360.in/mini_box_office/#" class="preview"></a></div>
-
-                        <div class="box-inner-p">
-                            <div class="box-inner-ellipsis">
-                                <div style="margin: 0px; padding: 0px; border: 0px;">
-                                    <h2 class="entry-title h3">
-                                        <a href="http://sky360.in/mini_box_office/interviews-detail?id=Mw==">
-                                            Are rock concerts really coming back into fashion? </a>
-                                    </h2>
-                                    <p class="uk-text-left">Monotonectally pursue backward-compatible ideas without
-                                        empowered imperatives. Interactively predomi... </p>
-                                </div>
-                            </div>
-                        </div>
-                    </article>
+                    <?php endforeach; ?>
                 </div>
             </div>
         </div>
-    </div>
 
 
-</section>
+    </section>
+<?php endif; ?>
 
 <!--WE CAN'T WAIT TO SEE YOU-->
 <section class="uk-container uk-section uk-animation-slide-bottom-medium uk-padding-remove-bottom">

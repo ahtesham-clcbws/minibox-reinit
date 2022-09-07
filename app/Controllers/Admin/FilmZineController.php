@@ -3,6 +3,7 @@
 namespace App\Controllers\Admin;
 
 use App\Controllers\BaseController;
+use App\Models\Common\FilmzinetoModule;
 use App\Models\Filmzine\NewsLikes;
 use App\Models\Filmzine\NewsModel;
 use App\Models\Filmzine\NewsTopics;
@@ -19,11 +20,19 @@ class FilmZineController extends BaseController
     }
     public function index()
     {
+        $response = ['success' => false, 'message' => '', 'data' => []];
         $newsMd = new NewsModel();
         if ($this->request->getPost()) {
-            if ($this->request->getPost('deletePost')) {
-                $postId = $this->request->getPost('id');
+            if ($this->request->getPost('deleteData')) {
+                $response['message'] = 'Unable to Delete, please try after some type.';
+                if ($newsMd->delete($this->request->getPost('deleteData'))) {
+                    $moduleDb = new FilmzinetoModule();
+                    $moduleDb->where('news_id', $this->request->getPost('deleteData'))->delete();
+                    $response['success'] = true;
+                    $response['message'] = 'Data Deleted.';
+                }
             }
+            return json_encode($response);
         }
 
         $this->data['AllNews'] = $newsMd->allAdminNews();
@@ -125,13 +134,13 @@ class FilmZineController extends BaseController
                 $postData['slug'] = $this->createSlug($this->request->getPost('title'));
                 $postData['featured'] = $this->request->getPost('featured');
                 $postData['title'] = $this->request->getPost('title');
+                $postData['summary'] = $this->request->getPost('summary');
                 $postData['content'] = htmlentities($this->request->getPost('content'));
                 // $postData['media_url'] = $this->request->getPost('media_url');
                 $postData['media_type'] = $mediaType;
                 $postData['topic_id'] = $this->request->getPost('topic_id');
                 $postData['topic_name'] = $this->request->getPost('topic_name');
                 $postData['movie_rating'] = $this->request->getPost('movie_rating') ? $this->request->getPost('movie_rating') : NULL;
-                $postData['status'] = $this->request->getPost('status');
                 // image upload here
                 if ($mediaType == 'image') {
                     if ($img = $this->request->getFile('image_input')) {

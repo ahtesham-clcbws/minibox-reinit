@@ -255,7 +255,69 @@ function getCitiesByStateCode($state_code)
     $cityDb = new CitiesModel();
     return $cityDb->select('id, name')->where(['state_code' => $state_code])->findAll();
 }
-
+function getWorldName($id, $type = 'country')
+{
+    $name = false;
+    if ($type == 'country') {
+        $entityDb = new CountriesModel();
+    }
+    if ($type == 'state') {
+        $entityDb = new StatesModel();
+    }
+    if ($type == 'city') {
+        $entityDb = new CitiesModel();
+    }
+    $entity = $entityDb->find($id);
+    if ($entity) {
+        $name = $entity['name'];
+    }
+    return $name;
+}
+function convertNumberToWord($num = false)
+{
+    $num = str_replace(array(',', ' '), '', trim($num));
+    if (!$num) {
+        return false;
+    }
+    $num = (int) $num;
+    $words = array();
+    $list1 = array(
+        '', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven',
+        'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'
+    );
+    $list2 = array('', 'ten', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety', 'hundred');
+    $list3 = array(
+        '', 'thousand', 'million', 'billion', 'trillion', 'quadrillion', 'quintillion', 'sextillion', 'septillion',
+        'octillion', 'nonillion', 'decillion', 'undecillion', 'duodecillion', 'tredecillion', 'quattuordecillion',
+        'quindecillion', 'sexdecillion', 'septendecillion', 'octodecillion', 'novemdecillion', 'vigintillion'
+    );
+    $num_length = strlen($num);
+    $levels = (int) (($num_length + 2) / 3);
+    $max_length = $levels * 3;
+    $num = substr('00' . $num, -$max_length);
+    $num_levels = str_split($num, 3);
+    for ($i = 0; $i < count($num_levels); $i++) {
+        $levels--;
+        $hundreds = (int) ($num_levels[$i] / 100);
+        $hundreds = ($hundreds ? ' ' . $list1[$hundreds] . ' hundred' . ' ' : '');
+        $tens = (int) ($num_levels[$i] % 100);
+        $singles = '';
+        if ($tens < 20) {
+            $tens = ($tens ? ' ' . $list1[$tens] . ' ' : '');
+        } else {
+            $tens = (int)($tens / 10);
+            $tens = ' ' . $list2[$tens] . ' ';
+            $singles = (int) ($num_levels[$i] % 10);
+            $singles = ' ' . $list1[$singles] . ' ';
+        }
+        $words[] = $hundreds . $tens . $singles . (($levels && (int) ($num_levels[$i])) ? ' ' . $list3[$levels] . ' ' : '');
+    } //end for loop
+    $commas = count($words);
+    if ($commas > 1) {
+        $commas = $commas - 1;
+    }
+    return implode(' ', $words);
+}
 function slugify($text, string $divider = '-')
 {
     // replace non letter or digits by divider
@@ -1942,6 +2004,17 @@ function getUserCountry()
     // $region   = $json['region'];
     // $city     = $json['city'];
 }
+function getCurrencySymbol()
+{
+    $country = getUserCountry();
+    $currency_symbol = '&#8377;';
+    if ($country == 'IN') {
+        $currency_symbol = '&#8377;';
+    } else {
+        $currency_symbol = '&#8364;';
+    }
+    return $currency_symbol;
+}
 
 function deadlineClass($deadline, $current)
 {
@@ -1964,7 +2037,8 @@ function getLanguages()
     return $langMd->getAllLanguages();
 }
 
-function isEmbeddableYoutubeURL($url) {
+function isEmbeddableYoutubeURL($url)
+{
 
     // Let's check the host first
     $parse = parse_url($url);
@@ -1974,7 +2048,7 @@ function isEmbeddableYoutubeURL($url) {
     }
 
     $ch = curl_init();
-    $oembedURL = 'www.youtube.com/oembed?url=' . urlencode($url).'&format=json';
+    $oembedURL = 'www.youtube.com/oembed?url=' . urlencode($url) . '&format=json';
     curl_setopt($ch, CURLOPT_URL, $oembedURL);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     $output = curl_exec($ch);
@@ -1986,4 +2060,72 @@ function isEmbeddableYoutubeURL($url) {
     if (!$data->{'html'}) return false; // Embeddable video MUST have 'html' provided 
 
     return true;
+}
+
+
+function getStars($rate)
+{
+    $rating = floatval($rate);
+    $starFill = '<span class="fa-solid fa-star"></span>';
+    $starHalf = '<span class="fa-solid fa-star-half"></span>';
+    $starBlank = '<span class="fa-regular fa-star"></span>';
+
+    $stars = [
+        $starBlank,
+        $starBlank,
+        $starBlank,
+        $starBlank,
+        $starBlank
+    ];
+    if ($rating == 0.5) {
+        $stars[0] = $starHalf;
+    }
+    if ($rating == 1 || $rating == 1.0) {
+        $stars[0] = $starFill;
+    }
+    if ($rating == 1.5) {
+        $stars[0] = $starFill;
+        $stars[1] = $starHalf;
+    }
+    if ($rating == 2 || $rating == 2.0) {
+        $stars[0] = $starFill;
+        $stars[1] = $starFill;
+    }
+    if ($rating == 2.5) {
+        $stars[0] = $starFill;
+        $stars[1] = $starFill;
+        $stars[2] = $starHalf;
+    }
+    if ($rating == 3 || $rating == 3.0) {
+        $stars[0] = $starFill;
+        $stars[1] = $starFill;
+        $stars[2] = $starFill;
+    }
+    if ($rating == 3.5) {
+        $stars[0] = $starFill;
+        $stars[1] = $starFill;
+        $stars[2] = $starFill;
+        $stars[3] = $starHalf;
+    }
+    if ($rating == 4 || $rating == 4.0) {
+        $stars[0] = $starFill;
+        $stars[1] = $starFill;
+        $stars[2] = $starFill;
+        $stars[3] = $starFill;
+    }
+    if ($rating == 4.5) {
+        $stars[0] = $starFill;
+        $stars[1] = $starFill;
+        $stars[2] = $starFill;
+        $stars[3] = $starFill;
+        $stars[4] = $starHalf;
+    }
+    if ($rating == 5 || $rating == 5.0) {
+        $stars[0] = $starFill;
+        $stars[1] = $starFill;
+        $stars[2] = $starFill;
+        $stars[3] = $starFill;
+        $stars[4] = $starFill;
+    }
+    return $stars;
 }

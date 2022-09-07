@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0067)http://sky360.in/mini_box_office/film-festival/mumbai-film-festival -->
+
 <html lang="en">
 
 <head>
@@ -225,6 +225,22 @@
 		.ProfileFestival-datesDeadlines .ProfileFestival-datesDeadlines-dateGroup.is-current .ProfileFestival-datesDeadlines-time {
 			font-size: 16px;
 		}
+
+		.currentDeadline a {
+			text-transform: uppercase;
+			color: #696969;
+			font-size: 20px;
+			/* font-weight: 600; */
+			/* letter-spacing: 2px; */
+			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+		}
+
+		.currentDeadline a:hover {
+			color: #d8b069;
+			-webkit-transition: all 0.3s ease;
+			-o-transition: all 0.3s ease;
+			transition: all 0.3s ease;
+		}
 	</style>
 	<?= $this->renderSection('css') ?>
 </head>
@@ -263,9 +279,8 @@
 					</div>
 				</div>
 
-				<div class="uk-navbar-right nav-overlay uk-visible@m">
+				<div class="uk-navbar-right nav-overlay uk-visible@m currentDeadline">
 					<a class="button" uk-toggle="target: #festivalDeadlineCanvasContainer" href="#"><?= $festival_details['deadlines']['show']['name'] ?> : <?= date('d M Y', strtotime($festival_details['deadlines']['show']['deadline'])) ?></a>
-
 				</div>
 			</nav>
 		</div>
@@ -499,6 +514,19 @@
 
 		</div>
 	</div>
+<div id="youtubeModal" class="uk-modal-container" uk-modal>
+    <div class="uk-modal-dialog uk-width-auto uk-margin-auto-vertical">
+        <button class="uk-modal-close-outside" type="button" uk-close></button>
+        <iframe id="youtubeModalIframe" src="" width="1280" height="720" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen uk-video uk-responsive></iframe>
+    </div>
+</div>
+
+<div id="vimeoModal" class="uk-modal-container" uk-modal>
+    <div class="uk-modal-dialog uk-width-auto uk-margin-auto-vertical">
+        <button class="uk-modal-close-outside" type="button" uk-close></button>
+        <iframe id="vimeoModalIframe" src="" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen width="1280" height="720" uk-video uk-responsive></iframe>
+    </div>
+</div>
 	<!-- JS FILES -->
 	<script defer src="/public/libs/fontawesome/js/all.js"></script>
 	<?= view('Globals/load_global_libraries') ?>

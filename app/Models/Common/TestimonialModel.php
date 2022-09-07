@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Models\Filmzine;
+namespace App\Models\Common;
 
 use CodeIgniter\Model;
 
-class NewsModel extends Model
+class TestimonialModel extends Model
 {
-    protected $table            = 'filmzine';
+    protected $DBGroup          = 'default';
+    protected $table            = 'testimonials';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $insertID         = 0;
@@ -14,24 +15,12 @@ class NewsModel extends Model
     protected $useSoftDeletes   = true;
     protected $protectFields    = true;
     protected $allowedFields    = [
-        'user_id',
-        'type_id',
-        'type_name',
-        'slug',
-        'featured',
-        'title',
-        'summary',
+        'type', // enum('global', 'festival', 'filmmarket')	
+        'module_id',
         'content',
-        'media_url',
-        'media_type', // image / video
-        'video_type', // youtube / vimeo
-        'topic_id',
-        'topic_name',
-        'total_likes',
-        'total_dislikes',
-        'movie_rating',
-        'total_views',
-        'status'
+        'rating',
+        'name',
+        'designation'
     ];
 
     // Dates
@@ -57,14 +46,4 @@ class NewsModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
-
-    public function allAdminNews()
-    {
-        $news = $this->distinct()
-            ->select('*')
-            // ->join()
-            // ->orderBy()
-            ->findAll();
-        return $news;
-    }
 }

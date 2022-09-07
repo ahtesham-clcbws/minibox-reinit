@@ -8,4 +8,4 @@ $routes = Services::routes();
 
 $routes->get('/', 'Web\FilmZine::index',  ['as' => 'film_zine']);
 
-$routes->get('article/(:segment)', 'Web\FilmZine::details\$1',  ['as' => 'film_zine_article']); // slug to the segment
+$routes->get('article/(:segment)', 'Web\FilmZine::details/$1',  ['as' => 'film_zine_article']); // base64 ID to the segment

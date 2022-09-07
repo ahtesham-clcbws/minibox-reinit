@@ -10,6 +10,7 @@ use App\Models\Festival\DynamicPagesData;
 use App\Models\Festival\FestivalAbout;
 use App\Models\Festival\FestivalAwards;
 use App\Models\Festival\FestivalAwardsPage;
+use App\Models\Festival\FestivalBanners;
 use App\Models\Festival\FestivalDeadlines;
 use App\Models\Festival\FestivalJury;
 use App\Models\Festival\FestivalModel;
@@ -250,9 +251,6 @@ class FilmFestivalController extends BaseController
                 }
             }
 
-            // return print_r($awardsPricingJson);
-            // return print_r($this->data['filmzine']);
-            // return print_r($festival['feature_awards_prices']);
 
             $this->data['festival'] = $festival;
 
@@ -1010,7 +1008,7 @@ class FilmFestivalController extends BaseController
                 ->where('filmzinetomodules.data_id', $id)
                 ->orderBy('filmzinetomodules.id', 'desc')->findAll();
             $this->data['entities'] = $filmzineData;
-            
+
             if ($this->request->getPost('getFilmzines')) {
                 $type = $this->request->getPost('getFilmzines');
 
@@ -1030,6 +1028,9 @@ class FilmFestivalController extends BaseController
                 }
                 if ($type == 'interviews') {
                     $getFilmzines = $getFilmzines->where('type_id', 3);
+                }
+                if ($type == 'knowledgecenter') {
+                    $getFilmzines = $getFilmzines->where('type_id', 5);
                 }
                 $getFilmzines = $getFilmzines->orderBy('id', 'desc')->findAll();
                 $response['message'] = 'No Data Found with this type, please try after add some articles in this type.';
@@ -1383,6 +1384,62 @@ class FilmFestivalController extends BaseController
             $this->data['entities'] = $entity;
 
             return view('Admin/Pages/filmfestivals/festival_details_gallery', $this->data);
+        } else {
+            return redirect()->route('admin_film_festivals');
+        }
+    }
+    public function festivalBanners($id)
+    {
+        $response = ['success' => false, 'message' => '', 'data' => []];
+
+        $festival = $this->festivalDb->find($id);
+
+        if ($festival) {
+            $this->data['festival'] = $festival;
+
+            $entityDb = new FestivalBanners();
+
+            if ($this->request->getPost('add_banner')) {
+                if ($img = $this->request->getFile('image')) {
+                    if ($img->isValid() && !$img->hasMoved()) {
+                        $newName = $img->getRandomName();
+                        $img->move('public/uploads/festival/banners/' . $festival['id'], $newName);
+                        $uploadedPath = '/public/uploads/festival/banners/' . $festival['id'] . '/' . $newName;
+                        $dataToUpdate['image'] = $uploadedPath;
+                    }
+                }
+
+                $dataToUpdate['festival_id'] = $festival['id'];
+
+                if ($entityDb->save($dataToUpdate)) {
+                    $response['message'] = 'Added succesfully.';
+                    $response['success'] = true;
+                } else {
+                    $response['message'] = 'Unable to add image, please try after some time.';
+                    $response['success'] = false;
+                }
+                return json_encode($response);
+            }
+
+            if ($this->request->getPost('deleteBanner')) {
+                $response['message'] = 'Unable to delete, please try after some time.';
+                if ($entityDb->delete($this->request->getPost('id'))) {
+                    $imageFile = $this->request->getPost('image');
+                    if (file_exists($imageFile)) {
+                        @unlink($imageFile);
+                    }
+                    $response['message'] = 'Deleted succesfully.';
+                    $response['success'] = true;
+                }
+                return json_encode($response);
+            }
+
+            $this->data['pagename'] = 'Banners - ' . $festival['name'];
+
+            $entity = $entityDb->where('festival_id', $id)->orderBy('id', 'desc')->findAll();
+            $this->data['entities'] = $entity;
+
+            return view('Admin/Pages/filmfestivals/festival_details_banners', $this->data);
         } else {
             return redirect()->route('admin_film_festivals');
         }

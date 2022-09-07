@@ -131,3 +131,109 @@ $('#selectState').on('change', function (e) {
         },
     })
 })
+
+var youtubeModal = $('#youtubeModal');
+var vimeoModal = $('#vimeoModal');
+
+var youtubeModalIframe = $('#youtubeModalIframe');
+var vimeoModalIframe = $('#vimeoModalIframe');
+
+UIkit.util.on('#youtubeModal', 'hide', function (ev, index) {
+    youtubeModalIframe.attr('src', '');
+});
+UIkit.util.on('#vimeoModal', 'hide', function (ev, index) {
+    vimeoModalIframe.attr('src', '');
+});
+var youtubeThumb = $('.youtubeThumb');
+youtubeThumb.on('click', function (ev) {
+    var videoId = $(this).data('video');
+    console.log(videoId);
+    var videoLink = 'https://www.youtube-nocookie.com/embed/' + videoId;
+    youtubeModalIframe.attr('src', videoLink);
+    UIkit.modal(youtubeModal).show();
+})
+var vimeoThumb = $('.vimeoThumb');
+vimeoThumb.on('click', function (ev) {
+    var videoId = $(this).data('video');
+    console.log(videoId);
+    var videoLink = 'https://player.vimeo.com/video/' + videoId + '?h=948f95b102&autoplay=1&title=0&byline=0&portrait=0';
+    vimeoModalIframe.attr('src', videoLink);
+    UIkit.modal(vimeoModal).show();
+})
+
+$(document).ready(function () {
+    $(".copyData").click(function () {
+        var $temp = $("<input>");
+        $("body").append($temp);
+        $temp.val($(this).attr('copyData')).select();
+        document.execCommand("copy");
+        $temp.remove();
+        alert('', 'Copied');
+    });
+
+});
+
+function getStars(rating) {
+    const starFill = '<span class="fa-solid fa-star"></span>';
+    const starHalf = '<span class="fa-solid fa-star-half"></span>';
+    const starBlank = '<span class="fa-regular fa-star"></span>';
+
+    var stars = [
+        starBlank,
+        starBlank,
+        starBlank,
+        starBlank,
+        starBlank
+    ];
+    if (rating == 0.5) {
+        stars[0] = starHalf;
+    }
+    if (rating == 1 || rating == 1.0) {
+        stars[0] = starFill;
+    }
+    if (rating == 1.5) {
+        stars[0] = starFill;
+        stars[1] = starHalf;
+    }
+    if (rating == 2 || rating == 2.0) {
+        stars[0] = starFill;
+        stars[1] = starFill;
+    }
+    if (rating == 2.5) {
+        stars[0] = starFill;
+        stars[1] = starFill;
+        stars[2] = starHalf;
+    }
+    if (rating == 3 || rating == 3.0) {
+        stars[0] = starFill;
+        stars[1] = starFill;
+        stars[2] = starFill;
+    }
+    if (rating == 3.5) {
+        stars[0] = starFill;
+        stars[1] = starFill;
+        stars[2] = starFill;
+        stars[3] = starHalf;
+    }
+    if (rating == 4 || rating == 4.0) {
+        stars[0] = starFill;
+        stars[1] = starFill;
+        stars[2] = starFill;
+        stars[3] = starFill;
+    }
+    if (rating == 4.5) {
+        stars[0] = starFill;
+        stars[1] = starFill;
+        stars[2] = starFill;
+        stars[3] = starFill;
+        stars[4] = starHalf;
+    }
+    if (rating == 5 || rating == 5.0) {
+        stars[0] = starFill;
+        stars[1] = starFill;
+        stars[2] = starFill;
+        stars[3] = starFill;
+        stars[4] = starFill;
+    }
+    return stars;
+}

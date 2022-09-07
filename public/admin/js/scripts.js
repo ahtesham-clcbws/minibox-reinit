@@ -1074,7 +1074,7 @@ var previewImage = function (event, tagId) {
 
 function createHtmlElement(type, classes = [], attributes = [], appendElement = [], text = null) {
   var element = document.createElement(type);
-  if(text) {
+  if (text) {
     element.appendChild(document.createTextNode(text));
   }
   classes.forEach(classname => {
@@ -1089,97 +1089,138 @@ function createHtmlElement(type, classes = [], attributes = [], appendElement = 
   return element;
 }
 function youtube_parser(url) {
-    // var regExp = /^.*(youtu.be\/|v\/|e\/|u\/\w+\/|embed\/|v=)([^#\&\?]*).*/;
-    // var regExp = /^.*(?:(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/|shorts\/)|(?:(?:watch)?\?v(?:i)?=|\&v(?:i)?=))([^#\&\?]*).*/;
-    var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
-    var match = url.match(regExp);
-    return (match && match[7].length == 11) ? match[7] : false;
+  // var regExp = /^.*(youtu.be\/|v\/|e\/|u\/\w+\/|embed\/|v=)([^#\&\?]*).*/;
+  // var regExp = /^.*(?:(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/|shorts\/)|(?:(?:watch)?\?v(?:i)?=|\&v(?:i)?=))([^#\&\?]*).*/;
+  var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+  var match = url.match(regExp);
+  return (match && match[7].length == 11) ? match[7] : false;
 }
 
 function vimeo_parser(url) {
-    var regExp = /(https?:\/\/)?(www\.)?(player\.)?vimeo\.com\/([a-z]*\/)*([0-9]{6,11})[?]?.*/;
-    // var regExp = /http(s)?:\/\/(www\.)?vimeo.com\/(\d+)(\/)?(#.*)?/
-    var match = url.match(regExp)
+  var regExp = /(https?:\/\/)?(www\.)?(player\.)?vimeo\.com\/([a-z]*\/)*([0-9]{6,11})[?]?.*/;
+  // var regExp = /http(s)?:\/\/(www\.)?vimeo.com\/(\d+)(\/)?(#.*)?/
+  var match = url.match(regExp)
 
-    // console.log(match)
-    // console.log(match[5])
-    if (match && match[5]) {
-        return match[5];
-    }
-    return false;
-    // return (match) ? match[5] : false;
+  // console.log(match)
+  // console.log(match[5])
+  if (match && match[5]) {
+    return match[5];
+  }
+  return false;
+  // return (match) ? match[5] : false;
 }
 
 $('#selectCountry').on('change', function (e) {
-    var id = $(this).val();
-    var formData = {};
-    var formData = {
-        id: id,
-        getStatesByCountryId: 'true'
-    };
-    console.log(formData);
-    $.ajax({
-        url: commonFunctions,
-        type: 'post',
-        data: formData,
-        success: function (response, textStatus, jqXHR) {
-            console.log(response);
-            var data = {};
-            try {
-                data = JSON.parse(response);
-                if (data.success == true) {
-                    var thisData = data.data;
-                    var options = '<option value="" selected="" disabled="">Select State</option>';
-                    thisData.forEach(state => {
-                        options += '<option value="' + state.id + '">' + state.name + '</option>';
-                    });
-                    $('#selectState').html(options);
-                } else {
-                    alert(data.message, 'Error', 'error');
-                }
-            } catch (e) {
-                console.log(e);
-                alert('Undefined error, please try after some time.', 'Error', 'error');
-            }
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-            alert('Server error', 'Error', 'error');
-        },
-    })
+  var id = $(this).val();
+  var formData = {};
+  var formData = {
+    id: id,
+    getStatesByCountryId: 'true'
+  };
+  console.log(formData);
+  $.ajax({
+    url: commonFunctions,
+    type: 'post',
+    data: formData,
+    success: function (response, textStatus, jqXHR) {
+      console.log(response);
+      var data = {};
+      try {
+        data = JSON.parse(response);
+        if (data.success == true) {
+          var thisData = data.data;
+          var options = '<option value="" selected="" disabled="">Select State</option>';
+          thisData.forEach(state => {
+            options += '<option value="' + state.id + '">' + state.name + '</option>';
+          });
+          $('#selectState').html(options);
+        } else {
+          alert(data.message, 'Error', 'error');
+        }
+      } catch (e) {
+        console.log(e);
+        alert('Undefined error, please try after some time.', 'Error', 'error');
+      }
+    },
+    error: function (jqXHR, textStatus, errorThrown) {
+      alert('Server error', 'Error', 'error');
+    },
+  })
 })
 $('#selectState').on('change', function (e) {
-    var id = $(this).val();
-    var formData = {};
-    var formData = {
-        id: id,
-        getCitiesByStateId: 'true'
-    };
-    $.ajax({
-        url: commonFunctions,
-        type: 'post',
-        data: formData,
-        success: function (response, textStatus, jqXHR) {
-            console.log(response);
-            var data = {};
-            try {
-                data = JSON.parse(response);
-                if (data.success == true) {
-                    var thisData = data.data;
-                    var options = '<option value="" selected="" disabled="">Select City</option>';
-                    thisData.forEach(city => {
-                        options += '<option value="' + city.id + '">' + city.name + '</option>';
-                    });
-                    $('#selectCity').html(options);
-                } else {
-                    alert(data.message, 'Error', 'error');
-                }
-            } catch (e) {
-                console.log(e);
-                alert('Undefined error, please try after some time.', 'Error', 'error');
-            }
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-            alert('Server error', 'Error', 'error');
-        },
-    })
+  var id = $(this).val();
+  var formData = {};
+  var formData = {
+    id: id,
+    getCitiesByStateId: 'true'
+  };
+  $.ajax({
+    url: commonFunctions,
+    type: 'post',
+    data: formData,
+    success: function (response, textStatus, jqXHR) {
+      console.log(response);
+      var data = {};
+      try {
+        data = JSON.parse(response);
+        if (data.success == true) {
+          var thisData = data.data;
+          var options = '<option value="" selected="" disabled="">Select City</option>';
+          thisData.forEach(city => {
+            options += '<option value="' + city.id + '">' + city.name + '</option>';
+          });
+          $('#selectCity').html(options);
+        } else {
+          alert(data.message, 'Error', 'error');
+        }
+      } catch (e) {
+        console.log(e);
+        alert('Undefined error, please try after some time.', 'Error', 'error');
+      }
+    },
+    error: function (jqXHR, textStatus, errorThrown) {
+      alert('Server error', 'Error', 'error');
+    },
+  })
 })
+
+async function fileSizeValidation(inputId, maxHeight = 100, maxWidth = 100, fixed = false, previewId = null) {
+  var validated = true;
+  var fileUpload = $("#" + inputId)[0];
+  var regex = new RegExp("([a-zA-Z0-9\s_\\.\-:])+(.jpg|.png|.gif)$");
+  if (regex.test(fileUpload.value.toLowerCase())) {
+    //Check whether HTML5 is supported.
+    if (typeof (fileUpload.files) != "undefined") {
+      //Initiate the FileReader object.
+      var reader = new FileReader();
+      //Read the contents of Image File.
+      reader.readAsDataURL(fileUpload.files[0]);
+      reader.onload = function (e) {
+        //Initiate the JavaScript Image object.
+        var image = new Image();
+        //Set the Base64 string return from FileReader as source.
+        image.src = e.target.result;
+        image.onload = function await () {
+          //Determine the Height and Width.
+          var height = this.height;
+          var width = this.width;
+          if (fixed && height != maxHeight || fixed && width != maxWidth) {
+            alert('', "Height and Width must match " + maxHeight + 'x' + maxWidth + ' pixels', 'error');
+            validated = false;
+          }
+          if (!fixed && height > maxHeight || !fixed && width > maxWidth) {
+            alert('', "Height and Width must not exceed " + maxHeight + 'x' + maxWidth + ' pixels', 'error');
+            validated = false;
+          }
+        };
+      }
+    } else {
+      alert('', "This browser does not support HTML5.", 'error');
+      validated = false;
+    }
+  } else {
+    alert('', "Please select a valid Image file.", 'error');
+    validated = false;
+  }
+  return validated;
+}

@@ -19,6 +19,10 @@ $routes->group('admin', ['filter' => 'adminauth'], static function ($routes) {
 $routes->group('film-festival', static function ($routes) {
     require APPPATH . 'Routes/film_festival.php';
 });
+// frontend events routes
+$routes->group('event', static function ($routes) {
+    require APPPATH . 'Routes/events.php';
+});
 // frontend film market routes
 $routes->group('film-market', static function ($routes) {
     require APPPATH . 'Routes/film_market.php';

@@ -13,8 +13,3 @@
         <span class="nk-menu-text">Topics</span>
     </a>
 </li>
-<li class="nk-menu-item">
-    <a href="<?= route_to('admin_film_zine_likes') ?>" class="nk-menu-link">
-        <span class="nk-menu-text">Like/Dislike Logs</span>
-    </a>
-</li>

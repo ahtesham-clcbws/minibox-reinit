@@ -25,7 +25,7 @@
 </div>
 <div class="card card-bordered card-preview">
     <div class="card-inner row">
-        <div class="col-lg-3 col-md-4 col-sm-6 col-12">
+        <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-3">
             <div class="card text-white bg-primary">
                 <a href="<?= route_to('admin_settings_homepage_banners') ?>" class="card-inner text-center">
                     <h4>Home Banners</h4>
@@ -33,7 +33,25 @@
                 </a>
             </div>
         </div>
-        <div class="col-lg-3 col-md-4 col-sm-6 col-12">
+
+        <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-3">
+            <div class="card text-white bg-primary">
+                <a href="<?= route_to('admin_settings_homepage_filmzine') ?>" class="card-inner text-center">
+                    <h4>Home FilmZine</h4>
+                    <h1><em class="ni ni-property"></em></h1>
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-3">
+            <div class="card text-white bg-primary">
+                <a href="<?= route_to('admin_settings_testimonials') ?>" class="card-inner text-center">
+                    <h4>Testimonials</h4>
+                    <h1><em class="ni ni-comments"></em></h1>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-3">
             <div class="card text-white bg-primary">
                 <a href="<?= route_to('admin_settings_support_forms') ?>" class="card-inner text-center">
                     <h4>Support Form</h4>
@@ -41,7 +59,7 @@
                 </a>
             </div>
         </div>
-        <div class="col-lg-3 col-md-4 col-sm-6 col-12">
+        <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-3">
             <div class="card text-white bg-primary">
                 <a href="<?= route_to('admin_settings_festival_awards') ?>" class="card-inner text-center">
                     <h4>Awards</h4>
@@ -49,7 +67,7 @@
                 </a>
             </div>
         </div>
-        <div class="col-lg-3 col-md-4 col-sm-6 col-12">
+        <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-3">
             <div class="card text-white bg-primary">
                 <a href="<?= route_to('admin_settings_film_types') ?>" class="card-inner text-center">
                     <h4>Film Types</h4>

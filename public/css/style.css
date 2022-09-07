@@ -1,5 +1,10 @@
 @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap");
+html,
+body {
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: "Josefin Sans", sans-serif !important;
   -webkit-transition: all 0.3s ease;
@@ -7,6 +12,31 @@ body {
   transition: all 0.3s ease;
 }
 
+.ticket_counter input,
+.ticket_counter icon,
+.ticket_counter span,
+.ticket_counter svg {
+  display: inline;
+}
+
+.ticket_counter input,
+.ticket_counter span {
+  font-size: 30px;
+}
+
+.ticket_counter input {
+  font-size: 30px;
+}
+
+.ticket_counter svg {
+  background-color: #d8b069 !important;
+  color: #fff;
+  border-radius: 50%;
+  cursor: pointer;
+  padding: 1px;
+  width: 22px;
+  height: 22px;
+}
 .uk-button-primary {
   background-color: #d8b069 !important;
   color: #222;
@@ -227,7 +257,9 @@ top: 0;
 position: absolute;
 
 } */
-
+/* .ticket_counter {
+  min-width: 80px;
+} */
 .about-text-title {
   font-size: 30px;
   font-family: "Open Sans", sans-serif;
@@ -374,19 +406,18 @@ position: absolute;
 .ct-fancybox-back {
   padding-top: 50%;
 }
+.ct-fancybox-back .text {
+  color: #fff !important;
+  text-align: center;
+  font-family: "Open Sans", sans-serif;
+}
 .ct-fancybox-back h2 {
   font-size: 40px;
-  text-align: center;
-  color: #fff;
-  font-family: "Open Sans", sans-serif;
   font-weight: 700;
 }
 
 .ct-fancybox-back h3 {
   font-size: 30px;
-  text-align: center;
-  color: #fff;
-  font-family: "Open Sans", sans-serif;
 }
 .ct-fancybox-front h2 {
   font-size: 170px;
@@ -439,6 +470,9 @@ position: absolute;
   width: 100%;
 }
 
+.meks_ess {
+  color: #fff;
+}
 .count {
   width: 100%;
   height: 60px;
@@ -2138,9 +2172,9 @@ color: #009cff;
 }
 .meks_ess a span {
   font-family: inherit;
-  position: relative;
+  /* position: relative;
   top: -1px;
-  margin-left: 8px;
+  margin-left: 8px; */
 }
 .gridlove-share a span {
   display: none;
@@ -4252,8 +4286,8 @@ pointer-events: none;} */
 .uk-form-controls .select2-selection {
   max-width: 100%;
   color: #666;
-  transition: .2s ease-in-out;
-  transition-property: color,background-color,border;
+  transition: 0.2s ease-in-out;
+  transition-property: color, background-color, border;
   height: 47px !important;
   font-family: "Josefin Sans";
   margin-bottom: 0px;
@@ -4668,4 +4702,75 @@ section.about-section {
 
 .maain {
   padding-bottom: 108px;
+}
+
+.headlines-section article {
+  position: relative;
+}
+
+article.smallArticle a.uk-link-reset {
+  /* font-size: 18px !important; */
+  /* line-height: 2px !important; */
+  /* font-weight: 700 !important; */
+  color: inherit !important;
+  text-decoration: none !important;
+}
+
+.headlines-section article > figure {
+  height: 345px;
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.headlines-section article > iframe {
+  height: 345px;
+  width: 100%;
+}
+
+.smallArticle > figure {
+  height: 190px !important;
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.smallArticle > iframe {
+  height: 190px !important;
+  width: 100%;
+}
+
+.videoIcon {
+  position: absolute;
+  top: 35%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  color: #fff;
+  -webkit-box-shadow: 0 3px 5px 0 rgb(0 1 1 / 10%);
+  box-shadow: 0 3px 5px 0 rgb(0 1 1 / 10%);
+  cursor: pointer;
+}
+
+.videoIcon.youtubeIcon {
+  background-color: #ff0000;
+}
+
+.videoIcon.vimeoIcon {
+  background-color: #86c9ef;
+}
+
+.onlyTwoTitleLines {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* number of lines to show */
+  -webkit-box-orient: vertical;
+}
+
+.eventShowcaseImage {
+  width: 373px;
+  height: 590px;
+  background-size: cover;
+  background-position: center center;
 }

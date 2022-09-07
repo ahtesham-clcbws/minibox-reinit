@@ -43,10 +43,11 @@
     <a href="#" aria-expanded="false">MEDIA</a>
     <div class="uk-navbar-dropdown">
         <ul class="uk-nav uk-navbar-dropdown-nav">
-            <li><a href="#">Gallery</a></li>
-            <li> <a href="#">Filmmakers Cut- Interviews & Trailers </a></li>
-            <li><a href="#">KnowledgeCentre</a></li>
-            <li><a href="#">Press</a></li>
+            <li><a href="<?= route_to('festival_gallery', $festivalSlug) ?>">Gallery</a></li>
+            <li> <a href="<?= route_to('festival_filmzine_media', $festivalSlug, 'interviews') ?>">Filmmakers Cut-Interviews </a></li>
+            <li> <a href="<?= route_to('festival_filmzine_media', $festivalSlug, 'trailers') ?>">Trailers </a></li>
+            <li><a href="<?= route_to('festival_filmzine_media', $festivalSlug, 'knowledge-center') ?>">Knowledge Center</a></li>
+            <li><a href="<?= route_to('festival_press', $festivalSlug) ?>">Press</a></li>
             <li><a href="#" target="_blank">FilmZine</a></li>
         </ul>
     </div>
