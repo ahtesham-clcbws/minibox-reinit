@@ -27,7 +27,9 @@ body {
 .ticket_counter input {
   font-size: 30px;
 }
-
+.uk-form-icon:not(.uk-form-icon-flip)~.uk-select {
+  padding-left: 40px!important;
+}
 .ticket_counter svg {
   background-color: #d8b069 !important;
   color: #fff;

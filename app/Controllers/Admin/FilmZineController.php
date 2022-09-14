@@ -11,11 +11,8 @@ use App\Models\Filmzine\NewsType;
 
 class FilmZineController extends BaseController
 {
-    protected $data;
     public function __construct()
     {
-        $this->data = [];
-        $this->data['optionalJs'] = false;
         $this->data['pagename'] = 'Film Zine';
     }
     public function index()

@@ -102,4 +102,7 @@ $routes->group('settings', static function ($routes) {
     $routes->add('film-types', 'Admin\SettingsController::filmTypes', ['as' => 'admin_settings_film_types']);
     $routes->add('homepage-filmzine', 'Admin\SettingsController::homepageFilmzine', ['as' => 'admin_settings_homepage_filmzine']);
     $routes->add('testimonials', 'Admin\SettingsController::testimonials', ['as' => 'admin_settings_testimonials']);
+
+    $routes->add('orders', 'Admin\SettingsController::allOrders', ['as' => 'admin_settings_all_orders']);
+
 });

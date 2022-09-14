@@ -63,3 +63,8 @@
         <span class="nk-menu-text">Settings</span>
     </a>
 </li>
+<li class="nk-menu-item">
+    <a href="<?= route_to('admin_settings_all_orders') ?>" class="nk-menu-link">
+        <span class="nk-menu-text">Orders</span>
+    </a>
+</li>

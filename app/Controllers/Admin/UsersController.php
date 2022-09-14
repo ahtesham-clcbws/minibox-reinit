@@ -7,11 +7,9 @@ use App\Models\UserModel;
 
 class UsersController extends BaseController
 {
-    protected $data;
     protected $userDb;
     public function __construct()
     {
-        $this->data = [];
         $this->userDb = new UserModel();
     }
     public function index()

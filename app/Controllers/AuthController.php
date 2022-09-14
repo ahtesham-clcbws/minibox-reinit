@@ -7,12 +7,9 @@ use App\Models\UserModel;
 
 class AuthController extends BaseController
 {
-    protected $data;
     protected $userDb;
     public function __construct()
     {
-        $this->data = [];
-        $this->data['optionalJs'] = false;
         $this->userDb = new UserModel();
     }
     public function register()

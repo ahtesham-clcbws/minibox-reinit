@@ -3,6 +3,7 @@
 use App\Models\Common\CitiesModel;
 use App\Models\Common\CountriesModel;
 use App\Models\Common\LanguagesModel;
+use App\Models\Common\SiteSettings;
 use App\Models\Common\StatesModel;
 use App\Models\Festival\FestivalModel;
 use App\Models\HomePageBannersModel;
@@ -10,7 +11,10 @@ use App\Models\UserModel;
 use Config\Database;
 
 $response = ['success' => false, 'message' => '', 'data' => []];
-
+function getCustomerCare()
+{
+    return array('email' => CUSTOMER_SUPPORT_EMAIL, 'phone' => CUSTOMER_SUPPORT_PHONE);
+}
 function createMainAdmin()
 {
     $data = [
@@ -59,6 +63,9 @@ function dontShowSidenav()
     // if (getUrlSegment(2) == 'film-zine') {
     //     return true;
     // }
+    if (getUrlSegment(3) && getUrlSegment(3) == 'orders') {
+        return true;
+    }
     if (getUrlSegment(2) == 'settings' && !getUrlSegment(3)) {
         return true;
     }
@@ -272,6 +279,28 @@ function getWorldName($id, $type = 'country')
         $name = $entity['name'];
     }
     return $name;
+}
+function getWorldNameByName($name, $type = 'country')
+{
+    $name = false;
+    if ($type == 'country') {
+        $entityDb = new CountriesModel();
+        $entity = $entityDb->select('id')->where('iso2', $name)->first();
+    }
+    if ($type == 'state') {
+        $entityDb = new StatesModel();
+        $entity = $entityDb->select('id')->like('name', $name)->first();
+    }
+    if ($type == 'city') {
+        $entityDb = new CitiesModel();
+        $entity = $entityDb->select('id')->like('name', $name)->first();
+    }
+
+    if ($entity) {
+        $id = $entity['id'];
+        return $id;
+    }
+    return false;
 }
 function convertNumberToWord($num = false)
 {
@@ -1973,9 +2002,18 @@ function get_client_ip()
     } else {
         $ipaddress = 'UNKNOWN';
     }
-    if ($ipaddress == '::1') {
-        $ipaddress = '103.157.10.69';
-        // $ipaddress = '69.162.81.155';
+    // if ($ipaddress == '::1') {
+    // if (getenv('CI_ENVIRONMENT') == 'development') {
+    $customIp = getSiteSettingsByName('custom_ip_address');
+    if ($customIp && $customIp['enable']) {
+        // $ips = json_decode($customIp['value'], true);
+        // foreach ($ips as $ip) {
+        // if ($ip['enabled']) {
+        $ipaddress = $customIp['value'];
+        // $ipaddress = $ip['ip'];
+        // break;
+        // }
+        // }
     }
 
     return $ipaddress;
@@ -2128,4 +2166,52 @@ function getStars($rate)
         $stars[4] = $starFill;
     }
     return $stars;
+}
+
+function uniqidReal($lenght = 13)
+{
+    // uniqid gives 13 chars, but you could adjust it to your needs.
+    if (function_exists("random_bytes")) {
+        $bytes = random_bytes(ceil($lenght / 2));
+    } elseif (function_exists("openssl_random_pseudo_bytes")) {
+        $bytes = openssl_random_pseudo_bytes(ceil($lenght / 2));
+    } else {
+        throw new Exception("no cryptographically secure random function available");
+    }
+    return substr(bin2hex($bytes), 0, $lenght);
+}
+
+function getNameofString($string)
+{
+    $str = str_replace('_', ' ', $string);
+    return ucfirst($str);
+}
+
+function createSiteSettings($name, $value, $enable = true)
+{
+    $settingsMd = new SiteSettings();
+
+    $settings = array();
+    if ($thisSettings = $settingsMd->where(['name' => $name])->first()) {
+        $settings['id'] = $thisSettings['id'];
+    } else {
+        $settings['name'] = $name;
+    }
+    $settings['value'] = $value;
+    $settings['enable'] = $enable ? 1 : 0;
+
+    if ($settingsMd->save($settings)) {
+        return true;
+    }
+    return false;
+}
+function getAllSiteSettings()
+{
+    $settingsMd = new SiteSettings();
+    return $settingsMd->findAll();
+}
+function getSiteSettingsByName($name)
+{
+    $settingsMd = new SiteSettings();
+    return $settingsMd->where(['name' => $name])->first();
 }

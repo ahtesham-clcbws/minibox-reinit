@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Email Receipt</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type="text/css">
+        body {
+            /* width: 100%; */
+            padding-top: 100px;
+        }
+
+        #mainDiv {
+            max-width: 900px;
+            margin: auto;
+        }
+    </style>
+    <style type="text/css">
+        .topnav {
+            background-color: #333;
+            width: 100%;
+            position: fixed;
+            display: block;
+            height: 48px;
+            top: 0;
+            left: 0;
+            z-index: 2;
+        }
+
+        .topnav a {
+            background-color: #ddd;
+            color: black;
+            border: none;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-size: 17px;
+            float: left;
+        }
+
+        .topnav button {
+            background-color: #04AA6D;
+            color: white;
+            border: none;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-size: 17px;
+            float: right;
+        }
+    </style>
+    <style type="text/css">
+        .ticket {
+            display: flex;
+            font-family: Roboto;
+            margin: 16px;
+            border: 1px solid #E0E0E0;
+            position: relative;
+        }
+
+        .ticket:before {
+            content: "";
+            width: 32px;
+            height: 32px;
+            background-color: #fff;
+            border: 1px solid #E0E0E0;
+            border-top-color: transparent;
+            border-left-color: transparent;
+            position: absolute;
+            transform: rotate(-45deg);
+            left: -18px;
+            top: 50%;
+            margin-top: -16px;
+            border-radius: 50%;
+        }
+
+        .ticket:after {
+            content: "";
+            width: 32px;
+            height: 32px;
+            background-color: #fff;
+            border: 1px solid #E0E0E0;
+            border-top-color: transparent;
+            border-left-color: transparent;
+            position: absolute;
+            transform: rotate(135deg);
+            right: -18px;
+            top: 50%;
+            margin-top: -16px;
+            border-radius: 50%;
+        }
+
+        .ticket--start {
+            position: relative;
+            border-right: 1px dashed #E0E0E0;
+        }
+
+        .ticket--start:before {
+            content: "";
+            width: 32px;
+            height: 32px;
+            background-color: #fff;
+            border: 1px solid #E0E0E0;
+            border-top-color: transparent;
+            border-left-color: transparent;
+            border-right-color: transparent;
+            position: absolute;
+            transform: rotate(-45deg);
+            left: -18px;
+            top: -2px;
+            margin-top: -16px;
+            border-radius: 50%;
+        }
+
+        .ticket--start:after {
+            content: "";
+            width: 32px;
+            height: 32px;
+            background-color: #fff;
+            border: 1px solid #E0E0E0;
+            border-top-color: transparent;
+            border-left-color: transparent;
+            border-bottom-color: transparent;
+            position: absolute;
+            transform: rotate(-45deg);
+            left: -18px;
+            top: 100%;
+            margin-top: -16px;
+            border-radius: 50%;
+        }
+
+        .ticket--start>img {
+            display: block;
+            padding: 24px;
+            height: 270px;
+        }
+
+        .ticket--center {
+            padding: 24px;
+            flex: 1;
+        }
+
+        .ticket--center--row {
+            display: flex;
+        }
+
+        .ticket--center--row:not(:last-child) {
+            padding-bottom: 48px;
+        }
+
+        .ticket--center--row:first-child span {
+            color: #4872b0;
+            text-transform: uppercase;
+            line-height: 24px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .ticket--center--row:first-child strong {
+            font-size: 20px;
+            font-weight: 400;
+            text-transform: uppercase;
+        }
+
+        .ticket--center--col {
+            display: flex;
+            flex: 1;
+            width: 50%;
+            box-sizing: border-box;
+            flex-direction: column;
+        }
+
+        .ticket--center--col:not(:last-child) {
+            padding-right: 16px;
+        }
+
+        .ticket--end {
+            background-color: rgb(72, 114, 176) !important;
+            position: relative;
+            width: 120px;
+        }
+
+        .ticket--end:before {
+            content: "";
+            width: 32px;
+            height: 32px;
+            background-color: #fff;
+            border: 1px solid #E0E0E0;
+            border-top-color: transparent;
+            border-right-color: transparent;
+            border-bottom-color: transparent;
+            position: absolute;
+            transform: rotate(-45deg);
+            right: -18px;
+            top: -2px;
+            margin-top: -16px;
+            border-radius: 50%;
+        }
+
+        .ticket--end:after {
+            content: "";
+            width: 32px;
+            height: 32px;
+            background-color: #fff;
+            border: 1px solid #E0E0E0;
+            border-right-color: transparent;
+            border-left-color: transparent;
+            border-bottom-color: transparent;
+            position: absolute;
+            transform: rotate(-45deg);
+            right: -18px;
+            top: 100%;
+            margin-top: -16px;
+            border-radius: 50%;
+        }
+
+        .ticket--info--title {
+            text-transform: uppercase;
+            color: #757575;
+            font-size: 13px;
+            line-height: 24px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .ticket--info--subtitle {
+            font-size: 16px;
+            line-height: 24px;
+            font-weight: 500;
+            color: #4872b0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .ticket--info--content {
+            font-size: 13px;
+            line-height: 24px;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .miniboxLogo {
+            width: 100%;
+            height: 100%;
+        }
+
+        .miniboxLogo img {
+            width: 25px;
+            max-height: 222px;
+            position: absolute;
+            top: 50%;
+            left: 45%;
+            -ms-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+        }
+
+        @media print {
+            * {
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- only if email preview -->
+    <div class="topnav">
+        <a href="#">go back to Minibox office</a>
+        <button type="button" onclick="printDiv('mainDiv')">Print This</button>
+    </div>
+    <!-- only if email preview -->
+    <div id="mainDiv">
+        <div class="ticket">
+            <div class="ticket--start">
+                <img src="https://i.ibb.co/W3cK42J/image-1.png" />
+            </div>
+            <div class="ticket--center">
+                <div class="ticket--center--row">
+                    <div class="ticket--center--col">
+                        <span>Delegate Registraion - 2nd Indian Cine Film Festival 2022</span>
+                        Movie: <strong>Movie Name</strong>
+                    </div>
+                </div>
+                <div class="ticket--center--row">
+                    <div class="ticket--center--col">
+                        <span class="ticket--info--title">Date and time</span>
+                        <span class="ticket--info--subtitle">Thursday, May 14 2020</span>
+                        <span class="ticket--info--content">7:00 am to 9:00 pm (GMT+1)</span>
+                    </div>
+                    <div class="ticket--center--col">
+                        <span class="ticket--info--title">Location</span>
+                        <span class="ticket--info--subtitle">Location name</span>
+                        <span class="ticket--info--content">Location complete address, Town, COUNTRY</span>
+                    </div>
+                </div>
+                <div class="ticket--center--row">
+                    <div class="ticket--center--col">
+                        <span class="ticket--info--title">Ticket type</span>
+                        <span class="ticket--info--content">Event category</span>
+                    </div>
+                    <div class="ticket--center--col">
+                        <span class="ticket--info--title">Order info</span>
+                        <span class="ticket--info--content">Order #0123456789. Ordered By Jhon DOE</span>
+                    </div>
+                </div>
+            </div>
+            <div class="ticket--end">
+                <div class="miniboxLogo"><img src="http://localhost:8080/public/images/rotated-logo.png" /></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- only if email preview -->
+    <script>
+        function printDiv(divName) {
+            var printContents = document.getElementById(divName).innerHTML;
+            var originalContents = document.body.innerHTML;
+
+            document.body.innerHTML = printContents;
+
+            window.print();
+
+            document.body.innerHTML = originalContents;
+        }
+    </script>
+    <!-- only if email preview -->
+</body>
+
+</html>

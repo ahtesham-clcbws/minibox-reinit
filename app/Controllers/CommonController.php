@@ -47,4 +47,5 @@ class CommonController extends BaseController
             return json_encode($response);
         }
     }
+
 }

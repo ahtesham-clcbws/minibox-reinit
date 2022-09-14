@@ -50,3 +50,7 @@ require APPPATH . 'Routes/main.php';
 $routes->group('auth', static function ($routes) {
     require APPPATH . 'Routes/auth.php';
 });
+
+$routes->group('service', static function ($routes) {
+    require APPPATH . 'Routes/internal-services.php';
+});

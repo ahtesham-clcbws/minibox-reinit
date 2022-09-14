@@ -12,14 +12,12 @@ use App\Models\Festival\FestivalModel;
 use App\Models\Festival\FestivalTypeOfFilms;
 use App\Models\Filmzine\NewsModel;
 use App\Models\HomePageBannersModel;
+use App\Models\Payment\OrderModel;
 
 class SettingsController extends BaseController
 {
-    protected $data;
     public function __construct()
     {
-        $this->data = [];
-        $this->data['optionalJs'] = false;
         $this->data['pagename'] = 'Settings';
     }
     public function index()
@@ -387,5 +385,22 @@ class SettingsController extends BaseController
         }
         $this->data['testimonials'] = $testimonials;
         return view('Admin/Pages/Settings/testimonials', $this->data);
+    }
+
+    public function allOrders(){
+        $this->data['pagename'] = 'ORDERS';
+        $response = ['success' => false, 'message' => '', 'data' => []];
+
+        $entityDb = new OrderModel();
+
+        $select = 'id, user_name, user_email, user_phone, currency, payment_status, gateway, order_id, receipt, amount, product_name, type_of_action, created_at, updated_at';
+
+        $completedOrders = $entityDb->select($select)->where('payment_status', 'completed')->orderBy('id', 'desc')->findAll();
+        $incompleteOrders = $entityDb->select($select)->where('payment_status !=', 'completed')->orderBy('id', 'desc')->findAll();
+
+        $this->data['completedOrders'] = $completedOrders;
+        $this->data['incompleteOrders'] = $incompleteOrders;
+
+        return view('Admin/Pages/Settings/allOrders', $this->data);
     }
 }

@@ -8,16 +8,14 @@ use App\Models\Events\Events;
 
 class Home extends BaseController
 {
-    protected $data;
     public function __construct()
     {
-        $this->data = [];
-        $this->data['optionalJs'] = false;
     }
     public function index()
     {
-        $this->data['optionalJs'] = true;
+        // return print_r($this->data);
 
+        $this->data['optionalJs'] = true;
 
         $filmzineSelect = 'filmzinetomodules.news_id, filmzinetomodules.data_id, filmzine.title,, filmzine.summary, filmzine.slug, filmzine.featured, filmzine.media_url, filmzine.media_type, filmzine.video_type, filmzine.topic_id, filmzine.topic_name, filmzine.total_likes, filmzine.total_dislikes, filmzine.movie_rating, filmzine.total_views, filmzine.created_at';
         $filmzineModule = new FilmzinetoModule();

@@ -26,6 +26,7 @@
 	<link href="https://fonts.googleapis.com/css2?family=Cabin:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
 	<link href="/public/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
 	<link rel="stylesheet" href="/public/css/magnific-popup.min.css">
+      <!-- <script src="https://polyfill.io/v3/polyfill.min.js"></script> -->
 	<?php if (isset($loadSelect2) && $loadSelect2 == true) : ?>
 		<link href="/public/libs/select2/css/select2.min.css" rel="stylesheet" />
 	<?php endif; ?>
@@ -583,6 +584,7 @@
 	<?php if (isset($loadSelect2) && $loadSelect2 == true) : ?>
 		<script src="/public/libs/select2/js/select2.min.js"></script>
 	<?php endif; ?>
+	<?= isset($paymentAssets) && $paymentAssets == true ? view('Globals/load_payment_libraries') : '' ?>
 	<script src="/public/js/custom.js"></script>
 	<?= $this->renderSection('js') ?>
 

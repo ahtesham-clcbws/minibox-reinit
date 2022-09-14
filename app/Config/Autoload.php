@@ -64,7 +64,10 @@ class Autoload extends AutoloadConfig
      *
      * @var array<string, string>
      */
-    public $classmap = [];
+    public $classmap = [
+        'PaypalHttpHelper' => APPPATH . 'Libraries/PaypalHttpHelper.php',
+        'PayPalHelper' => APPPATH . 'Libraries/PayPalHelper.php',
+    ];
 
     /**
      * -------------------------------------------------------------------

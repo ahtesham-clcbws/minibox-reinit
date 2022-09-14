@@ -12,11 +12,8 @@ use App\Models\Festival\FestivalModel;
 
 class EventsController extends BaseController
 {
-    protected $data;
     public function __construct()
     {
-        $this->data = [];
-        $this->data['optionalJs'] = false;
         $this->data['pagename'] = 'Events';
     }
     public function add()

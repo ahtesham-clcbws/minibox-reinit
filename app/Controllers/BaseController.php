@@ -36,6 +36,7 @@ abstract class BaseController extends Controller
      * @var array
      */
     protected $helpers = ['common', 'number'];
+    protected $data = array();
 
     /**
      * Constructor.
@@ -43,8 +44,21 @@ abstract class BaseController extends Controller
     public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
     {
 
+        $this->data['data_status'] = 'global data loaded';
+
+        $this->data['optionalJs'] = false;
+        $this->data['loadSelect2'] = false;
+        $this->data['paymentAssets'] = false;
+
+        $this->data['pageName'] = 'Mini Box Office';
+        $this->data['pageTitle'] = 'Mini Box Office';
+
+        $this->data['gateway_callback'] = route_to('gatewayCallbak');
+        $this->data['gateway_callback_success'] = route_to('gatewaySuccess');
+        $this->data['gateway_callback_fail'] = route_to('gatewayFailed');
+
         // Do Not Edit This Line
-        parent::initController($request, $response, $logger);
+        parent::initController($request, $response, $logger, $this->data);
 
         // Preload any models, libraries, etc, here.
 

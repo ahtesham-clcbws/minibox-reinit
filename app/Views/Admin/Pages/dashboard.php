@@ -1,6 +1,11 @@
 <?= $this->extend('Admin/Layout') ?>
 
 <?= $this->section('css') ?>
+<style>
+    .device-status-group {
+        width: 95%;
+    }
+</style>
 <?= $this->endSection() ?>
 
 <?= $this->section('content') ?>
@@ -13,6 +18,105 @@
 </div>
 <div class="nk-block">
     <div class="row g-gs">
+
+        <div class="col-md-6 col-12">
+            <div class="card card-bordered h-100">
+                <div class="card-inner h-100 stretch flex-column">
+                    <div class="card-title-group">
+                        <div class="card-title card-title-sm">
+                            <h6 class="title">PayPal Payments & Orders</h6>
+                        </div>
+                        <!-- <div class="card-tools">
+                            <div class="drodown">
+                                <a href="#" class="dropdown-toggle dropdown-indicator btn btn-sm btn-outline-light btn-white" data-bs-toggle="dropdown">30 Days</a>
+                                <div class="dropdown-menu dropdown-menu-end dropdown-menu-xs">
+                                    <ul class="link-list-opt no-bdr">
+                                        <li><a href="#"><span>7 Days</span></a></li>
+                                        <li><a href="#"><span>15 Days</span></a></li>
+                                        <li><a href="#"><span>30 Days</span></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div> -->
+                    </div>
+                    <div class="device-status my-auto">
+                        <div class="device-status-ck">
+                            <canvas class="analytics-doughnut" id="paypalPayments"></canvas>
+                        </div>
+                        <div class="device-status-group">
+                            <div class="device-status-data">
+                                <!-- <em data-color="#798bff" class="icon ni ni-monitor"></em> -->
+                                <div class="title">Total</div>
+                                <div class="amount"><?= $paypalPayments['total_currency'] ?></div>
+                                <!-- <div class="change up text-danger"><em class="icon ni ni-arrow-long-up"></em>4.5%</div> -->
+                            </div>
+                            <div class="device-status-data">
+                                <!-- <em data-color="#baaeff" class="icon ni ni-mobile"></em> -->
+                                <div class="title">Completed</div>
+                                <div class="amount"><?= $paypalPayments['completed_currency'] ?></div>
+                                <!-- <div class="change up text-danger"><em class="icon ni ni-arrow-long-up"></em>133.2%</div> -->
+                            </div>
+                            <div class="device-status-data">
+                                <!-- <em data-color="#7de1f8" class="icon ni ni-tablet"></em> -->
+                                <div class="title">Failed</div>
+                                <div class="amount"><?= $paypalPayments['failed_currency'] ?></div>
+                                <!-- <div class="change up text-danger"><em class="icon ni ni-arrow-long-up"></em>25.3%</div> -->
+                            </div>
+                        </div><!-- .device-status-group -->
+                    </div><!-- .device-status -->
+                </div>
+            </div><!-- .card -->
+        </div>
+
+        <div class="col-md-6 col-12">
+            <div class="card card-bordered h-100">
+                <div class="card-inner">
+                    <div class="card-title-group">
+                        <div class="card-title card-title-sm">
+                            <h6 class="title">Razorpay Payments & Orders</h6>
+                        </div>
+                        <!-- <div class="card-tools">
+                            <div class="drodown">
+                                <a href="#" class="dropdown-toggle dropdown-indicator btn btn-sm btn-outline-light btn-white" data-bs-toggle="dropdown">30 Days</a>
+                                <div class="dropdown-menu dropdown-menu-end dropdown-menu-xs">
+                                    <ul class="link-list-opt no-bdr">
+                                        <li><a href="#"><span>7 Days</span></a></li>
+                                        <li><a href="#"><span>15 Days</span></a></li>
+                                        <li><a href="#"><span>30 Days</span></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div> -->
+                    </div>
+                    <div class="device-status my-auto">
+                        <div class="device-status-ck">
+                            <canvas class="analytics-doughnut" id="razorpayPayments"></canvas>
+                        </div>
+                        <div class="device-status-group">
+                            <div class="device-status-data">
+                                <!-- <em data-color="#798bff" class="icon ni ni-monitor"></em> -->
+                                <div class="title">Total</div>
+                                <div class="amount"><?= $razorpayPayments['total_currency'] ?></div>
+                                <!-- <div class="change up text-danger"><em class="icon ni ni-arrow-long-up"></em>4.5%</div> -->
+                            </div>
+                            <div class="device-status-data">
+                                <!-- <em data-color="#baaeff" class="icon ni ni-mobile"></em> -->
+                                <div class="title">Completed</div>
+                                <div class="amount"><?= $razorpayPayments['completed_currency'] ?></div>
+                                <!-- <div class="change up text-danger"><em class="icon ni ni-arrow-long-up"></em>133.2%</div> -->
+                            </div>
+                            <div class="device-status-data">
+                                <!-- <em data-color="#7de1f8" class="icon ni ni-tablet"></em> -->
+                                <div class="title">Failed</div>
+                                <div class="amount"><?= $razorpayPayments['failed_currency'] ?></div>
+                                <!-- <div class="change up text-danger"><em class="icon ni ni-arrow-long-up"></em>25.3%</div> -->
+                            </div>
+                        </div><!-- .traffic-channel-group -->
+                    </div><!-- .traffic-channel -->
+                </div>
+            </div><!-- .card -->
+        </div>
+
         <!-- Official Selections -->
         <div class="col-sm-6">
             <div class="card card-bordered">
@@ -1072,4 +1176,99 @@
 
 <?= $this->section('js') ?>
 <script src="/public/admin/js/charts/gd-default.js?ver=3.0.0"></script>
+<script>
+    var paypalPayments = {
+        labels: ["Total Orders", "Completed Payments", "Failed Payments"],
+        dataUnit: 'EURO',
+        legend: false,
+        datasets: [{
+            borderColor: "#fff",
+            background: ["#9cabff", "#1EE0AC", "#E85347"],
+            data: [<?= $paypalPayments['total'] ?>, <?= $paypalPayments['completed'] ?>, <?= $paypalPayments['failed'] ?>]
+        }]
+    };
+    var razorpayPayments = {
+        labels: ["Total Orders", "Completed Payments", "Failed Payments"],
+        dataUnit: 'INR',
+        legend: false,
+        datasets: [{
+            borderColor: "#fff",
+            background: ["#9cabff", "#1EE0AC", "#E85347"],
+            data: [<?= $razorpayPayments['total'] ?>, <?= $razorpayPayments['completed'] ?>, <?= $razorpayPayments['failed'] ?>]
+        }]
+    };
+
+    function analyticsDoughnut(selector, set_data) {
+        var $selector = selector ? $(selector) : $('.analytics-doughnut');
+        $selector.each(function() {
+            var $self = $(this),
+                _self_id = $self.attr('id'),
+                _get_data = typeof set_data === 'undefined' ? eval(_self_id) : set_data;
+
+            var selectCanvas = document.getElementById(_self_id).getContext("2d");
+            var chart_data = [];
+
+            for (var i = 0; i < _get_data.datasets.length; i++) {
+                chart_data.push({
+                    backgroundColor: _get_data.datasets[i].background,
+                    borderWidth: 2,
+                    borderColor: _get_data.datasets[i].borderColor,
+                    hoverBorderColor: _get_data.datasets[i].borderColor,
+                    data: _get_data.datasets[i].data
+                });
+            }
+
+            var chart = new Chart(selectCanvas, {
+                type: 'doughnut',
+                data: {
+                    labels: _get_data.labels,
+                    datasets: chart_data
+                },
+                options: {
+                    legend: {
+                        display: _get_data.legend ? _get_data.legend : false,
+                        rtl: NioApp.State.isRTL,
+                        labels: {
+                            boxWidth: 12,
+                            padding: 20,
+                            fontColor: '#6783b8'
+                        }
+                    },
+                    rotation: -1.5,
+                    cutoutPercentage: 70,
+                    maintainAspectRatio: false,
+                    tooltips: {
+                        enabled: true,
+                        rtl: NioApp.State.isRTL,
+                        callbacks: {
+                            title: function title(tooltipItem, data) {
+                                return data['labels'][tooltipItem[0]['index']];
+                            },
+                            label: function label(tooltipItem, data) {
+                                return data.datasets[tooltipItem.datasetIndex]['data'][tooltipItem['index']] + ' ' + _get_data.dataUnit;
+                            }
+                        },
+                        backgroundColor: '#fff',
+                        borderColor: '#eff6ff',
+                        borderWidth: 2,
+                        titleFontSize: 13,
+                        titleFontColor: '#6783b8',
+                        titleMarginBottom: 6,
+                        bodyFontColor: '#9eaecf',
+                        bodyFontSize: 12,
+                        bodySpacing: 4,
+                        yPadding: 10,
+                        xPadding: 10,
+                        footerMarginTop: 0,
+                        displayColors: false
+                    }
+                }
+            });
+        });
+    }
+    // init chart
+    NioApp.coms.docReady.push(function() {
+        analyticsDoughnut();
+    });
+</script>
 <?= $this->endSection() ?>

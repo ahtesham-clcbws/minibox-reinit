@@ -3,6 +3,8 @@
 namespace App\Controllers\Web;
 
 use App\Controllers\BaseController;
+use App\Libraries\PayPalHelper;
+use App\Models\AwardsCategoryModel;
 use App\Models\Common\FilmzinetoModule;
 use App\Models\Common\TestimonialModel;
 use App\Models\Events\Events;
@@ -15,6 +17,8 @@ use App\Models\Festival\FestivalAwardsPage;
 use App\Models\Festival\FestivalBanners;
 use App\Models\Festival\FestivalDeadlines;
 use App\Models\Festival\FestivalDelegatePackages;
+use App\Models\Festival\FestivalDelegates;
+use App\Models\Festival\FestivalEntries;
 use App\Models\Festival\FestivalGallery;
 use App\Models\Festival\FestivalJury;
 use App\Models\Festival\FestivalJuryGallery;
@@ -27,23 +31,21 @@ use App\Models\Festival\FestivalTypeOfFilms;
 use App\Models\Festival\FestivalVenueItem;
 use App\Models\Festival\FestivalVenues;
 use App\Models\Festival\FestivalVolunteer;
+use App\Models\Payment\OrderModel;
+use CodeIgniter\API\ResponseTrait;
 use DateTime;
 
 class FilmFestival extends BaseController
 {
-    protected $data;
     protected $slug;
     protected $festivalModel;
     // protected $festivalYearlyModel;
     protected $festival_details;
+    use ResponseTrait;
 
     public function __construct()
     {
-        $this->data = [];
-        $this->data['optionalJs'] = false;
-        $this->data['loadSelect2'] = false;
-
-        $this->data['paymentAssets'] = false;
+        $this->data['gateway'] = 'razorpay';
         $this->festivalModel = new FestivalModel();
         $slug = service('uri')->getSegment(2) ? service('uri')->getSegment(2) : 'nothing';
         $this->festival_details = $this->festivalModel->getFestivalBySlugFrontend($slug);
@@ -317,7 +319,37 @@ class FilmFestival extends BaseController
     }
     public function festival_event_details($slug, $decodedId)
     {
+
+        helper('payment');
+
+        $paymentFirstLink = route_to('event_tickets_registration');
+        $this->data['paymentFirstLink'] = $paymentFirstLink;
+
+        $response = ['success' => false, 'message' => '', 'data' => []];
+
         $country = getUserCountry();
+
+        $this->data['pageName'] = 'Entry Form';
+        $this->data['paymentAssets'] = true;
+        $this->data['productType'] = 'entry_form';
+
+        $this->data['loadSelect2'] = true;
+        $this->data['productDescription'] = 'Event Ticket';
+
+        if ($country == 'IN') {
+            $this->data['currency'] = 'INR';
+            $this->data['currency_symbol'] = '&#8377;';
+            $this->data['gst_note'] = ' <small>Excl. GST</small>';
+
+            $this->data['gateway'] = 'razorpay';
+            $this->data['callback_url'] = route_to('razorpayCallback');
+        } else {
+            $this->data['currency'] = 'EUR';
+            $this->data['currency_symbol'] = '&#8364;';
+            $this->data['gst_note'] = '';
+
+            $this->data['gateway'] = 'other';
+        }
         $eventId = base64_decode($decodedId);
         $eventMd = new Events();
         if ($event = $eventMd->find($eventId)) {
@@ -390,19 +422,33 @@ class FilmFestival extends BaseController
     public function festival_entry_form()
     {
         // return print_r($this->festival_details);
+        helper('payment');
+
+        $response = ['success' => false, 'message' => '', 'data' => []];
+
         $country = getUserCountry();
+
+        $this->data['pageName'] = 'Entry Form';
+        $this->data['paymentAssets'] = true;
+        $this->data['productType'] = 'entry_form';
+
         $this->data['loadSelect2'] = true;
+        $this->data['productDescription'] = 'Delegate Registration';
+
         if ($country == 'IN') {
             $this->data['currency'] = 'INR';
             $this->data['currency_symbol'] = '&#8377;';
             $this->data['gst_note'] = ' <small>Excl. GST</small>';
+
+            $this->data['gateway'] = 'razorpay';
+            $this->data['callback_url'] = route_to('razorpayCallback');
         } else {
             $this->data['currency'] = 'EUR';
             $this->data['currency_symbol'] = '&#8364;';
             $this->data['gst_note'] = '';
-        }
 
-        $this->data['pageName'] = 'Entry Form';
+            $this->data['gateway'] = 'other';
+        }
 
         $filmTypesDb = new FestivalTypeOfFilms();
         $allProjectTypes = $filmTypesDb->orderBy('type', 'desc')->orderBy('name', 'asc')->findAll();
@@ -418,14 +464,268 @@ class FilmFestival extends BaseController
         $this->data['typesOfAwards'] = $typesOfAwards;
 
         if ($this->request->getPost()) {
-            if ($this->request->getPost('submitEntryForm')) {
-                $requestData = $this->request->getPost();
-                $requestData['totalPricingArray'] = json_decode($this->request->getPost('totalPricingArray'));
-                $requestData['awardsPricingArrayShort'] = json_decode($this->request->getPost('awardsPricingArrayShort'));
-                $requestData['awardsPricingArrayFeature'] = json_decode($this->request->getPost('awardsPricingArrayFeature'));
+            $festivalFullName = $this->festival_details['title'] ? $this->festival_details['title'] : $this->festival_details['name'];
+            if ($this->request->getPost('submitForm')) {
+                $requestedData = $this->request->getVar();
+                $receipt = uniqidReal();
+                $requestedData['totalPricingArray'] = json_decode($this->request->getPost('totalPricingArray'), true);
+                // $requestedData['awardsPricingArrayShort'] = json_decode($this->request->getPost('awardsPricingArrayShort'));
+                // $requestedData['awardsPricingArrayFeature'] = json_decode($this->request->getPost('awardsPricingArrayFeature'));
+                // $requestedData['award'] = json_decode($this->request->getPost('award'));
+                // return json_encode($requestedData);
 
-                return json_encode($requestData);
+                $selected_awards = array();
+                $project_type_small = strtolower($requestedData['project_type']);
+                foreach ($requestedData['award'][$project_type_small] as $key => $thisaward) {
+                    $award = array(
+                        'id' => $key,
+                        'award' => $thisaward['award'],
+                        'subwards' => isset($thisaward['sub_awards']) ? $thisaward['sub_awards'] : []
+                    );
+                    $selected_awards[] = $award;
+                }
+                $requestedData['selected_awards'] = (array)$selected_awards;
+                // return json_encode($requestedData);
+
+
+                $entryFormData = [
+                    "name" => $requestedData['name'],
+                    "email" => $requestedData['email'],
+                    "mobile" => $requestedData['mobile'],
+                    "country" => $requestedData['country'],
+                    'festival_id' => $this->festival_details['id'],
+                    'festival_year' => $this->festival_details['current_year'],
+                    "movie_name" => $requestedData['movie_name'],
+                    "director" => $requestedData['director'],
+                    "movie_preview_link" => $requestedData['movie_preview_link'],
+                    "movie_password" => $requestedData['movie_password'],
+                    "producer" => $requestedData['producer'],
+                    "production_company" => $requestedData['production_company'],
+                    "duration" => $requestedData['duration'], // in minutes
+                    "debut_film" => $requestedData['debut_film'],
+                    "language" => $requestedData['language'],
+                    "synopsis" => $requestedData['synopsis'],
+                    "occupation" => $requestedData['occupation'],
+                    "project" => $requestedData['project'], // project type id
+                    "project_type" => $requestedData['project_type'], // like : short or feature (for accessing awards from award array)
+                    "currency" => $requestedData['currency'],
+                    "festival_deadline" => $requestedData['festival_deadline'],
+                    "selected_award_ids" => json_encode($requestedData['totalPricingArray']['awards']), //  totalPricingArray['awards'] = array of ids // NEW
+                    "total_amount" => $requestedData['totalPricingArray']['total'], //  totalPricingArray['total'] // NEW
+                    "amount" => $requestedData['totalPricingArray']['final'], //  totalPricingArray['final'] // NEW
+                    "totalPricingArray" => json_encode($requestedData['totalPricingArray']),
+                    "selected_awards" => json_encode($selected_awards), // award data will be converting to new array like array(award_id, sub_awards=array()) // NEW
+                    'gateway' => $requestedData['gateway'],
+                    'receipt' => $receipt,
+                    'payment_status' => 'pending'
+                ];
+                if ($country == 'IN') {
+                    $entryFormData['tax_amount'] = $requestedData['totalPricingArray']['tax'];
+                }
+
+                $response['message'] = 'Unable to add your order, please mail us on ' . getCustomerCare()['email'] . ' or call us on ' . getCustomerCare()['phone'];
+                $response['data'] = $entryFormData;
+                $festivalEntriesDb = new FestivalEntries();
+                $saveEntry = $festivalEntriesDb->save($entryFormData);
+
+                $response['message'] = 'Unable to add your order (FE), please mail us on ' . getCustomerCare()['email'] . ' or call us on ' . getCustomerCare()['phone'];
+                // return json_encode($this->festivalDeadlines($this->festival_details)['show']);
+                if ($saveEntry) {
+                    $awardCateDb = new AwardsCategoryModel();
+
+                    // $priceColumn = $project_type_small . '_' . $entryFormData['occupation'] . '_' . strtolower($this->data['currency']);
+
+                    $awardIds = json_decode($entryFormData['selected_award_ids'], true);
+
+                    // $this->festival_details['deadlines']['show']
+
+                    // $selectedPackages = $awardCateDb->select('id, name, ' . $priceColumn . ' as amount')->whereIn('id', $awardIds)->findAll();
+
+                    // $selectedPackages = $awardCateDb->whereIn('id', $awardIds)->findAll();
+
+                    // $selectedPackages = $this->convertFestivalAwardPricesByDeadline2($this->festival_details['deadlines']['show'], $selectedPackages);
+                    $selectedPackages = array();
+
+                    $mainAwardPrizes = $this->festival_details[$project_type_small . '_awards_prices'];
+                    foreach ($mainAwardPrizes as $key => $prize) {
+                        if (in_array($prize['award_id'],  $awardIds)) {
+                            $amount = $prize['prices'][strtolower($this->data['currency'])][$entryFormData['occupation']];
+                            // $amount = $this->convertSingleFeeByDeadline($amount, $entryFormData['occupation'], strtolower($this->data['currency']));
+                            $award = [
+                                "id" => $prize['award_id'],
+                                "name" => $prize['award_name'],
+                                "details" => $prize['award_name'] . ' Awards',
+                                "total" => $amount,
+                                "type" => "award",
+                                "quantity" => 1
+                            ];
+                            $selectedPackages[] = $award;
+                        }
+                    }
+
+                    // foreach ($selectedPackages as $key => $value) {
+                    //     return json_encode($value[$priceColumn]);
+                    //     return json_encode($this->convertSingleFeeByDeadline($value[$priceColumn], $entryFormData['occupation'], strtolower($this->data['currency'])));
+                    //     $selectedPackages[$key]['details'] = $value['name'] . ' Award';
+                    //     // $amount = 0;
+                    //     // if($requestedData['project_type'] == 'Feature' && $entryFormData['occupation'] = 'professional' &&  $this->data['currency'] == 'INR') {
+                    //     //     $amount = $value['feature_professional_inr'];
+                    //     // }
+                    //     // if($requestedData['project_type'] == 'Feature' && $entryFormData['occupation'] = 'professional' &&  $this->data['currency'] == 'EUR') {
+                    //     //     $amount = $value['feature_professional_eur'];
+                    //     // }
+                    //     // if($requestedData['project_type'] == 'Short' && $entryFormData['occupation'] = 'professional' &&  $this->data['currency'] == 'INR') {
+                    //     //     $amount = $value['feature_student_inr'];
+                    //     // }
+                    //     // if($requestedData['project_type'] == 'Short' && $entryFormData['occupation'] = 'professional' &&  $this->data['currency'] == 'EUR') {
+                    //     //     $amount = $value['feature_student_inr'];
+                    //     // }
+                    //     // if($requestedData['project_type'] == 'Feature' && $entryFormData['occupation'] = 'student' &&  $this->data['currency'] == 'INR') {
+                    //     //     $amount = $value['feature_student_inr'];
+                    //     // }
+                    //     $selectedPackages[$key]['total'] = $this->convertSingleFeeByDeadline($value[$priceColumn], $entryFormData['occupation'], strtolower($this->data['currency']));
+                    //     $selectedPackages[$key]['type'] = 'award';
+                    //     $selectedPackages[$key]['quantity'] = 1;
+
+                    //     unset($selectedPackages[$key]['created_at']);
+                    //     unset($selectedPackages[$key]['deleted_at']);
+                    //     unset($selectedPackages[$key]['feature_professional_eur']);
+                    //     unset($selectedPackages[$key]['feature_professional_inr']);
+                    //     unset($selectedPackages[$key]['feature_student_eur']);
+                    //     unset($selectedPackages[$key]['feature_student_inr']);
+                    //     unset($selectedPackages[$key]['image']);
+                    //     unset($selectedPackages[$key]['short_name']);
+                    //     unset($selectedPackages[$key]['short_professional_eur']);
+                    //     unset($selectedPackages[$key]['short_professional_inr']);
+                    //     unset($selectedPackages[$key]['short_student_eur']);
+                    //     unset($selectedPackages[$key]['short_student_inr']);
+                    //     unset($selectedPackages[$key]['updated_at']);
+                    // }
+                    // return json_encode($selectedPackages);
+
+                    $selectedPackagesX  = array();
+
+                    foreach ($selectedPackages as $key => $package) {
+                        array_push($selectedPackagesX, $package);
+                    }
+
+                    $requestedData['selectedPackages'] = (array)$selectedPackagesX;
+                    $orderData = [
+                        'receipt' => $receipt,
+                        'amount' => $entryFormData['amount'],
+                        'product_information' => $selectedPackagesX,
+                        'product_name' => 'Festival Entry - ' . $festivalFullName,
+                        'user_name' => $entryFormData['name'],
+                        'user_email' => $entryFormData['email'],
+                        'user_phone' => $entryFormData['mobile'],
+                        'other_user_info' => array(
+                            "movie_name" => $entryFormData['movie_name'],
+                            "director" => $entryFormData['director'],
+                            "producer" => $entryFormData['producer'],
+                            "language" => $entryFormData['language'],
+                            "project_type" => $entryFormData['project_type'],
+                            "occupation" => $entryFormData['occupation'],
+                            "production_company" => $entryFormData['production_company'],
+                        ),
+                        'type_of_action' => 'festival_entry',
+                        'user_country' => $entryFormData['country'],
+                        'order_items' => 'festival_entry_awards'
+                    ];
+                    if ($this->data['gateway'] == 'razorpay') {
+                        // create order then send the selected data to razorpay server;
+                        // CREATE LOCAL ORDER FOR RAZORPAY
+                        $orderDb = new OrderModel();
+                        $orderData['tax_gst'] = $entryFormData['tax_amount'];
+
+                        $response['message'] = 'Unable to add your order (RCO1), please mail us on ' . getCustomerCare()['email'] . ' or call us on ' . getCustomerCare()['phone'];
+
+                        $createOrder = $orderDb->razorpayCreateOrder($orderData);
+                        return json_encode($createOrder);
+
+                        $thisEntry = $festivalEntriesDb->where(['receipt' => $receipt])->first();
+
+                        $response['message'] = 'Unable to add your order (RCO2), please mail us on ' . getCustomerCare()['email'] . ' or call us on ' . getCustomerCare()['phone'];
+
+                        if ($createOrder['success']) {
+                            $oldEntry['id'] = $thisEntry['id'];
+                            $oldEntry['order_id'] = $createOrder['data']['order']['id'];
+                            $oldEntry['gateway_order_id'] = $createOrder['data']['response']['id'];
+                            $oldEntry['payment_status'] = 'processing';
+                            $festivalEntriesDb->save($oldEntry);
+
+                            return json_encode($createOrder);
+                        }
+                        $oldEntry['id'] = $thisEntry['id'];
+                        $oldEntry['payment_status'] = 'failed';
+                        $festivalEntriesDb->save($oldEntry);
+                    }
+                    if ($this->request->getPost('paypalOrderCreate')) {
+                        $paypalOrderData = json_encode($orderData);
+                        $paypalOrderData = json_decode($paypalOrderData, true);
+
+                        // return json_encode($paypalOrderData);
+
+                        // 100 PERCENT WORKING CODE OF PAYPAL RIGHT NOW
+                        $paypalHelper = new PayPalHelper;
+                        return json_encode($paypalHelper->orderCreate($paypalOrderData));
+                    }
+                }
+                return json_encode($response);
+
+                // return json_encode($entryFormData);
+
+                // sample data (would be changed in future for better performance)
+                $sampleData = array(
+                    "name" => "Mohammad Ahtesham",
+                    "email" => "ahtesham2000@gmail.com",
+                    "mobile" => "+919873350509",
+                    "country" => "101",
+                    "movie_name" => "Avenger Version 2",
+                    "director" => "Some director",
+                    "movie_preview_link" => "http://google.com",
+                    "movie_password" => "",
+                    "producer" => "Some Producer",
+                    "production_company" => "Broadway Web Services",
+                    "duration" => "120",
+                    "debut_film" => "No",
+                    "language" => "40",
+                    "synopsis" => "",
+                    "occupation" => "professional",
+                    "project" => "2",
+                    "currency" => "INR",
+                    "festival_deadline" => "2022-09-16",
+                    "award" => array(
+                        "feature" => array(
+                            "0" => array(
+                                "award" => "Production",
+                                "sub_awards" => array(
+                                    "Best Feature Documentary",
+                                    "Best Music Video",
+                                    "Best Debut Director"
+                                )
+                            ),
+                            "3" => array(
+                                "award" => "Music"
+                            )
+                        )
+                    ),
+                    "totalPricingArray" => array(
+                        "awards" => array(
+                            "1",
+                            "4"
+                        ),
+                        "total" => 9584,
+                        "final" => 11309.12,
+                        "tax" => 18
+                    ),
+                    "project_type" => "Feature",
+                    "rules" => "on",
+                    "submitForm" => "true",
+                    "awardsPricingArrayShort" => null,
+                    "awardsPricingArrayFeature" => null
+                );
             }
+            return json_encode($response);
         }
 
         $pageData = $this->getPageData('entry_form', $this->festival_details['id']);
@@ -466,21 +766,207 @@ class FilmFestival extends BaseController
     public function festival_delegate_registration()
     {
         $country = getUserCountry();
-
+        helper('payment');
         $response = ['success' => false, 'message' => '', 'data' => []];
 
         $this->data['pageName'] = 'Delegate Registration';
         $this->data['paymentAssets'] = true;
+        $this->data['productType'] = 'deletegate_registration';
+        $this->data['productDescription'] = 'Delegate Registration';
+
+        if ($country == 'IN') {
+            $this->data['gateway'] = 'razorpay';
+            $this->data['callback_url'] = route_to('razorpayCallback');
+        } else {
+            $this->data['gateway'] = 'other';
+        }
 
         $pageData = $this->getPageData('delegate', $this->festival_details['id']);
         $this->data['pagedata'] = $pageData;
 
         if ($this->request->getPost('submitForm')) {
             $requestedData = $this->request->getPost();
-            $requestedData["fullPackageJson"] = json_decode($requestedData["fullPackageJson"]);
-            $response['message'] = 'Good data';
-            $response['success'] = true;
+            // $requestedData["fullPackageJson"] = json_decode($requestedData["fullPackageJson"]);
+            // sample JSON (maybe there is some changes)
+            $sampleJson = array(
+                "name" => "Mohammad Ahtesham",
+                "movie_name" => "some movie",
+                "email" => "ahtesham2000@gmail.com",
+                "whatsapp" => "9810763314",
+                "mobile" => "+919873350509",
+                "organization" => "Broadway Web Services",
+                "address" => "H No-143, 4th floor, Gali No-13,, Flat No-3, Jamia Nagar, Okhla",
+                "country" => "101",
+                "state" => "4021",
+                "city" => "131679",
+                "pin" => "110025",
+                "package" => array(
+                    array(
+                        "details" => "Screening & networking with lunch & morning/evening tea coffee & snacks.",
+                        "amount" => "800",
+                        "tickets" => "1",
+                        "total" => "800"
+                    ),
+                    array(
+                        "details" => "Screening & Networking, Master Class on Film Funding [For emerging filmmakers], with lunch & morning/evening tea coffee.",
+                        "amount" => "2000",
+                        "tickets" => "2",
+                        "total" => "4000"
+                    ),
+                    array(
+                        "details" => "Screening & Networking, Master Class on Marketing, promotion, distribution & Revenue generation through Short films with lunch & morning/evening tea coffee.",
+                        "amount" => "3000",
+                        "tickets" => "0",
+                        "total" => "0"
+                    )
+                ),
+                "package_tickets" => "3",
+                "package_amount" => "4800",
+                "submitForm" => "true"
+            );
+            $receipt = uniqidReal();
+            $delegateRegsitrationDb = new FestivalDelegates();
+            $delegate = array(
+                'festival_id' => $this->festival_details['id'],
+                'festival_year' => $this->festival_details['current_year'],
+                'name' => $requestedData['name'],
+                'movie_name' => $requestedData['movie_name'],
+                'email' => $requestedData['email'],
+                'whatsapp' => $requestedData['whatsapp'],
+                'mobile' => $requestedData['mobile'],
+                'organization' => $requestedData['organization'],
+                'address' => $requestedData['address'],
+                'country' => $requestedData['country'],
+                'state' => $requestedData['state'],
+                'city' => $requestedData['city'],
+                'pin' => $requestedData['pin'],
+                'package_details' => json_encode($requestedData['package']),
+                'tickets' => $requestedData['package_tickets'],
+                'amount' => $requestedData['package_amount'],
+                'gateway' => $requestedData['gateway'],
+                'receipt' => $receipt
+            );
+
+            // $delegate['status'] = $this->festival_details['status'];    
+            $response['message'] = 'Unable to get your order, please mail us on ' . getCustomerCare()['email'] . ' or call us on ' . getCustomerCare()['phone'];
             $response['data'] = $requestedData;
+            $saveDelegate = $delegateRegsitrationDb->save($delegate);
+            if ($saveDelegate) {
+                $selectedPackages = array();
+                $realAmountByPckages = 0;
+                $realTicketsByPckages = 0;
+
+                $requestedData['package'] = (array) $requestedData['package'];
+                foreach ($requestedData['package'] as $package) {
+                    $thisPackage = (array) $package;
+                    // $selectedPackages[] = $thisPackage;
+                    $realAmount = intval($thisPackage['amount']) * intval($thisPackage['tickets']);
+                    $realAmountByPckages += $realAmount;
+                    $realTicketsByPckages += intval($thisPackage['tickets']);
+
+                    if ($thisPackage['tickets'] > 0 && $thisPackage['total'] > 0) {
+                        // $thisPackage['name'] = $thisPackage['details'];
+                        $thisPackage['type'] = 'ticket';
+                        $thisPackage['quantity'] = $thisPackage['tickets'];
+                        unset($thisPackage['tickets']);
+                        $selectedPackages[] = $thisPackage;
+                    }
+                }
+
+                if ($country == 'IN') {
+                    $singlePercent = $realAmountByPckages / 100;
+                    $taxGst = $singlePercent * 18;
+                    $realAmountByPckages = $realAmountByPckages + $taxGst;
+                }
+
+                $response['message'] = 'In-Valid Request.';
+                $requestedData['selectedPackages'] = $selectedPackages;
+                if ($realAmountByPckages == $requestedData['package_amount'] && $realTicketsByPckages == $requestedData['package_tickets']) {
+                    if ($this->data['gateway'] == 'razorpay') {
+                        // create order then send the selected data to razorpay server;
+                        // CREATE LOCAL ORDER FOR RAZORPAY
+                        $orderData = [
+                            'receipt' => $receipt,
+                            'amount' => $requestedData['package_amount'],
+                            'product_information' => $selectedPackages,
+                            'product_name' => 'Delegate Registration - ' . $this->festival_details['title'] ? $this->festival_details['title'] : $this->festival_details['name'],
+                            'user_name' => $requestedData['name'],
+                            'user_email' => $requestedData['email'],
+                            'user_phone' => $requestedData['mobile'],
+                            'other_user_info' => array(
+                                "movie_name" => $requestedData['movie_name'],
+                                "whatsapp" => $requestedData['whatsapp'],
+                                "organization" => $requestedData['organization'],
+                                "address" => $requestedData['address'],
+                                "country" => getWorldName($requestedData['country'], 'country'),
+                                "state" => getWorldName($requestedData['state'], 'state'),
+                                "city" => getWorldName($requestedData['city'], 'city'),
+                                "pin" => $requestedData['pin'],
+                            ),
+                            'type_of_action' => 'delegate_registration',
+                            'user_address' => $requestedData['address'],
+                            'user_pincode' => $requestedData['pin'],
+                            'user_city' => $requestedData['city'],
+                            'user_state' => $requestedData['state'],
+                            'user_country' => $requestedData['country'],
+                            'order_items' => 'festival_delegate_packages',
+                            'tax_gst' => $requestedData['tax_gst'],
+                        ];
+                        $orderDb = new OrderModel();
+                        $createOrder = $orderDb->razorpayCreateOrder($orderData);
+
+                        $thisDelegate = $delegateRegsitrationDb->where(['receipt' => $receipt])->first();
+
+                        if ($createOrder['success']) {
+                            $delegateDetails['id'] = $thisDelegate['id'];
+                            $delegateDetails['order_id'] = $createOrder['data']['order']['id'];
+                            $delegateDetails['gateway_order_id'] = $createOrder['data']['response']['id'];
+                            $delegateDetails['payment_status'] = 'processing';
+                            $delegateRegsitrationDb->save($delegateDetails);
+
+                            $response = $createOrder;
+                            return json_encode($response);
+                        }
+                        $delegateDetails['id'] = $thisDelegate['id'];
+                        $delegateDetails['payment_status'] = 'failed';
+                        $delegateRegsitrationDb->save($delegateDetails);
+                    }
+                    if ($this->request->getPost('paypalOrderCreate')) {
+                        $orderData = [
+                            'receipt' => $receipt,
+                            'amount' => $requestedData['package_amount'],
+                            'product_information' => $selectedPackages,
+                            'product_name' => 'Delegate Registration - ' . $this->festival_details['title'] ? $this->festival_details['title'] : $this->festival_details['name'],
+                            'user_name' => $requestedData['name'],
+                            'user_email' => $requestedData['email'],
+                            'user_phone' => $requestedData['mobile'],
+                            'other_user_info' => array(
+                                "movie_name" => $requestedData['movie_name'],
+                                "whatsapp" => $requestedData['whatsapp'],
+                                "organization" => $requestedData['organization'],
+                                "address" => $requestedData['address'],
+                                "country" => getWorldName($requestedData['country'], 'country'),
+                                "state" => getWorldName($requestedData['state'], 'state'),
+                                "city" => getWorldName($requestedData['city'], 'city'),
+                                "pin" => $requestedData['pin'],
+                            ),
+                            'type_of_action' => 'delegate_registration',
+                            'user_address' => $requestedData['address'],
+                            'user_pincode' => $requestedData['pin'],
+                            'user_city' => $requestedData['city'],
+                            'user_state' => $requestedData['state'],
+                            'user_country' => $requestedData['country'],
+                            'order_items' => 'festival_delegate_packages',
+                        ];
+                        $orderData = json_encode($orderData);
+                        $orderData = json_decode($orderData, true);
+
+                        // 100 PERCENT WORKING CODE OF PAYPAL RIGHT NOW
+                        $paypalHelper = new PayPalHelper;
+                        return json_encode($paypalHelper->orderCreate($orderData));
+                    }
+                }
+            }
             return json_encode($response);
         }
 
@@ -507,6 +993,8 @@ class FilmFestival extends BaseController
             unset($allPackages[$key]['festival_id']);
         }
         $this->data['allPackages'] = $allPackages;
+
+        // return print_r($this->data);
 
         return view('Web/Filmfestival/festival_delegate_registration', $this->data);
     }
@@ -672,23 +1160,77 @@ class FilmFestival extends BaseController
     {
         if ($deadline['id'] != 'event_date' && $deadline['id'] != 'opening_date') {
             foreach ($pricing as $key => $prices) {
-                $amountToDeduct = $prices['prices']['inr']['student'] / $deadline['student_inr'];
-                $newAmount = $prices['prices']['inr']['student'] - $amountToDeduct;
-                $pricing[$key]['prices']['inr']['student'] = ceil($newAmount);
+                // $amountToDeduct = ($prices['prices']['inr']['student'] / 100) * $deadline['student_inr'];
+                // $newAmount = $prices['prices']['inr']['student'] - $amountToDeduct;
+                // $pricing[$key]['prices']['inr']['student'] = ceil($newAmount);
+                $pricing[$key]['prices']['inr']['student'] = $this->convertSingleFeeByDeadline($prices['prices']['inr']['student'], 'student', 'inr');
 
-                $amountToDeduct = $prices['prices']['eur']['student'] / $deadline['student_eur'];
-                $newAmount = $prices['prices']['eur']['student'] - $amountToDeduct;
-                $pricing[$key]['prices']['eur']['student'] = ceil($newAmount);
+                // $amountToDeduct = ($prices['prices']['eur']['student']  / 100) * $deadline['student_eur'];
+                // $newAmount = $prices['prices']['eur']['student'] - $amountToDeduct;
+                // $pricing[$key]['prices']['eur']['student'] = ceil($newAmount);
+                $pricing[$key]['prices']['eur']['student'] = $this->convertSingleFeeByDeadline($prices['prices']['eur']['student'], 'student', 'eur');
 
-                $amountToDeduct = $prices['prices']['inr']['professional'] / $deadline['professional_inr'];
-                $newAmount = $prices['prices']['inr']['professional'] - $amountToDeduct;
-                $pricing[$key]['prices']['inr']['professional'] = ceil($newAmount);
+                // $amountToDeduct = ($prices['prices']['inr']['professional']  / 100) * $deadline['professional_inr'];
+                // $newAmount = $prices['prices']['inr']['professional'] - $amountToDeduct;
+                // $pricing[$key]['prices']['inr']['professional'] = ceil($newAmount);
+                $pricing[$key]['prices']['inr']['professional'] = $this->convertSingleFeeByDeadline($prices['prices']['inr']['professional'], 'professional', 'inr');
 
-                $amountToDeduct = $prices['prices']['eur']['professional'] / $deadline['professional_eur'];
-                $newAmount = $prices['prices']['eur']['professional'] - $amountToDeduct;
-                $pricing[$key]['prices']['eur']['professional'] = ceil($newAmount);
+                // $amountToDeduct = ($prices['prices']['eur']['professional']  / 100) * $deadline['professional_eur'];
+                // $newAmount = $prices['prices']['eur']['professional'] - $amountToDeduct;
+                // $pricing[$key]['prices']['eur']['professional'] = ceil($newAmount);
+                $pricing[$key]['prices']['eur']['professional'] = $this->convertSingleFeeByDeadline($prices['prices']['eur']['professional'], 'professional', 'eur');
             }
         }
         return $pricing;
+    }
+    private function convertFestivalAwardPricesByDeadline2($deadline, $pricing, $type = 'student', $currency = 'inr')
+    {
+        if ($deadline['id'] != 'event_date' && $deadline['id'] != 'opening_date') {
+            foreach ($pricing as $key => $prices) {
+                // short awards
+                $amountToDeduct = ($prices['short_student_inr']  / 100) * $deadline['student_inr'];
+                $newAmount = $prices['short_student_inr'] - $amountToDeduct;
+                $pricing[$key]['short_student_inr'] = ceil($newAmount);
+
+                $amountToDeduct = ($prices['short_student_eur']  / 100) * $deadline['student_eur'];
+                $newAmount = $prices['short_student_eur'] - $amountToDeduct;
+                $pricing[$key]['short_student_eur'] = ceil($newAmount);
+
+                $amountToDeduct = ($prices['short_professional_inr']  / 100) * $deadline['professional_inr'];
+                $newAmount = $prices['short_professional_inr'] - $amountToDeduct;
+                $pricing[$key]['short_professional_inr'] = ceil($newAmount);
+
+                $amountToDeduct = ($prices['short_professional_eur']  / 100) * $deadline['professional_eur'];
+                $newAmount = $prices['short_professional_eur'] - $amountToDeduct;
+                $pricing[$key]['short_professional_eur'] = ceil($newAmount);
+                // feature awards
+                $amountToDeduct = ($prices['feature_student_inr']  / 100) * $deadline['student_inr'];
+                $newAmount = $prices['feature_student_inr'] - $amountToDeduct;
+                $pricing[$key]['feature_student_inr'] = ceil($newAmount);
+
+                $amountToDeduct = ($prices['feature_student_eur']  / 100) * $deadline['student_eur'];
+                $newAmount = $prices['feature_student_eur'] - $amountToDeduct;
+                $pricing[$key]['feature_student_eur'] = ceil($newAmount);
+
+                $amountToDeduct = ($prices['feature_professional_inr']  / 100) * $deadline['professional_inr'];
+                $newAmount = $prices['feature_professional_inr'] - $amountToDeduct;
+                $pricing[$key]['feature_professional_inr'] = ceil($newAmount);
+
+                $amountToDeduct = ($prices['feature_professional_eur']  / 100) * $deadline['professional_eur'];
+                $newAmount = $prices['feature_professional_eur'] - $amountToDeduct;
+                $pricing[$key]['feature_professional_eur'] = ceil($newAmount);
+            }
+        }
+        return $pricing;
+    }
+
+    private function convertSingleFeeByDeadline($price, $type, $currency)
+    {
+        $deadline = $this->festivalDeadlines($this->festival_details);
+        $current = $deadline['show'];
+        $field = $type . '_' . $currency;
+        $amountToDeduct = ($price  / 100) * $current[$field];
+        $newAmount = $price - $amountToDeduct;
+        return ceil($newAmount);
     }
 }

@@ -120,20 +120,20 @@
 					Please Wait for next festival.
 				</h2>
 			<?php else : ?>
-				<form id="awardSelectionForm" method="post">
+				<form id="submitForm" method="post">
 					<!-- Personal Details -->
 					<h4>Personal Details</h4>
 					<div class="uk-grid-small" uk-grid>
 						<div class="uk-margin uk-width-1-4@l uk-width-1-3@m uk-width-1-2@s uk-margin-top">
 							<label class="uk-form-label" for="submitter_name">Submitter Name</label>
 							<div class="uk-form-controls">
-								<input class="uk-input" type="text" placeholder="Submitter Name" name="submitter_name" id="submitter_name" required>
+								<input class="uk-input" type="text" placeholder="Submitter Name" name="name" id="submitter_name" required>
 							</div>
 						</div>
 						<div class="uk-margin uk-width-1-4@l uk-width-1-3@m uk-width-1-2@s">
 							<label class="uk-form-label" for="email_id">Email Id</label>
 							<div class="uk-form-controls">
-								<input class="uk-input" type="email" placeholder="Email Id" name="email_id" id="email_id" required>
+								<input class="uk-input" type="email" placeholder="Email Id" name="email" id="email_id" required>
 							</div>
 						</div>
 						<div class="uk-margin uk-width-1-4@l uk-width-1-3@m uk-width-1-2@s">
@@ -179,7 +179,7 @@
 						<div class="uk-margin uk-width-1-3@m uk-width-1-2@s">
 							<label class="uk-form-label" for="password">Movie Password <small>(if required)</small></label>
 							<div class="uk-form-controls">
-								<input class="uk-input" type="text" placeholder="if any | optional" name="password" id="password">
+								<input class="uk-input" type="text" placeholder="if any | optional" name="movie_password" id="password">
 							</div>
 						</div>
 						<div class="uk-margin uk-width-1-3@m uk-width-1-2@s">
@@ -285,7 +285,7 @@
 														<h3 class="plan-title uk-margin-remove">
 															<label class="m-0">
 																<?= strtoupper($awardType['award_name']) ?> AWARDS
-																<input class="uk-checkbox uk-form-large selectAward<?= $typesOfAward ?> parentAward<?= $typesOfAward ?>" onchange="calculateAwardsData()" key="<?= $key ?>" id="parentAward<?= $typesOfAward ?><?= $key ?>" subawardsclass="subAward<?= $typesOfAward ?>Selection<?= $key ?>" awardId="<?= $awardType['award_id'] ?>" type="checkbox" value="<?= $awardType['award_name'] ?>" name="award[<?= strtolower($typesOfAward) ?>][<?= $key ?>][award]">
+																<input class="uk-checkbox uk-form-large selectAward<?= $typesOfAward ?> parentAward<?= $typesOfAward ?>" onchange="calculateAwardsData()" key="<?= $key ?>" id="parentAward<?= $typesOfAward ?><?= $key ?>" subawardsclass="subAward<?= $typesOfAward ?>Selection<?= $key ?>" awardId="<?= $awardType['award_id'] ?>" type="checkbox" value="<?= $awardType['award_name'] ?>" name="award[<?= strtolower($typesOfAward) ?>][<?= $awardType['award_id'] ?>][award]">
 															</label>
 														</h3>
 														<div class="plan-price uk-margin-bottom">
@@ -301,7 +301,7 @@
 															<?php foreach ($awardType['awards'] as $aKey => $award) : ?>
 																<li class="uk-display-inline-block">
 																	<label class="m-0 subAward subAward<?= $typesOfAward ?><?= $key ?>" key="<?= $key ?>">
-																		<input class="uk-checkbox subAward<?= $typesOfAward ?>Selection<?= $key ?>" type="checkbox" value="<?= $award['name'] ?>" name="award[<?= strtolower($typesOfAward) ?>][<?= $key ?>][sub_awards][]">
+																		<input class="uk-checkbox subAward<?= $typesOfAward ?>Selection<?= $key ?>" type="checkbox" value="<?= $award['name'] ?>" name="award[<?= strtolower($typesOfAward) ?>][<?= $awardType['award_id'] ?>][sub_awards][]">
 																		<?= $award['name'] ?>
 																	</label>
 																</li>
@@ -324,14 +324,15 @@
 								<div class="uk-width-1-3@m uk-text-right">
 									<span id="subTotalBlock">
 										<span id="totalProjectPricePrefix">Total: </span>
-										<span id="totalProjectPrice"></span></span>
+										<?= $currency_symbol ?> <span id="totalProjectPrice">0</span>
+									</span>
 									<span id="gstBlock">
-										<span id="taxProjectPricePrefix">GST: </span>
-										<span id="taxProjectPrice">18 %</span>
+										<span id="taxProjectPricePrefix">GST 18%: </span>
+										<span id="taxProjectPrice"></span>
 									</span>
 									<span id="finalAmountBlock">
 										<span id="finalProjectPricePrefix">Final Amount: </span>
-										<span id="finalProjectPrice"></span>
+										<?= $currency_symbol ?> <span id="finalProjectPrice">0</span>
 									</span>
 								</div>
 							</div>
@@ -344,12 +345,16 @@
 						<div class="uk-margin" uk-grid>
 							<div class="uk-width-1-2@m">
 								<label class="m-0">
+									<input type="hidden" id="gateway" hidden name="gateway" value="<?= $gateway ?>">
 									<input class="uk-checkbox" type="checkbox" id="rulesAndRgulations" name="rules" required>
 									I agree with the rules and regulations. <a href="#festivalRules" uk-toggle>Read Rules</a>
 								</label>
 							</div>
 							<div class="uk-width-1-2@m uk-text-right">
-								<button class="uk-button uk-button-primary btn-all-page" type="submit">Submit</button>
+								<div class="uk-text-right uk-width-1-1">
+									<div id="showOtherGatewayOptions"></div>
+									<button class="uk-button uk-button-primary btn-all-page" type="submit" id="mainSubmitButton">Submit</button>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -373,10 +378,10 @@
 	var currency = $('#festival_currency').val();
 	var currencyLower = currency.toLowerCase();
 
-	var currencySymbol = '€';
-	if (currency == 'INR') {
-		currencySymbol = '₹';
-	}
+	// var currencySymbol = '€';
+	// if (currency == 'INR') {
+	// 	currencySymbol = '₹';
+	// }
 
 	var totalProjectPricePrefix = $('#totalProjectPricePrefix');
 	var totalProjectPrice = $('#totalProjectPrice');
@@ -396,7 +401,7 @@
 		const userType = $("input[type='radio'][name='occupation']:checked").val();
 		const typeOfAward = selectProjectType.find('option:selected').attr("data_type");
 		var project_type = $('#project_type');
-		// console.log(userType);
+		console.log(typeOfAward);
 		project_type.val(typeOfAward);
 		if (userType) {
 			// console.log(typeOfAward);
@@ -474,7 +479,7 @@
 		// var deadlineName = deadline_dataname
 
 		// console.log(festival_currency);
-		console.log(deadline_data);
+		// console.log(deadline_data);
 
 		var totalAwards = 0;
 		$('.parentAward' + typeOfAward).each(function(index, element) {
@@ -492,20 +497,21 @@
 		})
 
 		if (totalPrice > 0) {
-			totalProjectPrice.insertBefore(currencySymbol + '');
+			// totalProjectPrice.insertBefore(currencySymbol + '');
 			totalProjectPrice.html(totalPrice + '.00');
 
 			var finalPrice = 0;
 			var taxValue = 0;
 			if (currency == 'INR') {
 				finalPrice = calculateFinalWithGst(totalPrice);
-				taxValue = 18;
+				taxValue = calculateGst(totalPrice);
 			} else {
 				finalPrice = totalPrice;
 				taxValue = 0;
 			}
 
-			finalProjectPrice.insertBefore(currencySymbol + '');
+			// finalProjectPrice.insertBefore(currencySymbol + '');
+			taxProjectPrice.html(taxValue);
 			finalProjectPrice.html(finalPrice);
 
 			var totalArray = {
@@ -530,6 +536,12 @@
 		var b = a * 18;
 		var c = amount + b;
 		return c;
+	}
+
+	function calculateGst(amount) {
+		var a = amount / 100;
+		var b = a * 18;
+		return b;
 	}
 
 	function totalAmountsShow() {
@@ -569,12 +581,19 @@
 	// 		}
 	// 	}
 	// }
-	$('#awardSelectionForm').submit(function(ev) {
+	$('#submitForm').submit(function(ev) {
 		ev.preventDefault();
 		const typeOfAward = selectProjectType.find('option:selected').attr("data_type");
 		var formData = new FormData($(this)[0]);
-		formData.append('submitEntryForm', 'true');
+		formData.append('submitForm', 'true');
+		console.log(Array.from(formData));
 		calculateAwardsData();
+		<?php if ($gateway == 'other') : ?>
+			if ($('#othergateway').val() == 'paypal') {
+				initPayPal();
+			}
+			return;
+		<?php endif; ?>
 		// return;
 		// console.log(Array.from(formData))
 		// return;
@@ -589,15 +608,21 @@
 				try {
 					data = JSON.parse(response);
 					console.log(data);
-					// if (data.success == true) {
-					//     alert('', 'Data updated.', 'info').then(() => {
-					//         stopLoader();
-					//         location.reload();
-					//     })
-					// } else {
-					//     console.log(response);
-					//     alert(data.message, 'Error', 'error');
-					// }
+					if (data.success == true) {
+						orderData = data.data.order;
+						responseData = data.data.response;
+						// return;
+						alert('', data.message, 'success').then(() => {
+							// console.log(data.data);
+							// return;
+							if ('<?= getUserCountry() ?>' == 'IN') {
+								razorpaySubmit(responseData.id, orderData.package_amount, orderData.name, orderData.email, orderData.mobile, orderData.product_name);
+							}
+						});
+					} else {
+						console.log(response);
+						alert(data.message, 'Error', 'error');
+					}
 				} catch (e) {
 					console.log(e);
 					alert('Undefined error, please try after some time.', 'Error', 'error');

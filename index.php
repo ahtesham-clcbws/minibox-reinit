@@ -52,6 +52,7 @@ require_once SYSTEMPATH . 'Config/DotEnv.php';
  */
 
 $app = Config\Services::codeigniter();
+// $app = Illumina
 $app->initialize();
 $context = is_cli() ? 'php-cli' : 'web';
 $app->setContext($context);
@@ -63,5 +64,4 @@ $app->setContext($context);
  * Now that everything is setup, it's time to actually fire
  * up the engines and make this app do its thang.
  */
-
 $app->run();

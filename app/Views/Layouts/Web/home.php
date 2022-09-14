@@ -99,6 +99,7 @@
 	<?php if (isset($loadSelect2) && $loadSelect2 == true) : ?>
 		<script src="/public/libs/select2/select2.min.js"></script>
 	<?php endif; ?>
+	<?= isset($paymentAssets) && $paymentAssets == true ? view('Globals/load_payment_libraries') : '' ?>
 	<script src="/public/js/custom.js"></script>
 	<?= $this->renderSection('js') ?>
 

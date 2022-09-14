@@ -89,7 +89,7 @@ if ($event['type'] == 'festival') {
         color: #ffffff;
     }
 
-    #contactOrganizer form .uk-form-controls .uk-inline {
+    form .uk-form-controls .uk-inline {
         width: 100%;
     }
 
@@ -113,6 +113,32 @@ if ($event['type'] == 'festival') {
         font-weight: bold;
         color: #fff;
         background: grey;
+    }
+
+    /* Chrome, Safari, Edge, Opera */
+    .ticket_numbers::-webkit-outer-spin-button,
+    .ticket_numbers::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    /* Firefox */
+    .ticket_numbers {
+        -moz-appearance: textfield;
+        text-align: center;
+        border: none;
+        max-width: 50px;
+        padding: 0;
+    }
+
+    .totalFooter .ticket_numbers {
+        background: transparent;
+        color: #fff;
+        font-size: 18px;
+    }
+
+    .ticket_counter {
+        min-width: 110px;
     }
 
     * {
@@ -150,6 +176,10 @@ if ($event['type'] == 'festival') {
     .Particulars {
         margin-bottom: 0 !important;
         padding-bottom: 0 !important;
+    }
+
+    .Particulars tr td {
+        min-width: 100px;
     }
 </style>
 <?= $this->endSection() ?>
@@ -241,16 +271,16 @@ if ($event['type'] == 'festival') {
                 <div class="uk-width-1-1 uk-text-center@m">
                     <div class="sharingBlock">
                         <div class="meks_ess square solid ">
-                            <a href="javascript:void(0);" class="socicon-facebook" title="facebook" aria-hidden="true" data-title="MiniBoxOffice" data-sharer="facebook" data-url="http://sky360.in/mini_box_office/film-festival/indian-film-festival/video-trailer/OQ==">
+                            <a href="javascript:void(0);" class="socicon-facebook" title="facebook" aria-hidden="true" data-title="MiniBoxOffice" data-sharer="facebook" data-url="#">
                                 <span uk-icon="facebook"></span>
                             </a>
-                            <a href="javascript:void(0);" class="socicon-twitter" title="twitter" aria-hidden="true" data-title="MiniBoxOffice" data-sharer="twitter" data-url="http://sky360.in/mini_box_office/film-festival/indian-film-festival/video-trailer/OQ==">
+                            <a href="javascript:void(0);" class="socicon-twitter" title="twitter" aria-hidden="true" data-title="MiniBoxOffice" data-sharer="twitter" data-url="#">
                                 <span uk-icon="twitter"></span>
                             </a>
-                            <a href="javascript:void(0);" class="socicon-instagram" title="instagram" data-title="MiniBoxOffice" data-sharer="instagram" data-url="http://sky360.in/mini_box_office/film-festival/indian-film-festival/video-trailer/OQ==">
+                            <a href="javascript:void(0);" class="socicon-instagram" title="instagram" data-title="MiniBoxOffice" data-sharer="instagram" data-url="#">
                                 <span uk-icon="instagram"></span>
                             </a>
-                            <a href="javascript:void(0);" class="socicon-whatsapp" title="whatsapp" aria-hidden="true" data-title="MiniBoxOffice" data-sharer="whatsapp" data-url="http://sky360.in/mini_box_office/film-festival/indian-film-festival/video-trailer/OQ==">
+                            <a href="javascript:void(0);" class="socicon-whatsapp" title="whatsapp" aria-hidden="true" data-title="MiniBoxOffice" data-sharer="whatsapp" data-url="#">
                                 <span uk-icon="whatsapp"></span>
                             </a>
                         </div>
@@ -264,16 +294,130 @@ if ($event['type'] == 'festival') {
                 <?= html_entity_decode($event['content']) ?>
             </div>
             <hr>
-            <div class="eventTicktes" id="eventTicktes">
+            <form class="eventTicktes" id="submitForm">
 
                 <div id="feeTable">
-                    <h3>Event Tickets:</h3>
+                    <h4>Event Registration</h4>
                     <span id="packageCounts"><?= count($tickets) ?></span>
                     <div class="uk-margin uk-overflow-auto">
-                        <table class="uk-table uk-table-justify uk-table-hover uk-table-divider Particulars">
+                        <div class="uk-width-1-1 uk-padding-small">
+                            <div uk-grid>
+                                <div class="uk-form-stacked uk-width-1-2@m">
+                                    <div class="uk-margin">
+                                        <label class="uk-form-label" for="user_name">Your Name</label>
+                                        <div class="uk-form-controls">
+                                            <div class="uk-inline">
+                                                <span class="uk-form-icon" uk-icon="icon: user"></span>
+                                                <input class="uk-input" id="user_name" name="name" type="text" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="uk-form-stacked uk-width-1-2@m">
+                                    <div class="uk-margin">
+                                        <label class="uk-form-label" for="user_email">Email</label>
+                                        <div class="uk-form-controls">
+                                            <div class="uk-inline">
+                                                <span class="uk-form-icon" uk-icon="icon: mail"></span>
+                                                <input class="uk-input" id="user_email" name="email" type="email" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="uk-form-stacked uk-width-1-2@m">
+                                    <div class="uk-margin">
+                                        <label class="uk-form-label" for="user_mobile">Mobile</label>
+                                        <div class="uk-form-controls">
+                                            <div class="uk-inline">
+                                                <span class="uk-form-icon" uk-icon="icon: receiver"></span>
+                                                <input class="uk-input" id="user_mobile" name="mobile" type="tel" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="uk-form-stacked uk-width-1-2@m">
+                                    <div class="uk-margin">
+                                        <label class="uk-form-label" for="user_whatsapp">WhatsApp</label>
+                                        <div class="uk-form-controls">
+                                            <div class="uk-inline">
+                                                <span class="uk-form-icon" uk-icon="icon: whatsapp"></span>
+                                                <input class="uk-input" id="user_whatsapp" name="whatsapp" type="tel" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="uk-form-stacked uk-width-1-1">
+                                    <div class="uk-margin">
+                                        <label class="uk-form-label" for="user_address">Full Address</label>
+                                        <div class="uk-form-controls">
+                                            <div class="uk-inline">
+                                                <span class="uk-form-icon" uk-icon="icon: home"></span>
+                                                <input class="uk-input" id="user_address" name="address" type="text" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="uk-form-stacked uk-width-1-2@m">
+                                    <div class="uk-margin">
+                                        <label class="uk-form-label" for="user_country">Country</label>
+                                        <div class="uk-form-controls">
+                                            <div class="uk-inline">
+                                                <span class="uk-form-icon" uk-icon="icon: world"></span>
+                                                <select name="country" class="uk-select" autocomplete="off" id="selectCountry" required>
+                                                    <option value="" selected="" disabled="">Select Country</option>
+                                                    <?php foreach (getAllCountries() as $kkey => $country) : ?>
+                                                        <option value="<?= $country['id'] ?>"><?= $country['name'] ?></option>
+                                                    <?php endforeach; ?>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="uk-form-stacked uk-width-1-2@m">
+                                    <div class="uk-margin">
+                                        <label class="uk-form-label" for="user_state">State</label>
+                                        <div class="uk-form-controls">
+                                            <div class="uk-inline">
+                                                <span class="uk-form-icon" uk-icon="icon: plus-circle"></span>
+                                                <select name="state" class="uk-select" autocomplete="off" id="selectState" required>
+                                                    <option value="" selected="" disabled="">Select State</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="uk-form-stacked uk-width-1-2@m">
+                                    <div class="uk-margin">
+                                        <label class="uk-form-label" for="user_city">City</label>
+                                        <div class="uk-form-controls">
+                                            <div class="uk-inline">
+                                                <span class="uk-form-icon" uk-icon="icon: plus-circle"></span>
+                                                <select name="city" class="uk-select" autocomplete="off" id="selectCity" required>
+                                                    <option value="" selected="" disabled="">Select City</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="uk-form-stacked uk-width-1-2@m">
+                                    <div class="uk-margin">
+                                        <label class="uk-form-label" for="user_pincode">Pin / Zip Code</label>
+                                        <div class="uk-form-controls">
+                                            <div class="uk-inline">
+                                                <span class="uk-form-icon" uk-icon="icon: location"></span>
+                                                <input class="uk-input" id="user_pincode" maxlength="12" minlength="4" name="pincode" type="number" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <table class="uk-table Particulars">
+                            <!-- <table class="uk-table uk-table-justify uk-table-hover uk-table-divider Particulars"> -->
                             <thead>
                                 <tr>
-                                    <th scope="col">Particulars</th>
+                                    <th scope="col">Event Ticket</th>
                                     <th scope="col" class="uk-text-nowrap">Price</th>
                                     <th scope="col" class="uk-text-nowrap">Tickets</th>
                                     <th scope="col" class="uk-text-right uk-text-nowrap">Amount</th>
@@ -282,42 +426,61 @@ if ($event['type'] == 'festival') {
                             <tbody>
                                 <?php foreach ($tickets as $key => $package) : ?>
                                     <tr>
-                                        <td><label><?= $package['details'] ?></label></td>
-                                        <td class="uk-text-nowrap">
-                                            <?= $currency_symbol ?> <span class="ticket_amount" id="ticket_amount<?= $key ?>" key="<?= $key ?>"><?= $package['fee'] ?></span>
+                                        <td>
+                                            <input type="hidden" hidden name="package[<?= $key ?>][id]" value="<?= $package['id'] ?>">
+                                            <label><?= $package['details'] ?></label>
+                                            <input type="hidden" hidden name="package[<?= $key ?>][details]" value="<?= $package['details'] ?>">
                                         </td>
-                                        <td class="uk-padding-remove-top uk-text-nowrap">
+                                        <td>
+                                            <?= $package['currency_symbol'] ?> <span class="ticket_amount" id="ticket_amount<?= $key ?>" key="<?= $key ?>"><?= $package['fee'] ?></span>
+                                            <input type="hidden" hidden name="package[<?= $key ?>][amount]" value="<?= $package['fee'] ?>">
+                                        </td>
+                                        <td class="uk-padding-remove-top">
                                             <div class="ticket_counter">
                                                 <icon class="ticketDecrease" key="<?= $key ?>">
                                                     <i class="fa-solid fa-minus"></i>
                                                 </icon>
-                                                <span class="ticket_numbers" id="ticket_numbers<?= $key ?>" key="<?= $key ?>">0</span>
+                                                <input type="number" class="ticket_numbers" readonly id="ticket_numbers<?= $key ?>" name="package[<?= $key ?>][tickets]" value="0">
                                                 <icon class="ticketIncrease" key="<?= $key ?>">
                                                     <i class="fa-solid fa-plus"></i>
                                                 </icon>
                                             </div>
                                         </td>
-                                        <td class="uk-text-right uk-text-nowrap">
-                                            <span class="ticket_total" id="ticket_total<?= $key ?>" key="<?= $key ?>"></span>
+                                        <td class="uk-text-right uk-padding-remove-top">
+                                            <input type="number" class="ticket_numbers" id="ticket_total<?= $key ?>" name="package[<?= $key ?>][total]" value="0">
                                             <span class="fullTicketDetails" id="fullTicketDetails<?= $key ?>" key="<?= $key ?>"><?= json_encode($package) ?></span>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
                             </tbody>
                             <tfoot>
-                                <tr>
+                                <?php if ($gateway == 'razorpay') : ?>
+                                    <tr class="totalFooter" id="gstFooter">
+                                        <td colspan="2"></td>
+                                        <td class="uk-text-center">GST 18%</td>
+                                        <td class="uk-text-right"><?= $currency_symbol ?> <input type="number" class="ticket_numbers" id="taxGstInput" name="tax_gst" value="0"></td>
+                                    </tr>
+                                <?php endif; ?>
+                                <tr class="totalFooter">
                                     <td colspan="2"></td>
-                                    <td class="uk-text-center uk-text-nowrap">Tickets <span id="grandTotalTickets">0</span></td>
-                                    <td class="uk-text-right uk-text-nowrap"><?= $currency_symbol ?> <span id="grandTotal">0</span></td>
+                                    <td class="uk-text-center">Tickets <input type="number" class="ticket_numbers" id="grandTotalTickets" name="package_tickets" value="0"></td>
+                                    <td class="uk-text-right"><?= $currency_symbol ?> <input type="number" class="ticket_numbers" id="grandTotal" name="package_amount" value="0"></td>
                                 </tr>
                             </tfoot>
                         </table>
-                        <div class="uk-width-1-1 uk-text-right">
-                            <button type="button" class="uk-button uk-button-secondary">Buy Now</button>
+                        <input type="hidden" id="gateway" hidden name="gateway" value="<?= $gateway ?>">
+                        <input type="hidden" hidden name="event_type" value="<?= $event['type'] ?>">
+                        <input type="hidden" hidden name="event_id" value="<?= $event['id'] ?>">
+                        <input type="hidden" hidden name="module_id" value="<?= $event['module_id'] ?>">
+
+                        <div class="uk-text-right uk-width-1-1 uk-margin-top">
+                            <div id="showOtherGatewayOptions"></div>
+                            <button class="uk-button uk-button-primary" type="submit" id="mainSubmitButton">Make payment</button>
                         </div>
+
                     </div>
                 </div>
-            </div>
+            </form>
             <hr>
             <div class="eventMap">
                 <iframe id="event-directions" src="https://maps.google.com/maps?q=<?= $event['latitude'] ?>,<?= $event['longitude'] ?>&z=15&output=embed" width="100%" height="450" style="border:0;" allowfullscreen="" referrerpolicy="no-referrer-when-downgrade"></iframe>
@@ -410,23 +573,23 @@ if ($event['type'] == 'festival') {
         }, 1000);
     });
 
-    function clickRegisterNow(){
+    function clickRegisterNow() {
         $('html, body').animate({
             scrollTop: eval($('#eventTicktes').offset().top - 50)
         }, 500);
     }
     var grandTotal = 0;
     var grandTotalTickets = 0;
-    getAllData();
+    // getAllData();
     $('.ticketDecrease').on('click', function(event) {
         event.stopPropagation();
         event.stopImmediatePropagation();
 
         var counterId = '#ticket_numbers' + $(this).attr('key');
-        var oldValue = parseInt($(counterId).html());
+        var oldValue = parseInt($(counterId).val());
         if (oldValue >= 1) {
             var newValueSingle = oldValue - 1;
-            $(counterId).html(newValueSingle);
+            $(counterId).val(newValueSingle);
         }
         getAllData();
     })
@@ -435,9 +598,9 @@ if ($event['type'] == 'festival') {
         event.stopImmediatePropagation();
 
         var counterId = '#ticket_numbers' + $(this).attr('key');
-        var oldValue = parseInt($(counterId).html());
+        var oldValue = parseInt($(counterId).val());
         var newValueSingle = oldValue + 1;
-        $(counterId).html(newValueSingle);
+        $(counterId).val(newValueSingle);
 
         getAllData();
     })
@@ -447,19 +610,16 @@ if ($event['type'] == 'festival') {
         var totalJson = [];
         for (let index = 0; index < totalPackages; index++) {
             var tickets = $('#ticket_numbers' + index);
-            // tickets.html(parseInt(tickets.html())+1);
 
             var element = $('#fullTicketDetails' + index);
             var detailsJson = JSON.parse(element.html());
-            var totalAmount = detailsJson.fee * parseInt(tickets.html());
-            $('#ticket_total' + index).html(totalAmount);
+            var totalAmount = detailsJson.fee * parseInt(tickets.val());
+            $('#ticket_total' + index).val(totalAmount);
 
             detailsJson.total = totalAmount;
-            detailsJson.tickets = parseInt(tickets.html());
+            detailsJson.tickets = parseInt(tickets.val());
             totalJson[index] = detailsJson;
             element.html(JSON.stringify(detailsJson));
-            console.log(detailsJson);
-            console.log(totalJson);
         }
         var totalAmountJson = {
             tickets: 0,
@@ -475,22 +635,73 @@ if ($event['type'] == 'festival') {
         }
         grandTotal = totalAmountJson.amount;
         grandTotalTickets = totalAmountJson.tickets;
-        $('#grandTotal').html(totalAmountJson.amount);
-        $('#grandTotalTickets').html(totalAmountJson.tickets);
 
-        $('#fullPackageJson').val(JSON.stringify(fullJson));
+        <?php if ($gateway == 'razorpay') { ?>
+            var singlePercent = totalAmountJson.amount / 100;
+            var gstAmount = singlePercent * 18;
+            totalAmountJson.amount = totalAmountJson.amount + gstAmount;
+            $('#taxGstInput').val(gstAmount);
+        <?php }; ?>
+
+        $('#grandTotal').val(totalAmountJson.amount);
+        $('#grandTotalTickets').val(totalAmountJson.tickets);
+
         console.log(fullJson);
     }
 
-    function getSingleTicketDetails(index, tickets) {
-        var element = $('#fullTicketDetails' + index);
-        var detailsJson = JSON.parse(element.html());
-        var totalAmount = detailsJson.fee * tickets;
-        detailsJson.total = totalAmount;
-        detailsJson.tickets = tickets;
+    $('#submitForm').submit(function(e) {
+        e.preventDefault();
+        if (grandTotal == 0 || grandTotalTickets == 0) {
+            alert('Please choose tickets before cubmitting.', 'Error', 'error');
+            return;
+        }
 
-        element.html(JSON.stringify(detailsJson))
-        console.log(detailsJson);
-    }
+        var formData = new FormData($(this)[0]);
+        formData.append('submitForm', 'true');
+        formData.append('buyEventTicket', 'true');
+        console.log(Array.from(formData));
+        // return;
+
+        <?php if ($gateway == 'other') : ?>
+            if ($('#othergateway').val() == 'paypal') {
+                initPayPal();
+            }
+            return;
+        <?php endif; ?>
+        $.ajax({
+            url: '<?= route_to('event_tickets_registration') ?>',
+            type: 'post',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response, textStatus, jqXHR) {
+                // console.log(response);
+                var data = {};
+                try {
+                    data = JSON.parse(response);
+                    console.log(data.data);
+                    if (data.success == true) {
+                        orderData = data.data.order;
+                        responseData = data.data.response;
+                        // return;
+                        alert('', data.message, 'success').then(() => {
+                            // console.log(data.data);
+                            if ('<?= getUserCountry() ?>' == 'IN') {
+                                razorpaySubmit(responseData.id, orderData.package_amount, orderData.name, orderData.email, orderData.mobile, orderData.product_name);
+                            }
+                        });
+                    } else {
+                        alert(data.message, 'Error', 'error');
+                    }
+                } catch (e) {
+                    console.log(e);
+                    alert('Undefined error, please try after some time.', '', 'error');
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert('Server error', 'Error', 'error');
+            },
+        })
+    })
 </script>
 <?= $this->endSection() ?>

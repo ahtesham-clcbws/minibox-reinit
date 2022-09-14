@@ -29,13 +29,10 @@ use App\Models\Filmzine\NewsModel;
 
 class FilmFestivalController extends BaseController
 {
-    protected $data;
     protected $festivalDb;
     public function __construct()
     {
-        $this->data = [];
         $this->festivalDb = new FestivalModel();
-        $this->data['optionalJs'] = false;
         $this->data['pagename'] = 'Film Festivals';
     }
     public function index()

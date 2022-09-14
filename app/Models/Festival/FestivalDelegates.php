@@ -17,6 +17,7 @@ class FestivalDelegates extends Model
     protected $allowedFields    = [
         'festival_id',
         'festival_year',
+        'receipt',
         'name',
         'movie_name',
         'email',
@@ -29,10 +30,13 @@ class FestivalDelegates extends Model
         'city',
         'pin',
         'package_details',
-        'ticket_details',
+        'tickets',
         'order_id',
         'amount',
+        'gateway',
         'gateway_order_id',
+        'payment_status',
+        'status'
     ];
 
     // Dates
