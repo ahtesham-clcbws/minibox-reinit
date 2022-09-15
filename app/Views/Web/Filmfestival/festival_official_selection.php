@@ -79,7 +79,7 @@
 		<div class=" uk-grid" data-uk-grid="">
 			<div class="uk-width-1-4@m">
 				<div class="schedule">
-					<a href="#"></a>
+					<a href="<?= route_to('festival_official_selection_details', $festivalSlug, base64_encode('something')) ?>"></a>
 					<img src="/public/images/list-box-3.jpg" alt="">
 					<div class="schedule-details">
 						<h3 class="schedule-title">
@@ -93,7 +93,7 @@
 			</div>
 			<div class="uk-width-1-4@m">
 				<div class="schedule">
-					<a href="#"></a>
+					<a href="<?= route_to('festival_official_selection_details', $festivalSlug, base64_encode('something')) ?>"></a>
 					<img src="/public/images/list-box-3.jpg" alt="">
 					<div class="schedule-details">
 						<h3 class="schedule-title">
@@ -107,7 +107,7 @@
 			</div>
 			<div class="uk-width-1-4@m">
 				<div class="schedule">
-					<a href="#"></a>
+					<a href="<?= route_to('festival_official_selection_details', $festivalSlug, base64_encode('something')) ?>"></a>
 					<img src="/public/images/list-box-3.jpg" alt="">
 					<div class="schedule-details">
 						<h3 class="schedule-title">
@@ -121,7 +121,7 @@
 			</div>
 			<div class="uk-width-1-4@m">
 				<div class="schedule">
-					<a href="#"></a>
+					<a href="<?= route_to('festival_official_selection_details', $festivalSlug, base64_encode('something')) ?>"></a>
 					<img src="/public/images/list-box-3.jpg" alt="">
 					<div class="schedule-details">
 						<h3 class="schedule-title">
@@ -135,7 +135,7 @@
 			</div>
 			<div class="uk-width-1-4@m uk-grid-margin uk-first-column">
 				<div class="schedule">
-					<a href="#"></a>
+					<a href="<?= route_to('festival_official_selection_details', $festivalSlug, base64_encode('something')) ?>"></a>
 					<img src="/public/images/list-box-3.jpg" alt="">
 					<div class="schedule-details">
 						<h3 class="schedule-title">
@@ -149,7 +149,7 @@
 			</div>
 			<div class="uk-width-1-4@m uk-grid-margin">
 				<div class="schedule">
-					<a href="#"></a>
+					<a href="<?= route_to('festival_official_selection_details', $festivalSlug, base64_encode('something')) ?>"></a>
 					<img src="/public/images/list-box-3.jpg" alt="">
 					<div class="schedule-details">
 						<h3 class="schedule-title">
@@ -163,7 +163,7 @@
 			</div>
 			<div class="uk-width-1-4@m uk-grid-margin">
 				<div class="schedule">
-					<a href="#"></a>
+					<a href="<?= route_to('festival_official_selection_details', $festivalSlug, base64_encode('something')) ?>"></a>
 					<img src="/public/images/list-box-3.jpg" alt="">
 					<div class="schedule-details">
 						<h3 class="schedule-title">
@@ -177,7 +177,7 @@
 			</div>
 			<div class="uk-width-1-4@m uk-grid-margin">
 				<div class="schedule">
-					<a href="#"></a>
+					<a href="<?= route_to('festival_official_selection_details', $festivalSlug, base64_encode('something')) ?>"></a>
 					<img src="/public/images/list-box-3.jpg" alt="">
 					<div class="schedule-details">
 						<h3 class="schedule-title">
@@ -191,7 +191,7 @@
 			</div>
 			<div class="uk-width-1-4@m uk-grid-margin uk-first-column">
 				<div class="schedule">
-					<a href="#"></a>
+					<a href="<?= route_to('festival_official_selection_details', $festivalSlug, base64_encode('something')) ?>"></a>
 					<img src="/public/images/list-box-3.jpg" alt="">
 					<div class="schedule-details">
 						<h3 class="schedule-title">
@@ -205,7 +205,7 @@
 			</div>
 			<div class="uk-width-1-4@m uk-grid-margin">
 				<div class="schedule">
-					<a href="#"></a>
+					<a href="<?= route_to('festival_official_selection_details', $festivalSlug, base64_encode('something')) ?>"></a>
 					<img src="/public/images/list-box-3.jpg" alt="">
 					<div class="schedule-details">
 						<h3 class="schedule-title">
@@ -219,7 +219,7 @@
 			</div>
 			<div class="uk-width-1-4@m uk-grid-margin">
 				<div class="schedule">
-					<a href="#"></a>
+					<a href="<?= route_to('festival_official_selection_details', $festivalSlug, base64_encode('something')) ?>"></a>
 					<img src="/public/images/list-box-4.jpg" alt="">
 					<div class="schedule-details">
 						<h3 class="schedule-title">
@@ -233,7 +233,7 @@
 			</div>
 			<div class="uk-width-1-4@m uk-grid-margin">
 				<div class="schedule">
-					<a href="#"></a>
+					<a href="<?= route_to('festival_official_selection_details', $festivalSlug, base64_encode('something')) ?>"></a>
 					<img src="/public/images/list-box-3.jpg" alt="">
 					<div class="schedule-details">
 						<h3 class="schedule-title">
@@ -247,7 +247,7 @@
 			</div>
 			<div class="uk-width-1-4@m uk-grid-margin uk-first-column">
 				<div class="schedule">
-					<a href="#"></a>
+					<a href="<?= route_to('festival_official_selection_details', $festivalSlug, base64_encode('something')) ?>"></a>
 					<img src="/public/images/list-box-3.jpg" alt="">
 					<div class="schedule-details">
 						<h3 class="schedule-title">
@@ -261,7 +261,7 @@
 			</div>
 			<div class="uk-width-1-4@m uk-grid-margin">
 				<div class="schedule">
-					<a href="#"></a>
+					<a href="<?= route_to('festival_official_selection_details', $festivalSlug, base64_encode('something')) ?>"></a>
 					<img src="/public/images/list-box-3.jpg" alt="">
 					<div class="schedule-details">
 						<h3 class="schedule-title">
@@ -275,7 +275,7 @@
 			</div>
 			<div class="uk-width-1-4@m uk-grid-margin">
 				<div class="schedule">
-					<a href="#"></a>
+					<a href="<?= route_to('festival_official_selection_details', $festivalSlug, base64_encode('something')) ?>"></a>
 					<img src="/public/images/list-box-3.jpg" alt="">
 					<div class="schedule-details">
 						<h3 class="schedule-title">
@@ -289,7 +289,7 @@
 			</div>
 			<div class="uk-width-1-4@m uk-grid-margin">
 				<div class="schedule">
-					<a href="#"></a>
+					<a href="<?= route_to('festival_official_selection_details', $festivalSlug, base64_encode('something')) ?>"></a>
 					<img src="/public/images/list-box-3.jpg" alt="">
 					<div class="schedule-details">
 						<h3 class="schedule-title">
@@ -303,7 +303,7 @@
 			</div>
 			<div class="uk-width-1-4@m uk-grid-margin uk-first-column">
 				<div class="schedule">
-					<a href="#"></a>
+					<a href="<?= route_to('festival_official_selection_details', $festivalSlug, base64_encode('something')) ?>"></a>
 					<img src="/public/images/list-box-3.jpg" alt="">
 					<div class="schedule-details">
 						<h3 class="schedule-title">
@@ -317,7 +317,7 @@
 			</div>
 			<div class="uk-width-1-4@m uk-grid-margin">
 				<div class="schedule">
-					<a href="#"></a>
+					<a href="<?= route_to('festival_official_selection_details', $festivalSlug, base64_encode('something')) ?>"></a>
 					<img src="/public/images/list-box-3.jpg" alt="">
 					<div class="schedule-details">
 						<h3 class="schedule-title">
@@ -331,7 +331,7 @@
 			</div>
 			<div class="uk-width-1-4@m uk-grid-margin">
 				<div class="schedule">
-					<a href="#"></a>
+					<a href="<?= route_to('festival_official_selection_details', $festivalSlug, base64_encode('something')) ?>"></a>
 					<img src="/public/images/list-box-3.jpg" alt="">
 					<div class="schedule-details">
 						<h3 class="schedule-title">
@@ -345,7 +345,7 @@
 			</div>
 			<div class="uk-width-1-4@m uk-grid-margin">
 				<div class="schedule">
-					<a href="#"></a>
+					<a href="<?= route_to('festival_official_selection_details', $festivalSlug, base64_encode('something')) ?>"></a>
 					<img src="/public/images/list-box-3.jpg" alt="">
 					<div class="schedule-details">
 						<h3 class="schedule-title">

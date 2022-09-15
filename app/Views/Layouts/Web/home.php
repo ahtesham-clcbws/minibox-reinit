@@ -16,6 +16,41 @@
 	</script>
 	<link rel="stylesheet" type="text/css" href="/public/css/uikit.min.css">
 	<link rel="stylesheet" type="text/css" href="/public/css/style.css">
+	<style>
+		.spinnerActivated {
+			overflow: hidden;
+		}
+
+		#customLoader {
+			position: fixed;
+			height: 100vh;
+			width: 100%;
+			top: 0;
+			left: 0;
+			background: #3d3d3d87;
+			z-index: 9999999;
+			display: none;
+		}
+
+		#customLoader .loaderBlock {
+			position: relative;
+			height: 100%;
+			width: 100%;
+		}
+		#customLoader .loaderBlock .loaderBlockInner {
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			position: absolute;
+		}
+	</style>
+	<div id="customLoader">
+		<div class="loaderBlock">
+			<div class="loaderBlockInner">
+				<span uk-spinner="ratio: 4.5" style="color: yellow;"></span>
+			</div>
+		</div>
+	</div>
 	<?php if (isset($loadSelect2) && $loadSelect2 == true) : ?>
 		<link href="/public/libs/select2/select2.min.css" rel="stylesheet" />
 	<?php endif; ?>
@@ -47,6 +82,7 @@
 	<!-- JS FILES -->
 	<script defer src="/public/libs/fontawesome/js/all.js"></script>
 	<?= view('Globals/load_global_libraries') ?>
+	
 	<?php if (isset($optionalJs) && $optionalJs == true) {
 		echo view('Globals/load_extra_libraries'); ?>
 		<script>

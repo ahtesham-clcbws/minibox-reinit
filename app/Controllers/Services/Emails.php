@@ -51,14 +51,21 @@ class Emails extends Controller
     }
     public function backup()
     {
+        // $data = [
+        //     'user_name' => 'Ahtesham Abdul Aziz',
+        //     'email_view' => true,
+        //     'type_of_action' => '(Festival Entry)',
+        //     'entry_form_link' => '#'
+        // ];
+        // return view('Components/emails/html/festival_entry_welcome', $data);
 
         // getEventTicket
 
         $orderDb = new OrderModel();
-        $order = $orderDb->find(159);
+        $order = $orderDb->find(154);
         $emailMd = new EmailsModel();
 
-        return $emailMd->getEventTicket($order);
+        return $emailMd->getFestivalEntryEmail($order);
         die();
         
         ///////////////////////

@@ -6,6 +6,7 @@ use App\Models\Common\LanguagesModel;
 use App\Models\Common\SiteSettings;
 use App\Models\Common\StatesModel;
 use App\Models\Festival\FestivalModel;
+use App\Models\Films\FilmInfosData;
 use App\Models\HomePageBannersModel;
 use App\Models\UserModel;
 use Config\Database;
@@ -2214,4 +2215,59 @@ function getSiteSettingsByName($name)
 {
     $settingsMd = new SiteSettings();
     return $settingsMd->where(['name' => $name])->first();
+}
+function getHoursFromMinutes($minutes)
+{
+    if ($minutes < 60) {
+        return '0h ' . $minutes . 'min';
+    } else {
+        $hours = floor($minutes / 60);
+        $mins = $minutes - ($hours * 60);
+        return $hours . 'h ' . $mins . 'min';
+    }
+}
+
+function getFilmInfoSelectData($type)
+{
+    $filmInfoSelectDb = new FilmInfosData();
+    return $filmInfoSelectDb->where('type', $type)->orderBy('id', 'asc')->findAll();
+}
+
+function getFilmStatus()
+{
+    return array([
+        'name' => 'Released',
+        'info' => 'Released and screened / available to the public (or firm date set in relatively near future)'
+    ], [
+        'name' => 'Completed (Privately)',
+        'info' => 'Completed and only limited non-public screenings (friends / family / fellow students / faculty members)'
+    ], [
+        'name' => 'Completed',
+        'info' => 'Completed but not shown anywhere'
+    ]);
+}
+
+function isUserLogin()
+{
+    if (session()->get('userLoggedIn')) {
+        return true;
+    }
+    return false;
+}
+function getFilmEditAuth($email)
+{
+    if (isUserLogin()) {
+        if (session()->get('user.email') == $email || session()->get('user.role') == ('admin' || 'staff')) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function isAdmin()
+{
+    if (session()->get('user.role') == 'admin') {
+        return true;
+    }
+    return false;
 }

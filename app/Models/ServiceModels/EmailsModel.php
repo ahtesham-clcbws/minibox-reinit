@@ -4,11 +4,16 @@ namespace App\Models\ServiceModels;
 
 // use App\Entities\Emails\Receipt;
 
+use App\Models\Common\LanguagesModel;
 use App\Models\Events\Events;
 use App\Models\Events\EventTicketRegistration;
 use App\Models\Festival\FestivalDelegates;
+use App\Models\Festival\FestivalEntries;
 use App\Models\Festival\FestivalModel;
+use App\Models\Festival\FestivalOfficialSubmission;
+use App\Models\Films\OtherInfoModel;
 use App\Models\Payment\OrderModel;
+use App\Models\UserModel;
 use CodeIgniter\Email\Email;
 use CodeIgniter\Model;
 use DateTime;
@@ -110,16 +115,16 @@ class EmailsModel extends Model
     public function sendOrderEmail($order, $type = [])
     {
         if (in_array('delegate', $type)) {
-            $subject = 'Delegate Registration - MiniBoxOffice.';
+            $subject = 'Delegate Registration Receipt - MiniBoxOffice.';
         }
         if (in_array('festival', $type)) {
             if (in_array('entry', $type)) {
-                $subject = 'Festival Entry - MiniBoxOffice.';
+                $subject = 'Festival Entry Receipt - MiniBoxOffice.';
             }
         }
         if (in_array('event', $type)) {
             if (in_array('ticket', $type)) {
-                $subject = 'Event ticket';
+                $subject = 'Event ticket Receipt';
             }
         }
 
@@ -129,7 +134,7 @@ class EmailsModel extends Model
         $message1 = htmlentities($this->getReceipt($order, $uniqueId, false));
         if (in_array('ticket', $type)) {
             if (in_array('delegate', $type)) {
-                $subject2 = 'Ticket Confirmation - Delegate Registration - MiniBoxOffice.';
+                $subject2 = 'Delegate Ticket Confirmation - Delegate Registration - MiniBoxOffice.';
                 $messagex = htmlentities($this->getDelegateTicket($order));
 
                 $uniqueId2 = uniqidReal();
@@ -139,7 +144,7 @@ class EmailsModel extends Model
                 $order['ticket_link'] = base_url(route_to('online_email_view', $decodedId));
             }
             if (in_array('event', $type)) {
-                $subject2 = 'Ticket Confirmation - Event Registration - MiniBoxOffice.';
+                $subject2 = 'Event Ticket Confirmation - Event Registration - MiniBoxOffice.';
                 $messagex = htmlentities($this->getEventTicket($order));
 
                 $uniqueId2 = uniqidReal();
@@ -148,6 +153,17 @@ class EmailsModel extends Model
                 $decodedId = base64_encode($uniqueId2);
                 $order['ticket_link'] = base_url(route_to('online_email_view', $decodedId));
             }
+        }
+        if (in_array('festival', $type) && in_array('entry', $type)) {
+            $subject2 = 'Festival Entry Form - MiniBoxOffice.';
+
+            $uniqueId2 = uniqidReal();
+
+            $messagex = htmlentities($this->getFestivalEntryEmail($order));
+
+            $this->sendEmail($uniqueId2, $order['user_email'], $subject2, $messagex, 'ticket', $order['user_name'], $messagex);
+            $decodedId = base64_encode($uniqueId2);
+            $order['ticket_link'] = base_url(route_to('online_email_view', $decodedId));
         }
         $message2 = htmlentities($this->getReceipt($order, $uniqueId));
 
@@ -249,6 +265,85 @@ class EmailsModel extends Model
         $receipt['event'] = $event;
 
         return view('Components/emails/html/event_ticket', (array)$receipt);
+    }
+    public function getFestivalEntryEmail($order)
+    {
+
+        $rcpNumber = $order['receipt']; // e559be72219f1 // create official submission from receipt number as unique id
+
+        $entryDb = new FestivalEntries();
+        $entry = $entryDb->where('receipt', $rcpNumber)->first();
+
+        $festivalDb = new FestivalModel();
+        $festival = $festivalDb->select('slug, name, title')->find($entry['festival_id']);
+        $slug = $festival['slug']; // festival slug
+
+        $officialDb = new FestivalOfficialSubmission();
+        $officialData = [
+            'festival_id' => $entry['festival_id'],
+            'festival_year' => $entry['festival_year'],
+            'user_email' => $order['user_email'],
+            'unique_id' => $rcpNumber,
+            'title' => $entry['movie_name'],
+            'project' => $entry['project'],
+            'country' => $entry['country'],
+            'director' => $entry['director'],
+            'production_company' => $entry['production_company'],
+            'duration' => $entry['duration'],
+            'debut_film' => $entry['debut_film'],
+            'synopsis' => $entry['synopsis'],
+        ];
+        $officialDb->save($officialData);
+
+        $languageDb = new LanguagesModel();
+        $language = $languageDb->find($entry['language']);
+
+        $otherInfoDb = new OtherInfoModel();
+        $languageData = [
+            'movie_id' => $rcpNumber,
+            'type' => 'languages',
+            'name' => $language['name'],
+            'attribute' => 'Main language'
+        ];
+        $otherInfoDb->save($languageData);
+        $producer = [
+            'movie_id' => $rcpNumber,
+            'type' => 'producers',
+            'name' => $entry['producer'],
+            'attribute' => 'producer'
+        ];
+        $otherInfoDb->save($producer);
+
+
+        $receipt = array();
+
+        $receipt['movie_name'] = $entry['movie_name'];
+        $receipt['festival_name'] = !empty($festival['title']) ? $festival['title'] : $festival['name'];
+        $receipt['type_of_action'] = '(' . $this->getTitle($order['type_of_action']) . ')';
+        $receipt['user_name'] = $order['user_name'];
+
+        $userEmail = $order['user_email'];
+        $receiptUpperCase = strtoupper($order['receipt']);
+        $userPass = createPassword($receiptUpperCase);
+        $userDb = new UserModel();
+        $userData = [
+            'first_name' => $order['user_name'],
+            'email' => $order['user_email'],
+            'mobile' => $order['user_phone'],
+            'password' => $userPass,
+            'email_status' => 'verified',
+            'status' => 1,
+            'text_status' => 'verified'
+        ];
+        if (!$userDb->where('email', $order['user_email'])->first()) {
+            $userDb->save($userData);
+            $receipt['user_email'] = $userEmail;
+            $receipt['user_password'] = $receiptUpperCase;
+        }
+
+        $receipt['entry_form_link'] = base_url(route_to('festival_entry_form_extended', $slug, base64_encode($rcpNumber)));
+
+        return view('Components/emails/html/festival_entry_welcome', (array)$receipt);
     }
 
     private function getTitle($string)

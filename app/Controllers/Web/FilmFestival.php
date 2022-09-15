@@ -23,6 +23,7 @@ use App\Models\Festival\FestivalGallery;
 use App\Models\Festival\FestivalJury;
 use App\Models\Festival\FestivalJuryGallery;
 use App\Models\Festival\FestivalModel;
+use App\Models\Festival\FestivalOfficialSubmission;
 use App\Models\Festival\FestivalPress;
 use App\Models\Festival\FestivalSchedules;
 use App\Models\Festival\FestivalSponsorship;
@@ -31,6 +32,9 @@ use App\Models\Festival\FestivalTypeOfFilms;
 use App\Models\Festival\FestivalVenueItem;
 use App\Models\Festival\FestivalVenues;
 use App\Models\Festival\FestivalVolunteer;
+use App\Models\Films\FilmInfosData;
+use App\Models\Films\MajorCasts;
+use App\Models\Films\OtherInfoModel;
 use App\Models\Payment\OrderModel;
 use CodeIgniter\API\ResponseTrait;
 use DateTime;
@@ -735,6 +739,118 @@ class FilmFestival extends BaseController
 
         return view('Web/Filmfestival/festival_entry_form', $this->data);
     }
+    public function festival_entry_form_extended($slug, $decodedId)
+    {
+        $response = ['success' => false, 'message' => '', 'data' => []];
+        $unique_id = base64_decode($decodedId);
+
+        $movieDb = new FestivalOfficialSubmission();
+        $movie = $movieDb->where('unique_id', $unique_id)->first();
+
+        if ($movie) {
+            if (getFilmEditAuth($movie['user_email'])) {
+                $disabledInputs = [];
+                $movieCastsDb = new MajorCasts();
+                $movie['major_casts'] = $movieCastsDb->where('movie_id', $unique_id)->findAll();
+
+                $projectTypeDb = new FestivalTypeOfFilms();
+                $movie['project'] = $projectTypeDb->find($movie['project'])['type'] . ' Film';
+
+                $movieInfoDb = new OtherInfoModel();
+                $movie['infos'] = $movieInfoDb->getAllinfoGroup($unique_id);
+
+                $movie['entry_data'] = false;
+                $entryDb = new FestivalEntries();
+                $entry = $entryDb->where('receipt', $unique_id)->first();
+
+                $infoDataDB = new FilmInfosData();
+                $currencies = $infoDataDB->where('type', 'currency')->findAll();
+                $this->data['currencies'] = $currencies;
+                $genres = $infoDataDB->where('type', 'genres')->findAll();
+                $this->data['genres'] = $genres;
+                $certificates = $infoDataDB->where('type', 'certificates')->findAll();
+                $this->data['certificates'] = $certificates;
+                $aspect_ratios = $infoDataDB->where('type', 'aspect_ratio')->findAll();
+                $this->data['aspect_ratios'] = $aspect_ratios;
+                $sound_mix = $infoDataDB->where('type', 'sound_mix')->findAll();
+                $this->data['sound_mixs'] = $sound_mix;
+                $sound_mix_attribute = $infoDataDB->where('type', 'sound_mix_attribute')->findAll();
+                $this->data['sound_mix_attributes'] = $sound_mix_attribute;
+                $producer_type = $infoDataDB->where('type', 'producer_type')->findAll();
+                $this->data['producer_types'] = $producer_type;
+
+                if ($entry) {
+                    $movie['entry_data'] = true;
+                    $entry['country'] ? $disabledInputs[] = 'country' : '';
+                    $entry['movie_name'] ? $disabledInputs[] = 'title' : '';
+                    $entry['director'] ? $disabledInputs[] = 'director' : '';
+                    $entry['production_company'] ? $disabledInputs[] = 'production_company' : '';
+                    $entry['duration'] ? $disabledInputs[] = 'duration' : '';
+                    $entry['debut_film'] ? $disabledInputs[] = 'debut_film' : '';
+                    $entry['synopsis'] ? $disabledInputs[] = 'synopsis' : '';
+                }
+
+                $movie['unlocked_inputs'] = json_decode($movie['unlocked_inputs']);
+                $movie['locked_inputs'] = json_decode($movie['locked_inputs']);
+
+                foreach ($disabledInputs as $key => $disabledInput) {
+                    if (in_array($disabledInput, $movie['unlocked_inputs'])) {
+                        unset($disabledInputs[$key]);
+                    }
+                }
+                foreach ($movie['locked_inputs'] as $key => $input) {
+                    if (!in_array($input, $disabledInputs)) {
+                        $disabledInputs[] = $input;
+                    }
+                }
+
+                $openedStep = 'noStep';
+
+                if ($movie['step6'] == 'open') {
+                    $openedStep = 'step6';
+                    if ($movie['step5'] == 'open') {
+                        $openedStep = 'step5';
+                        if ($movie['step4'] == 'open') {
+                            $openedStep = 'step4';
+                            if ($movie['step3'] == 'open') {
+                                $openedStep = 'step3';
+                                if ($movie['step2'] == 'open') {
+                                    $openedStep = 'step2';
+                                    if ($movie['step1'] == 'open') {
+                                        $openedStep = 'step1';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                // if ($movie['allsteps'] == 'locked') {
+                //     $openedStep = 'step1';
+                // }
+
+                // return print_r($openedStep);
+                $this->data['openedStep'] = $openedStep;
+                $this->data['pageName'] = 'Movie Submission';
+                $this->data['loadSelect2'] = true;
+                $this->data['disabledInputs'] = $disabledInputs;
+
+                $pageData = $this->getPageData('entry_form', $this->festival_details['id']);
+                $this->data['pagedata'] = $pageData;
+
+
+                $this->data['movie'] = $movie;
+            } else {
+                session()->destroy();
+                if (isUserLogin()) {
+                    session()->set('authorizationWarning', 'true');
+                }
+            }
+            return view('Web/Filmfestival/festival_entry_form_extended', $this->data);
+        } else {
+            // send to paid entry form
+            return redirect()->route('festival_entry_form', $this->slug);
+        }
+    }
     public function festival_volunteer()
     {
         $response = ['success' => false, 'message' => '', 'data' => []];
@@ -1109,6 +1225,13 @@ class FilmFestival extends BaseController
         $this->data['pagedata'] = $pageData;
 
         return view('Web/Filmfestival/festival_official_selection', $this->data);
+    }
+    public function festival_official_selection_details()
+    {
+        $this->data['pageName'] = 'Official Selection';
+        $this->data['pageTitle'] = ' | Official Selection | Mini Box Office';
+
+        return view('Web/Filmfestival/festival_official_selection_details', $this->data);
     }
 
     // private functions

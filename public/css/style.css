@@ -27,8 +27,8 @@ body {
 .ticket_counter input {
   font-size: 30px;
 }
-.uk-form-icon:not(.uk-form-icon-flip)~.uk-select {
-  padding-left: 40px!important;
+.uk-form-icon:not(.uk-form-icon-flip) ~ .uk-select {
+  padding-left: 40px !important;
 }
 .ticket_counter svg {
   background-color: #d8b069 !important;
@@ -3162,58 +3162,73 @@ pointer-events: none;} */
   justify-content: space-between;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   padding-bottom: 45px;
-  margin: 0 0 60px;
+  margin: 0 0 20px;
 }
 
-.winner-cast-list ul {
-  list-style: none;
+.winner-cast-list {
   padding: 0;
   margin: 0;
 }
-.winner-cast-list ul li {
+.winner-cast-list .winner-item {
   -webkit-transition: 0.3s;
   -moz-transition: 0.3s;
   -ms-transition: 0.3s;
   -o-transition: 0.3s;
   transition: 0.3s;
   border: transparent solid 1px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding: 15px;
+  border-radius: 10px;
+  background-color: whitesmoke;
+  box-shadow: 11.3px 5.1px 10px rgba(0, 0, 0, 0.035),
+    90px 41px 80px rgba(0, 0, 0, 0.07);
+
+  /* box-shadow: 2.8px 2.8px 2.2px rgba(0, 0, 0, 0.02),
+    6.7px 6.7px 5.3px rgba(0, 0, 0, 0.028),
+    12.5px 12.5px 10px rgba(0, 0, 0, 0.035),
+    22.3px 22.3px 17.9px rgba(0, 0, 0, 0.042),
+    41.8px 41.8px 33.4px rgba(0, 0, 0, 0.05),
+    100px 100px 80px rgba(0, 0, 0, 0.07); */
 }
-.winner-cast-list ul li .winner-profile {
+/* box-shadow: 11.3px 5.1px 10px rgba(0, 0, 0, 0.07),
+  90px 41px 80px rgba(0, 0, 0, 0.035); */
+.winner-cast-list .winner-profile {
   display: flex;
   align-items: center;
   flex: 2;
   color: #111;
 }
-.winner-cast-list ul li:hover {
-  border: #e5e5e5 solid 1px;
-  background-color: whitesmoke;
+.winner-cast-list .winner-item:hover {
+  background-color: white;
+  box-shadow: 2.8px 2.8px 2.2px rgba(0, 0, 0, 0.02),
+    6.7px 6.7px 5.3px rgba(0, 0, 0, 0.028),
+    12.5px 12.5px 10px rgba(0, 0, 0, 0.035),
+    22.3px 22.3px 17.9px rgba(0, 0, 0, 0.042),
+    41.8px 41.8px 33.4px rgba(0, 0, 0, 0.05),
+    100px 100px 80px rgba(0, 0, 0, 0.07);
 }
 
-.winner-cast-list ul li .winner-profile .winner-photo img {
+.winner-cast-list .winner-item .winner-profile .winner-photo img {
   border-radius: 50%;
   max-width: 65px;
   max-height: 65px;
 }
-.winner-cast-list ul li .winner-photo {
+.winner-cast-list .winner-item .winner-photo {
   padding-right: 30px;
 }
-.winner-cast-list ul li .winner-name {
+.winner-cast-list .winner-item .winner-name {
   font-weight: 600;
   display: block;
   white-space: nowrap;
 }
-.winner-cast-list ul li .winner-subtitle {
+.winner-cast-list .winner-item .winner-subtitle {
   display: block;
   opacity: 0.6;
   font-size: 12px;
   font-weight: bold;
-}
-.winner-cast-list ul li .winner-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  padding: 20px;
 }
 
 .left-tab {

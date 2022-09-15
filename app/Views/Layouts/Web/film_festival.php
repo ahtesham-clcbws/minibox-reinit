@@ -16,6 +16,41 @@
 	<link rel="stylesheet" type="text/css" href="/public/css/uikit.min.css">
 	<!-- <link rel="stylesheet" type="text/css" href="/public/bootstrap.min.css"> -->
 	<link rel="stylesheet" type="text/css" href="/public/css/style.css">
+	<style>
+		.spinnerActivated {
+			overflow: hidden;
+		}
+
+		#customLoader {
+			position: fixed;
+			height: 100vh;
+			width: 100%;
+			top: 0;
+			left: 0;
+			background: #3d3d3d87;
+			z-index: 9999999;
+			display: none;
+		}
+
+		#customLoader .loaderBlock {
+			position: relative;
+			height: 100%;
+			width: 100%;
+		}
+		#customLoader .loaderBlock .loaderBlockInner {
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			position: absolute;
+		}
+	</style>
+	<div id="customLoader">
+		<div class="loaderBlock">
+			<div class="loaderBlockInner">
+				<span uk-spinner="ratio: 4.5" style="color: yellow;"></span>
+			</div>
+		</div>
+	</div>
 
 	<link rel="stylesheet" href="/public/css/splide.min.css">
 	<!-- <link rel="stylesheet" href="/public/css/owl.theme.default.min.css"> -->
@@ -26,7 +61,7 @@
 	<link href="https://fonts.googleapis.com/css2?family=Cabin:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
 	<link href="/public/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
 	<link rel="stylesheet" href="/public/css/magnific-popup.min.css">
-      <!-- <script src="https://polyfill.io/v3/polyfill.min.js"></script> -->
+	<!-- <script src="https://polyfill.io/v3/polyfill.min.js"></script> -->
 	<?php if (isset($loadSelect2) && $loadSelect2 == true) : ?>
 		<link href="/public/libs/select2/css/select2.min.css" rel="stylesheet" />
 	<?php endif; ?>
@@ -515,19 +550,19 @@
 
 		</div>
 	</div>
-<div id="youtubeModal" class="uk-modal-container" uk-modal>
-    <div class="uk-modal-dialog uk-width-auto uk-margin-auto-vertical">
-        <button class="uk-modal-close-outside" type="button" uk-close></button>
-        <iframe id="youtubeModalIframe" src="" width="1280" height="720" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen uk-video uk-responsive></iframe>
-    </div>
-</div>
+	<div id="youtubeModal" class="uk-modal-container" uk-modal>
+		<div class="uk-modal-dialog uk-width-auto uk-margin-auto-vertical">
+			<button class="uk-modal-close-outside" type="button" uk-close></button>
+			<iframe id="youtubeModalIframe" src="" width="1280" height="720" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen uk-video uk-responsive></iframe>
+		</div>
+	</div>
 
-<div id="vimeoModal" class="uk-modal-container" uk-modal>
-    <div class="uk-modal-dialog uk-width-auto uk-margin-auto-vertical">
-        <button class="uk-modal-close-outside" type="button" uk-close></button>
-        <iframe id="vimeoModalIframe" src="" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen width="1280" height="720" uk-video uk-responsive></iframe>
-    </div>
-</div>
+	<div id="vimeoModal" class="uk-modal-container" uk-modal>
+		<div class="uk-modal-dialog uk-width-auto uk-margin-auto-vertical">
+			<button class="uk-modal-close-outside" type="button" uk-close></button>
+			<iframe id="vimeoModalIframe" src="" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen width="1280" height="720" uk-video uk-responsive></iframe>
+		</div>
+	</div>
 	<!-- JS FILES -->
 	<script defer src="/public/libs/fontawesome/js/all.js"></script>
 	<?= view('Globals/load_global_libraries') ?>

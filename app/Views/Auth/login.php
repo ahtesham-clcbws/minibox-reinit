@@ -51,11 +51,21 @@
                 if (data.success) {
                     var role = data.user_data.role;
                     console.log(data);
-                    if (role == 'admin' || role == 'staff') {
-                        alert('Success', 'Successfully logged in').then((result) => {
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'Signed in successfully'
+                    }).then((result) => {
+                        if (role == 'admin' || role == 'staff') {
                             return window.location = '<?= route_to('admin_dashboard') ?>';
-                        })
-                    }
+                        }
+                        return window.location = '<?= route_to('homepage') ?>';
+                    })
+                    // alert('Success', 'Successfully logged in').then((result) => {
+                    //     if (role == 'admin' || role == 'staff') {
+                    //         return window.location = '<?= route_to('admin_dashboard') ?>';
+                    //     }
+                    //     return window.location = '<?= route_to('homepage') ?>';
+                    // })
                 } else {
                     var errorMessage = data.message ? data.message : 'Error logging in';
                     alert('Error', errorMessage, 'error').then((result) => {

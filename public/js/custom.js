@@ -237,3 +237,119 @@ function getStars(rating) {
     }
     return stars;
 }
+
+
+// global ajax function
+$.ajaxSetup({
+    beforeSend: function (xhr) {
+        // console.log(xhr)
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        startLoader();
+    },
+    complete: function (xhr) {
+        // console.log(xhr)
+        setTimeout(() => {
+            stopLoader();
+        }, 1000);
+    }
+});
+
+function startLoader() {
+    // $('body').addClass('spinnerActivated');
+    $('body').css('overflow', 'hidden')
+    $('#customLoader').show();
+}
+function stopLoader() {
+    // $('body').removeClass('spinnerActivated');
+    $('body').css('overflow', 'visible')
+    $('#customLoader').hide();
+}
+
+document.addEventListener('focusin', (e) => {
+    if (e.target.closest(".tox-tinymce-aux, .moxman-window, .tam-assetmanager-root") !== null) {
+        e.stopImmediatePropagation();
+    }
+});
+var previewImage = function (event, tagId) {
+    // var output = $('#' + tagId);
+    var output = document.getElementById(tagId);
+    output.src = URL.createObjectURL(event.target.files[0]);
+    output.onload = function () {
+        URL.revokeObjectURL(output.src) // free memory
+    }
+};
+
+function youtube_parser(url) {
+    // var regExp = /^.*(youtu.be\/|v\/|e\/|u\/\w+\/|embed\/|v=)([^#\&\?]*).*/;
+    // var regExp = /^.*(?:(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/|shorts\/)|(?:(?:watch)?\?v(?:i)?=|\&v(?:i)?=))([^#\&\?]*).*/;
+    var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+    var match = url.match(regExp);
+    return (match && match[7].length == 11) ? match[7] : false;
+}
+
+function vimeo_parser(url) {
+    var regExp = /(https?:\/\/)?(www\.)?(player\.)?vimeo\.com\/([a-z]*\/)*([0-9]{6,11})[?]?.*/;
+    // var regExp = /http(s)?:\/\/(www\.)?vimeo.com\/(\d+)(\/)?(#.*)?/
+    var match = url.match(regExp)
+
+    // console.log(match)
+    // console.log(match[5])
+    if (match && match[5]) {
+        return match[5];
+    }
+    return false;
+    // return (match) ? match[5] : false;
+}
+
+async function fileSizeValidation(inputId, maxHeight = 100, maxWidth = 100, fixed = false, previewId = null) {
+    var validated = true;
+    var fileUpload = $("#" + inputId)[0];
+    var regex = new RegExp("([a-zA-Z0-9\s_\\.\-:])+(.jpg|.png|.gif)$");
+    if (regex.test(fileUpload.value.toLowerCase())) {
+        //Check whether HTML5 is supported.
+        if (typeof (fileUpload.files) != "undefined") {
+            //Initiate the FileReader object.
+            var reader = new FileReader();
+            //Read the contents of Image File.
+            reader.readAsDataURL(fileUpload.files[0]);
+            reader.onload = function (e) {
+                //Initiate the JavaScript Image object.
+                var image = new Image();
+                //Set the Base64 string return from FileReader as source.
+                image.src = e.target.result;
+                image.onload = function await() {
+                    //Determine the Height and Width.
+                    var height = this.height;
+                    var width = this.width;
+                    if (fixed && height != maxHeight || fixed && width != maxWidth) {
+                        alert('', "Height and Width must match " + maxHeight + 'x' + maxWidth + ' pixels', 'error');
+                        validated = false;
+                    }
+                    if (!fixed && height > maxHeight || !fixed && width > maxWidth) {
+                        alert('', "Height and Width must not exceed " + maxHeight + 'x' + maxWidth + ' pixels', 'error');
+                        validated = false;
+                    }
+                };
+            }
+        } else {
+            alert('', "This browser does not support HTML5.", 'error');
+            validated = false;
+        }
+    } else {
+        alert('', "Please select a valid Image file.", 'error');
+        validated = false;
+    }
+    return validated;
+}
+
+const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.addEventListener('mouseenter', Swal.stopTimer)
+      toast.addEventListener('mouseleave', Swal.resumeTimer)
+    }
+  })

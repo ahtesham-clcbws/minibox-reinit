@@ -332,6 +332,13 @@
         }
     </style>
     <style>
+        .singleLineOnly {
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+        }
+
         .threeLineOnly {
             overflow: hidden;
             display: -webkit-box;
@@ -488,7 +495,7 @@
                 <div class="ticket--center" style="position: relative; height: 290px; width: 619px;">
                     <div class="ticket--center--row">
                         <div class="ticket--center--col">
-                            <span class="threeLineOnly"><?= $event['title'] ?></span>
+                            <span class="threeLineOnly"><?= $item['details'] ?></span>
                         </div>
                         <div class="ticket--center--col totalTickets textRight">
                             <span>
@@ -516,7 +523,7 @@
                         </div>
                         <div class="ticket--center--col">
                             <span class="ticket--info--title">Location</span>
-                            <span class="ticket--info--content"><?= $event['address'] . ' - ' .$event['pincode'] ?></span>
+                            <span class="ticket--info--content"><?= $event['address'] . ' - ' . $event['pincode'] ?></span>
                             <span class="ticket--info--subtitle"><?= getWorldName($event['city'], 'city') . ', ' . getWorldName($event['state'], 'state') . ', ' . getWorldName($event['country'], 'country') ?></span>
                         </div>
                     </div>
@@ -530,8 +537,8 @@
                             <span class="ticket--info--content">#<?= $receipt_number ?></span>
                         </div>
                         <div class="ticket--center--col textRight">
-                            <span class="ticket--info--title">Ordered By</span>
-                            <span class="ticket--info--content"><?= $user_name ?></span>
+                            <span class="ticket--info--title">Event</span>
+                            <span class="ticket--info--content singleLineOnly"><?= $event['title'] ?></span>
                         </div>
                     </div>
                 </div>

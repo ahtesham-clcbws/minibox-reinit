@@ -31,6 +31,8 @@ $routes->group('(:segment)', [Web\FilmFestival::class], static function ($routes
     $routes->add('events', 'Web\FilmFestival::festival_events',  ['as' => 'festival_events']);
 });
 // media
+$routes->add('(:any)/entry-form/(:any)', 'Web\FilmFestival::festival_entry_form_extended/$1/$2',  ['as' => 'festival_entry_form_extended']);
+$routes->add('(:segment)/official-selections/(:segment)', 'Web\FilmFestival::festival_official_selection_details/$1/$2',  ['as' => 'festival_official_selection_details']);
 $routes->add('(:segment)/media/(:any)/(:any)', 'Web\FilmFestival::festival_media_single/$1/$2/$3',  ['as' => 'festival_filmzine_media_single']);
 $routes->add('(:segment)/media/(:any)', 'Web\FilmFestival::festival_media/$1/$2',  ['as' => 'festival_filmzine_media']);
 

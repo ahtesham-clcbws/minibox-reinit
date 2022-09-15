@@ -18,6 +18,7 @@
     </script>
     <!-- <link rel="stylesheet" href="/public/libs/bootstrap/css/bootstrap.min.css"> -->
     <link rel="stylesheet" href="/public/admin/css/dashlite.css">
+ <link rel="stylesheet" type="text/css" href="/public/libs/sweetalert/borderless.min.css" media="all">
     <link id="skin-default" rel="stylesheet" href="/public/admin/css/theme.css">
     <?= $this->renderSection('css') ?>
     <style>
