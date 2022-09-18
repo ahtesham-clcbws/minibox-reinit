@@ -55,7 +55,7 @@ class FestivalOfficialSubmission extends Model
         'step2', // completed / locked / open // (director, production_company, duration, debut_film, color, genres, genres, certificates, synopsis, storyline)
         'step3', // completed / locked / open // (banner, poster, trailer, movie, distribution, rating)
         'step4', // completed / locked / open // (after adding/updating major caste)
-        'step5', // completed / locked / open // (writers, producers, composers, cinematographers, editors)
+        'step5', // completed / locked / open // (producers, writers, composers, cinematographers, editors)
         'step6', // completed / locked / open // (languages, sound_mix, aspect_ratio)
         'allsteps', // completed / locked / open
 
@@ -84,7 +84,7 @@ class FestivalOfficialSubmission extends Model
     ];
 
     // Dates
-    protected $useTimestamps = false;
+    protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';

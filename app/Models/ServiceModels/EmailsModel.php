@@ -292,6 +292,16 @@ class EmailsModel extends Model
             'duration' => $entry['duration'],
             'debut_film' => $entry['debut_film'],
             'synopsis' => $entry['synopsis'],
+            'locked_inputs' => json_encode([
+                'country',
+                'title',
+                'director',
+                'production_company',
+                'duration',
+                'debut_film',
+                'synopsis',
+                'project'
+            ])
         ];
         $officialDb->save($officialData);
 

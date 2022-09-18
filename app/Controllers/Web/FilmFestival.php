@@ -741,98 +741,417 @@ class FilmFestival extends BaseController
     }
     public function festival_entry_form_extended($slug, $decodedId)
     {
-        $response = ['success' => false, 'message' => '', 'data' => []];
+        $response = ['success' => false, 'message' => 'In-Valid Request', 'data' => []];
         $unique_id = base64_decode($decodedId);
 
         $movieDb = new FestivalOfficialSubmission();
         $movie = $movieDb->where('unique_id', $unique_id)->first();
 
+        helper('form');
+
         if ($movie) {
             if (getFilmEditAuth($movie['user_email'])) {
-                $disabledInputs = [];
+
+                if (!$movie['approved'] && $movie['step1'] == 'locked' && $movie['step2'] == 'locked' && $movie['step3'] == 'locked' && $movie['step4'] == 'locked' && $movie['step5'] == 'locked' && $movie['step6'] == 'locked') {
+                    $movie['allsteps'] = 'locked';
+                } else if ($movie['approved'] && $movie['edit_status'] == 'completed' && $movie['step1'] == 'locked' && $movie['step2'] == 'locked' && $movie['step3'] == 'locked' && $movie['step4'] == 'locked' && $movie['step5'] == 'locked' && $movie['step6'] == 'locked') {
+                    $movie['allsteps'] = 'completed';
+                } else {
+                    $movie['allsteps'] = 'open';
+                }
+                $movieDb->save($movie);
+
                 $movieCastsDb = new MajorCasts();
-                $movie['major_casts'] = $movieCastsDb->where('movie_id', $unique_id)->findAll();
 
                 $projectTypeDb = new FestivalTypeOfFilms();
-                $movie['project'] = $projectTypeDb->find($movie['project'])['type'] . ' Film';
 
                 $movieInfoDb = new OtherInfoModel();
-                $movie['infos'] = $movieInfoDb->getAllinfoGroup($unique_id);
-
-                $movie['entry_data'] = false;
-                $entryDb = new FestivalEntries();
-                $entry = $entryDb->where('receipt', $unique_id)->first();
 
                 $infoDataDB = new FilmInfosData();
+
+                $locked_inputs = json_decode($movie['locked_inputs']);
+                $unlocked_inputs = json_decode($movie['unlocked_inputs']);
+
+                foreach ($locked_inputs as $key => $locked_input) {
+                    if (in_array($locked_input, $unlocked_inputs)) {
+                        unset($locked_inputs[$key]);
+                    }
+                }
+
+                $this->data['unlocked_inputs'] = $unlocked_inputs;
+                $this->data['locked_inputs'] = $locked_inputs;
+
+
+                if ($this->request->getPost()) {
+                    // datatables only requests
+                    if ($this->request->getPost('draw')) {
+                        $start = $this->request->getPost('start');
+                        $length = $this->request->getPost('length');
+                        if ($this->request->getPost('other_info_data')) {
+                            $stepNumberValue = '';
+                            $dataType = $this->request->getPost('other_info_data');
+                            if ($dataType == 'producers' || $dataType == 'writers' || $dataType == 'composers' || $dataType == 'cinematographers' || $dataType == 'editors') {
+                                $stepNumberValue = $movie['step5'];
+                            }
+                            if ($dataType == 'sound_mix' || $dataType == 'aspect_ratio' || $dataType == 'languages') {
+                                $stepNumberValue = $movie['step6'];
+                            }
+                            $tableData = $movieInfoDb->getInfoDataWithCount($dataType, $unique_id, $start, $length, $stepNumberValue);
+                            $json_data = array(
+                                "draw" => intval($this->request->getPost('draw')),
+                                "recordsTotal" => $tableData['countAll'],
+                                "recordsFiltered" => $tableData['countAll'],
+                                "data" => $tableData['list']
+                            );
+                        }
+                        if ($this->request->getPost('casts_data')) {
+                            $tableData = $movieCastsDb->getCastesWithCount($unique_id, $start, $length, $movie['step4']);
+                            $json_data = array(
+                                "draw" => intval($this->request->getPost('draw')),
+                                "recordsTotal" => $tableData['countAll'],
+                                "recordsFiltered" => $tableData['countAll'],
+                                "data" => $tableData['list']
+                            );
+                        }
+
+                        return json_encode($json_data);
+                    }
+                    // datatables only producer attributes
+                    if ($this->request->getPost('get_producers_type_data')) {
+                        $response['success'] = true;
+                        $response['data'] = $infoDataDB->where('type', 'producer_type')->findAll();
+                    }
+                    // datatables only sound mix name & attributes
+                    if ($this->request->getPost('get_sound_mix_data')) {
+                        $response['success'] = true;
+                        $response['data'] = [
+                            'sound_mixs' => $infoDataDB->where('type', 'sound_mix')->findAll(),
+                            'sound_mix_attributes' => $infoDataDB->where('type', 'sound_mix_attribute')->findAll(),
+                        ];
+                    }
+                    // datatables only aspect ratio names
+                    if ($this->request->getPost('get_aspect_ratio_data')) {
+                        $response['success'] = true;
+                        $response['data'] = $infoDataDB->where('type', 'aspect_ratio')->findAll();
+                    }
+                    // add movie data (producers, writers, composers, cinematographers, editors, languages, sound_mix, aspect_ratio)
+                    if ($this->request->getPost('addMovieData')) {
+                        $movieData = $this->request->getPost();
+                        unset($movieData['addMovieData']);
+                        $movieData['movie_id'] = $unique_id;
+                        if ($movieData['id'] == 0) {
+                            unset($movieData['id']);
+                        }
+                        if (!$movieData['attribute']) {
+                            $movieData['attribute'] = NULL;
+                        }
+                        if ($movieInfoDb->save($movieData)) {
+                            $response['success'] = true;
+                        } else {
+                            $response['success'] = false;
+                            $response['message'] = 'unable to save data, please try again after some time.';
+                        }
+                    }
+                    // delete movie data (producers, writers, composers, cinematographers, editors, languages, sound_mix, aspect_ratio)
+                    if ($this->request->getPost('deleteMovieData')) {
+                        $movieDataId = $this->request->getPost('deleteMovieData');
+                        if ($movieInfoDb->delete($movieDataId)) {
+                            $response['success'] = true;
+                        } else {
+                            $response['success'] = false;
+                            $response['message'] = 'unable to delete data, please try again after some time.';
+                        }
+                    }
+                    // add mmajor caste only
+                    if ($this->request->getPost('addMovieCast')) {
+                        $castData = $this->request->getPost();
+                        unset($castData['addMovieCast']);
+
+                        $castData['movie_id'] = $unique_id;
+
+                        if ($castData['id'] == 0) {
+                            unset($castData['id']);
+                        }
+                        if (!$castData['attribute']) {
+                            $castData['attribute'] = NULL;
+                        }
+                        if (!$castData['gender']) {
+                            $castData['gender'] = NULL;
+                        }
+
+                        if ($img = $this->request->getFile('image')) {
+                            if ($img->isValid() && !$img->hasMoved()) {
+                                $newName = $img->getRandomName();
+                                $img->move('uploads/movie_casts/' . $unique_id, $newName);
+                                $path = '/uploads/movie_casts/' . $unique_id . '/' . $newName;
+                                $castData['image'] = $path;
+                            }
+                        }
+
+                        if ($movieCastsDb->save($castData)) {
+                            $response['success'] = true;
+                        } else {
+                            $response['success'] = false;
+                            $response['message'] = 'unable to save cast, please try again after some time.';
+                        }
+                    }
+                    // delete major caste only
+                    if ($this->request->getPost('deleteMovieCast')) {
+                        $castId = $this->request->getPost('deleteMovieCast');
+                        if ($movieCastsDb->delete($castId)) {
+                            $response['success'] = true;
+                        } else {
+                            $response['success'] = false;
+                            $response['message'] = 'unable to delete cast, please try again after some time.';
+                        }
+                    }
+                    if ($this->request->getPost('step1Form')) {
+                        $postData = $this->request->getPost();
+                        unset($postData['step1Form']);
+                        $postKeys = array_keys($postData);
+                        foreach ($postKeys as $postKey) {
+                            array_push($locked_inputs, $postKey);
+                        }
+                        $postData['locked_inputs'] = json_encode($locked_inputs);
+
+                        $postData['step1'] = 'locked';
+                        $postData['id'] = $movie['id'];
+                        if ($this->checkIfAllOtherStepsLocked($movie, 'step1')) {
+                            $postData['allsteps'] = 'locked';
+                        } else {
+                            $postData['allsteps'] = 'open';
+                        }
+                        if ($movieDb->save($postData)) {
+                            $response['success'] = true;
+                        } else {
+                            $response['success'] = false;
+                            $response['message'] = 'unable to save data, please try again after some time.';
+                        }
+                    }
+                    if ($this->request->getPost('step2Form')) {
+                        $postData = $this->request->getPost();
+                        unset($postData['step2Form']);
+
+                        $postKeys = array_keys($postData);
+
+                        if ($postData['certificates']) {
+                            $postData['certificates'] = json_encode($postData['certificates']);
+                        }
+                        if ($postData['genres']) {
+                            $postData['genres'] = json_encode($postData['genres']);
+                        }
+                        foreach ($postKeys as $postKey) {
+                            array_push($locked_inputs, $postKey);
+                        }
+                        $postData['locked_inputs'] = json_encode($locked_inputs);
+                        // return json_encode($postData);
+
+                        $postData['step2'] = 'locked';
+                        $postData['id'] = $movie['id'];
+                        if ($this->checkIfAllOtherStepsLocked($movie, 'step2')) {
+                            $postData['allsteps'] = 'locked';
+                        } else {
+                            $postData['allsteps'] = 'open';
+                        }
+                        if ($movieDb->save($postData)) {
+                            $response['success'] = true;
+                        } else {
+                            $response['success'] = false;
+                            $response['message'] = 'unable to save data, please try again after some time.';
+                        }
+                    }
+                    if ($this->request->getPost('step3Form')) {
+                        $posterValid = false;
+                        $bannerValid = false;
+                        $postData = $this->request->getPost();
+                        unset($postData['step3Form']);
+
+                        $postKeys = array_keys($postData);
+
+                        foreach ($postKeys as $postKey) {
+                            array_push($locked_inputs, $postKey);
+                        }
+
+                        if ($img = $this->request->getFile('banner')) {
+                            if ($img->isValid() && !$img->hasMoved()) {
+                                $newName = $img->getRandomName();
+                                $img->move('uploads/movie_banner/' . $unique_id, $newName);
+                                $path = '/uploads/movie_banner/' . $unique_id . '/' . $newName;
+                                $postData['banner'] = $path;
+                                $bannerValid = true;
+                                if (!in_array('banner', $locked_inputs)) {
+                                    array_push($locked_inputs, 'banner');
+                                }
+                            }
+                        }
+
+                        if ($img = $this->request->getFile('poster')) {
+                            if ($img->isValid() && !$img->hasMoved()) {
+                                $newName = $img->getRandomName();
+                                $img->move('uploads/movie_poster/' . $unique_id, $newName);
+                                $path = '/uploads/movie_poster/' . $unique_id . '/' . $newName;
+                                $postData['poster'] = $path;
+                                $posterValid = true;
+                                if (!in_array('poster', $locked_inputs)) {
+                                    array_push($locked_inputs, 'poster');
+                                }
+                            }
+                        }
+
+                        $postData['locked_inputs'] = json_encode($locked_inputs);
+                        // return json_encode($postData);
+
+                        $postData['step3'] = 'locked';
+                        $postData['id'] = $movie['id'];
+                        if ($this->checkIfAllOtherStepsLocked($movie, 'step3')) {
+                            $postData['allsteps'] = 'locked';
+                        } else {
+                            $postData['allsteps'] = 'open';
+                        }
+                        if (!$posterValid || !$bannerValid) {
+                            $response['success'] = false;
+                            $response['message'] = $posterValid ? 'You need to upload banner before submitting the form.' : 'You need to upload poster before submitting the form.';
+                        } else {
+                            if ($movieDb->save($postData)) {
+                                $response['success'] = true;
+                            } else {
+                                $response['success'] = false;
+                                $response['message'] = 'unable to save data, please try again after some time.';
+                            }
+                        }
+                    }
+                    if ($this->request->getPost('step4Form')) {
+                        $postData['step4'] = 'locked';
+                        $postData['id'] = $movie['id'];
+                        if ($this->checkIfAllOtherStepsLocked($movie, 'step4')) {
+                            $postData['allsteps'] = 'locked';
+                        } else {
+                            $postData['allsteps'] = 'open';
+                        }
+                        if ($movieDb->save($postData)) {
+                            $response['success'] = true;
+                        } else {
+                            $response['success'] = false;
+                            $response['message'] = 'unable to save data, please try again after some time.';
+                        }
+                    }
+                    if ($this->request->getPost('step5Form')) {
+                        $postData['step5'] = 'locked';
+                        $postData['id'] = $movie['id'];
+                        if ($this->checkIfAllOtherStepsLocked($movie, 'step5')) {
+                            $postData['allsteps'] = 'locked';
+                        } else {
+                            $postData['allsteps'] = 'open';
+                        }
+                        if ($movieDb->save($postData)) {
+                            $response['success'] = true;
+                        } else {
+                            $response['success'] = false;
+                            $response['message'] = 'unable to save data, please try again after some time.';
+                        }
+                    }
+                    if ($this->request->getPost('step6Form')) {
+                        $postData['step6'] = 'locked';
+                        $postData['id'] = $movie['id'];
+                        if ($this->checkIfAllOtherStepsLocked($movie, 'step6')) {
+                            $postData['allsteps'] = 'locked';
+                        } else {
+                            $postData['allsteps'] = 'open';
+                        }
+                        if ($movieDb->save($postData)) {
+                            $response['success'] = true;
+                        } else {
+                            $response['success'] = false;
+                            $response['message'] = 'unable to save data, please try again after some time.';
+                        }
+                    }
+
+                    return json_encode($response);
+                }
+
+                $movie['project'] = $projectTypeDb->find($movie['project'])['type'] . ' Film';
+
                 $currencies = $infoDataDB->where('type', 'currency')->findAll();
                 $this->data['currencies'] = $currencies;
                 $genres = $infoDataDB->where('type', 'genres')->findAll();
                 $this->data['genres'] = $genres;
                 $certificates = $infoDataDB->where('type', 'certificates')->findAll();
                 $this->data['certificates'] = $certificates;
-                $aspect_ratios = $infoDataDB->where('type', 'aspect_ratio')->findAll();
-                $this->data['aspect_ratios'] = $aspect_ratios;
-                $sound_mix = $infoDataDB->where('type', 'sound_mix')->findAll();
-                $this->data['sound_mixs'] = $sound_mix;
-                $sound_mix_attribute = $infoDataDB->where('type', 'sound_mix_attribute')->findAll();
-                $this->data['sound_mix_attributes'] = $sound_mix_attribute;
-                $producer_type = $infoDataDB->where('type', 'producer_type')->findAll();
-                $this->data['producer_types'] = $producer_type;
-
-                if ($entry) {
-                    $movie['entry_data'] = true;
-                    $entry['country'] ? $disabledInputs[] = 'country' : '';
-                    $entry['movie_name'] ? $disabledInputs[] = 'title' : '';
-                    $entry['director'] ? $disabledInputs[] = 'director' : '';
-                    $entry['production_company'] ? $disabledInputs[] = 'production_company' : '';
-                    $entry['duration'] ? $disabledInputs[] = 'duration' : '';
-                    $entry['debut_film'] ? $disabledInputs[] = 'debut_film' : '';
-                    $entry['synopsis'] ? $disabledInputs[] = 'synopsis' : '';
-                }
-
-                $movie['unlocked_inputs'] = json_decode($movie['unlocked_inputs']);
-                $movie['locked_inputs'] = json_decode($movie['locked_inputs']);
-
-                foreach ($disabledInputs as $key => $disabledInput) {
-                    if (in_array($disabledInput, $movie['unlocked_inputs'])) {
-                        unset($disabledInputs[$key]);
-                    }
-                }
-                foreach ($movie['locked_inputs'] as $key => $input) {
-                    if (!in_array($input, $disabledInputs)) {
-                        $disabledInputs[] = $input;
-                    }
-                }
 
                 $openedStep = 'noStep';
-
+                $openedSteps = [];
                 if ($movie['step6'] == 'open') {
                     $openedStep = 'step6';
-                    if ($movie['step5'] == 'open') {
-                        $openedStep = 'step5';
-                        if ($movie['step4'] == 'open') {
-                            $openedStep = 'step4';
-                            if ($movie['step3'] == 'open') {
-                                $openedStep = 'step3';
-                                if ($movie['step2'] == 'open') {
-                                    $openedStep = 'step2';
-                                    if ($movie['step1'] == 'open') {
-                                        $openedStep = 'step1';
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    array_push($openedSteps, 'step6');
                 }
-                // if ($movie['allsteps'] == 'locked') {
-                //     $openedStep = 'step1';
-                // }
-
-                // return print_r($openedStep);
+                if ($movie['step5'] == 'open') {
+                    $openedStep = 'step5';
+                    array_push($openedSteps, 'step5');
+                }
+                if ($movie['step4'] == 'open') {
+                    $openedStep = 'step4';
+                    array_push($openedSteps, 'step4');
+                }
+                if ($movie['step3'] == 'open') {
+                    $openedStep = 'step3';
+                    array_push($openedSteps, 'step3');
+                }
+                if ($movie['step2'] == 'open') {
+                    $openedStep = 'step2';
+                    array_push($openedSteps, 'step2');
+                }
+                if ($movie['step1'] == 'open') {
+                    $openedStep = 'step1';
+                    array_push($openedSteps, 'step1');
+                }
                 $this->data['openedStep'] = $openedStep;
+                $this->data['openedSteps'] = $openedSteps;
+
+                $lockedSteps = [];
+                if ($movie['step6'] == 'locked') {
+                    array_push($lockedSteps, 'step6');
+                }
+                if ($movie['step5'] == 'locked') {
+                    array_push($lockedSteps, 'step5');
+                }
+                if ($movie['step4'] == 'locked') {
+                    array_push($lockedSteps, 'step4');
+                }
+                if ($movie['step3'] == 'locked') {
+                    array_push($lockedSteps, 'step3');
+                }
+                if ($movie['step2'] == 'locked') {
+                    array_push($lockedSteps, 'step2');
+                }
+                if ($movie['step1'] == 'locked') {
+                    array_push($lockedSteps, 'step1');
+                }
+                $this->data['lockedSteps'] = $lockedSteps;
+
+                $completedSteps = [];
+                if ($movie['step6'] == 'completed') {
+                    array_push($completedSteps, 'step6');
+                }
+                if ($movie['step5'] == 'completed') {
+                    array_push($completedSteps, 'step5');
+                }
+                if ($movie['step4'] == 'completed') {
+                    array_push($completedSteps, 'step4');
+                }
+                if ($movie['step3'] == 'completed') {
+                    array_push($completedSteps, 'step3');
+                }
+                if ($movie['step2'] == 'completed') {
+                    array_push($completedSteps, 'step2');
+                }
+                if ($movie['step1'] == 'completed') {
+                    array_push($completedSteps, 'step1');
+                }
+                $this->data['completedSteps'] = $completedSteps;
+
                 $this->data['pageName'] = 'Movie Submission';
                 $this->data['loadSelect2'] = true;
-                $this->data['disabledInputs'] = $disabledInputs;
+
 
                 $pageData = $this->getPageData('entry_form', $this->festival_details['id']);
                 $this->data['pagedata'] = $pageData;
@@ -1226,12 +1545,36 @@ class FilmFestival extends BaseController
 
         return view('Web/Filmfestival/festival_official_selection', $this->data);
     }
-    public function festival_official_selection_details()
+    public function festival_official_selection_details($slug, $decodedId)
     {
         $this->data['pageName'] = 'Official Selection';
-        $this->data['pageTitle'] = ' | Official Selection | Mini Box Office';
+        $officialDb = new FestivalOfficialSubmission();
+        $movieId = base64_decode($decodedId);
+        $movie = $officialDb->find($movieId);
+        if ($movie) {
+            $this->data['pageTitle'] = $movie['title'] . ' | Official Selection | Mini Box Office';
 
-        return view('Web/Filmfestival/festival_official_selection_details', $this->data);
+            $projectTypeDb = new FestivalTypeOfFilms();
+            $movie['project'] = $projectTypeDb->find($movie['project'])['type'] . ' Film';
+
+            $castDb = new MajorCasts();
+            $movie['casts'] = $castDb->where(['movie_id' => $movie['unique_id']])->findAll();
+
+            $infoDb = new OtherInfoModel();
+            $movie['producers'] = $infoDb->where(['movie_id' => $movie['unique_id'], 'type' => 'producers'])->findAll();
+            $movie['writers'] = $infoDb->where(['movie_id' => $movie['unique_id'], 'type' => 'writers'])->findAll();
+            $movie['composers'] = $infoDb->where(['movie_id' => $movie['unique_id'], 'type' => 'composers'])->findAll();
+            $movie['cinematographers'] = $infoDb->where(['movie_id' => $movie['unique_id'], 'type' => 'cinematographers'])->findAll();
+            $movie['editors'] = $infoDb->where(['movie_id' => $movie['unique_id'], 'type' => 'editors'])->findAll();
+            $movie['sound_mix'] = $infoDb->where(['movie_id' => $movie['unique_id'], 'type' => 'sound_mix'])->findAll();
+            $movie['aspect_ratio'] = $infoDb->where(['movie_id' => $movie['unique_id'], 'type' => 'aspect_ratio'])->findAll();
+            $movie['languages'] = $infoDb->where(['movie_id' => $movie['unique_id'], 'type' => 'languages'])->findAll();
+
+            $this->data['movie'] = $movie;
+            return view('Web/Filmfestival/festival_official_selection_details', $this->data);
+        } else {
+            return redirect()->route('festival_official_selection');
+        }
     }
 
     // private functions
@@ -1355,5 +1698,32 @@ class FilmFestival extends BaseController
         $amountToDeduct = ($price  / 100) * $current[$field];
         $newAmount = $price - $amountToDeduct;
         return ceil($newAmount);
+    }
+    private function checkIfAllOtherStepsLocked($movie, $step)
+    {
+        unset($movie[$step]);
+        $lockedSteps = [];
+        if (isset($movie['step1']) && $movie['step1'] == 'locked') {
+            array_push($lockedSteps, 'locked');
+        }
+        if (isset($movie['step2']) && $movie['step2'] == 'locked') {
+            array_push($lockedSteps, 'locked');
+        }
+        if (isset($movie['step3']) && $movie['step3'] == 'locked') {
+            array_push($lockedSteps, 'locked');
+        }
+        if (isset($movie['step4']) && $movie['step4'] == 'locked') {
+            array_push($lockedSteps, 'locked');
+        }
+        if (isset($movie['step5']) && $movie['step5'] == 'locked') {
+            array_push($lockedSteps, 'locked');
+        }
+        if (isset($movie['step6']) && $movie['step6'] == 'locked') {
+            array_push($lockedSteps, 'locked');
+        }
+        if (count($lockedSteps) >= 5) {
+            return true;
+        }
+        return false;
     }
 }

@@ -148,6 +148,9 @@ var youtubeThumb = $('.youtubeThumb');
 youtubeThumb.on('click', function (ev) {
     var videoId = $(this).data('video');
     console.log(videoId);
+    if(videoId.includes('http')) {
+        videoId = youtube_parser(videoId);
+    }
     var videoLink = 'https://www.youtube-nocookie.com/embed/' + videoId;
     youtubeModalIframe.attr('src', videoLink);
     UIkit.modal(youtubeModal).show();
@@ -156,6 +159,9 @@ var vimeoThumb = $('.vimeoThumb');
 vimeoThumb.on('click', function (ev) {
     var videoId = $(this).data('video');
     console.log(videoId);
+    if(videoId.includes('http')) {
+        videoId = youtube_parser(videoId);
+    }
     var videoLink = 'https://player.vimeo.com/video/' + videoId + '?h=948f95b102&autoplay=1&title=0&byline=0&portrait=0';
     vimeoModalIframe.attr('src', videoLink);
     UIkit.modal(vimeoModal).show();
@@ -270,7 +276,7 @@ document.addEventListener('focusin', (e) => {
         e.stopImmediatePropagation();
     }
 });
-var previewImage = function (event, tagId) {
+const previewImage = function (event, tagId) {
     // var output = $('#' + tagId);
     var output = document.getElementById(tagId);
     output.src = URL.createObjectURL(event.target.files[0]);
@@ -301,10 +307,11 @@ function vimeo_parser(url) {
     // return (match) ? match[5] : false;
 }
 
-async function fileSizeValidation(inputId, maxHeight = 100, maxWidth = 100, fixed = false, previewId = null) {
+async function fileSizeValidation(inputId, maxHeight = 100, maxWidth = 100, fixed = false, previewId = null, previewDefault=null) {
     var validated = true;
     var fileUpload = $("#" + inputId)[0];
-    var regex = new RegExp("([a-zA-Z0-9\s_\\.\-:])+(.jpg|.png|.gif)$");
+    // var regex = new RegExp("([a-zA-Z0-9\s_\\.\-:])+(.jpg|.png|.gif)$");
+    var regex = new RegExp(/\.(jpe?g|png|bmp)$/i);
     if (regex.test(fileUpload.value.toLowerCase())) {
         //Check whether HTML5 is supported.
         if (typeof (fileUpload.files) != "undefined") {
@@ -324,20 +331,31 @@ async function fileSizeValidation(inputId, maxHeight = 100, maxWidth = 100, fixe
                     if (fixed && height != maxHeight || fixed && width != maxWidth) {
                         alert('', "Height and Width must match " + maxHeight + 'x' + maxWidth + ' pixels', 'error');
                         validated = false;
+                        resetImageInput(inputId);
                     }
                     if (!fixed && height > maxHeight || !fixed && width > maxWidth) {
                         alert('', "Height and Width must not exceed " + maxHeight + 'x' + maxWidth + ' pixels', 'error');
                         validated = false;
+                        resetImageInput(inputId);
+                    }
+                    if (validated) {
+                        if(previewId) {
+                            $('#' + previewId).attr('src', this.src);
+                        } else {
+                            $('#' + previewId).attr('src', previewDefault);
+                        }
                     }
                 };
             }
         } else {
             alert('', "This browser does not support HTML5.", 'error');
             validated = false;
+            resetImageInput(inputId);
         }
     } else {
         alert('', "Please select a valid Image file.", 'error');
         validated = false;
+        resetImageInput(inputId);
     }
     return validated;
 }
@@ -349,7 +367,45 @@ const Toast = Swal.mixin({
     timer: 3000,
     timerProgressBar: true,
     didOpen: (toast) => {
-      toast.addEventListener('mouseenter', Swal.stopTimer)
-      toast.addEventListener('mouseleave', Swal.resumeTimer)
+        toast.addEventListener('mouseenter', Swal.stopTimer)
+        toast.addEventListener('mouseleave', Swal.resumeTimer)
     }
-  })
+})
+
+function numberToFloat(number) {
+    let f2 = parseFloat(number).toFixed(2);
+    // console.log(f2);
+
+    let decimal = f2.split('.')[1];
+    // console.log(decimal);
+    let decimal2 = decimal[1];
+    // console.log(decimal2);
+
+    let last = 0;
+    if (decimal2 >= 5) {
+        last = 1;
+    }
+
+    var firstNumber = parseInt(decimal[0], 10);
+    var newNumber = Math.floor(f2) + '.' + (firstNumber + last);
+    console.log(newNumber);
+    return parseFloat(newNumber).toFixed(2);
+}
+
+// const ratio1 = 1.89;
+// const ratio2 = 1.9
+
+// if(numberToFloat(ratio1) === numberToFloat(ratio2)) {
+//   console.log('equals')
+// } else {
+//   console.log('not equals')
+// }
+
+window.reset2 = function (e) {
+    e.wrap('<form>').closest('form').get(0).reset();
+    e.unwrap();
+}
+function resetImageInput(inputId) {
+    $("#" + inputId).wrap('<form>').closest('form').get(0).reset();
+    $("#" + inputId).unwrap();
+}

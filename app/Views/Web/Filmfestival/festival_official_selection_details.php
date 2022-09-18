@@ -3,38 +3,39 @@
 <?= $this->section('content') ?>
 
 <section class="about-section-shadow">
-    <img src="http://sky360.in/mini_box_office/mini@1357admin/img/filmfestival/userform/1625651134-title-bar-background.jpg" alt="" class="img-height" uk-img="">
+    <img src="<?= $movie['banner'] ?>" alt="" class="img-height" uk-img="">
     <div class="cover-shadow"></div>
     <div class="uk-section-small  uk-padding-remove-bottom  uk-padding-remove-top">
         <div class="team-details-top">
             <div class="uk-container">
                 <div class="uk-grid" uk-grid="">
                     <div class="uk-width-1-3@m uk-first-column">
-                        <img src="http://sky360.in/mini_box_office/mini@1357admin/img/filmfestival/userform/1626162337-list-box-3.jpg" alt="" class="team-photo-img">
+                        <img src="<?= $movie['poster'] ?>" alt="" class="team-photo-img">
                     </div>
                     <div class="uk-width-2-3@m">
                         <div class="team-details">
-                            <h3 class="winner-year">5<sup>th</sup> IFF-15 | Best Actor2</h3>
-                            <h2>movie name</h2>
-                            <p>
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim blandit volutpat maecenas volutpat blandit aliquam etiam erat. Nibh cras pulvinar mattis nunc sed blandit libero. Vitae congue mauris rhoncus aenean vel elit scelerisque mauris pellentesque. </p>
+                            <!-- <h3 class="winner-year">5<sup>th</sup> IFF-15 | Best Actor2</h3> -->
+                            <h2><?= $movie['title'] ?></h2>
+                            <p><?= $movie['synopsis'] ?></p>
                             <div class="winner-items">
-                                <div class="winner-circular-items">
-                                    <a href="https://vimeo.com/180293809" target="_blank">
-                                        <div class="winner-icon">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-play">
-                                                <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                                            </svg>
-                                        </div>
-                                        <span>Watch the Trailer</span>
-                                    </a>
+                                <div class="winner-circular-items <?= $movie['trailer_type'] === 'youtube' ? 'youtubeThumb' : 'vimeoThumb' ?>" data-video="<?= $movie['trailer'] ?>">
+                                    <div class="winner-icon" style="color:#fff;cursor: pointer;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-play">
+                                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                        </svg>
+                                    </div>
+                                    <span style="color:#fff;cursor: pointer;">Watch the Trailer</span>
                                 </div>
                                 <div class="winner-dotted-items">
-                                    <div class="winner-item winner-time">2020</div>
-                                    <div class="winner-item winner-time">2h 55min</div>
+                                    <div class="winner-item winner-time"><?= $movie['year'] ?></div>
+                                    <div class="winner-item winner-time"><?= getHoursFromMinutes($movie['duration']) ?></div>
                                     <div class="winner-item winner-genres">
-                                        Crime, Drama, Horror </div>
-                                    <div class="gt-item gt-release-date">June 27 ,2021</div>
+                                        <?php foreach (json_decode($movie['genres'], true) as $key => $genre) : if ($key < 3) { ?>
+                                                <span class="commaSeparated"><?= $genre ?></span>
+                                        <?php }
+                                        endforeach; ?>
+                                    </div>
+                                    <!-- <div class="gt-item gt-release-date">June 27 ,2021</div> -->
                                 </div>
                             </div>
                         </div>
@@ -55,7 +56,7 @@
             <div class="uk-width-2-3@m">
                 <div class="winner-style winner-item-part-2">
                     <div class="winner-item-rating">
-                        <div class="user-reating winner-style">
+                        <!-- <div class="user-reating winner-style">
                             <div class="winner-star">
                                 <i class="fa fa-star-o" aria-hidden="true"></i><i class="fa fa-star-o" aria-hidden="true"></i><i class="fa fa-star-o" aria-hidden="true"></i><i class="fa fa-star-o" aria-hidden="true"></i><i class="fa fa-star-o" aria-hidden="true"></i><i class="fa fa-star-o" aria-hidden="true"></i><i class="fa fa-star-o" aria-hidden="true"></i><i class="fa fa-star-o check" aria-hidden="true"></i><i class="fa fa-star-o check" aria-hidden="true"></i><i class="fa fa-star-o check" aria-hidden="true"></i>
                             </div>
@@ -63,22 +64,30 @@
                                 <span>7</span>
                                 <span>10</span>
                             </div>
+                        </div> -->
+                        <div class="uerr-network user-reating winner-style">
+                            <div class="user-item-title">Director</div>
+                            <div class="user-item-content">
+                                <a href="#"><?= $movie['director'] ?></a>
+                            </div>
                         </div>
                         <div class="uerr-network user-reating winner-style">
                             <div class="user-item-title">Country</div>
                             <div class="user-item-content">
-                                <a href="#">India</a>
+                                <a href="#"><?= getWorldName($movie['country']) ?></a>
                             </div>
                         </div>
                         <div class="uerr-network user-reating winner-style">
                             <div class="user-item-title">Distribution </div>
                             <div class="user-item-content">
-                                Available </div>
+                                <?= $movie['distribution'] ?>
+                            </div>
                         </div>
                         <div class="uerr-network user-reating winner-style">
                             <div class="user-item-title">Status </div>
                             <div class="user-item-content">
-                                Released </div>
+                                <?= $movie['film_status'] ?>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -92,62 +101,22 @@
     <div class="uk-container">
         <div class="about-text-title winner-item-title">Cast &amp; Crew</div>
         <div class="winner-cast-list uk-grid-small uk-child-width-1-4@s" uk-grid="">
-            <div>
-                <div class="winner-item">
-                    <div class="winner-profile">
-                        <div class="winner-photo">
-                            <img width="100" height="100" src="http://sky360.in/mini_box_office/mini@1357admin/img/filmfestival/userform/cast-7.webp" class="attachment-noxe-thumbnail-2 size-noxe-thumbnail-2 winner-lazy-load loaded" alt="crew4 name" loading="lazy" data-ll-status="loaded">
+            <?php foreach ($movie['casts'] as $cast) : ?>
+                <div>
+                    <div class="winner-item">
+                        <div class="winner-profile">
+                            <div class="winner-photo">
+                                <img width="100" height="100" src="<?= $cast['image'] && file_exists('./' . $cast['image']) ? $cast['image'] : '/public/images/avatar.jpg' ?>" class="attachment-noxe-thumbnail-2 size-noxe-thumbnail-2 winner-lazy-load loaded" alt="<?= $cast['name'] ?>" loading="lazy" data-ll-status="loaded">
+                            </div>
+                            <div class="winner-title">
+                                <span class="winner-subtitle"><?= $cast['name'] ?></span>
+                                <span class="winner-name"><?= $cast['cast_character'] ?></span>
+                            </div>
                         </div>
-                        <div class="winner-title">
-                            <span class="winner-subtitle">Actor</span>
-                            <span class="winner-name">crew4 name</span>
-                        </div>
+                        <!-- <div class="winner-details"></div> -->
                     </div>
-                    <div class="winner-details"></div>
                 </div>
-            </div>
-            <div>
-                <div class="winner-item">
-                    <div class="winner-profile">
-                        <div class="winner-photo">
-                            <img width="100" height="100" src="http://sky360.in/mini_box_office/mini@1357admin/img/filmfestival/userform/cast-7.webp" class="attachment-noxe-thumbnail-2 size-noxe-thumbnail-2 winner-lazy-load loaded" alt="crew4 name" loading="lazy" data-ll-status="loaded">
-                        </div>
-                        <div class="winner-title">
-                            <span class="winner-subtitle">Actor</span>
-                            <span class="winner-name">crew4 name</span>
-                        </div>
-                    </div>
-                    <div class="winner-details"></div>
-                </div>
-            </div>
-            <div>
-                <div class="winner-item">
-                    <div class="winner-profile">
-                        <div class="winner-photo">
-                            <img width="100" height="100" src="http://sky360.in/mini_box_office/mini@1357admin/img/filmfestival/userform/cast-7.webp" class="attachment-noxe-thumbnail-2 size-noxe-thumbnail-2 winner-lazy-load loaded" alt="crew4 name" loading="lazy" data-ll-status="loaded">
-                        </div>
-                        <div class="winner-title">
-                            <span class="winner-subtitle">Actor</span>
-                            <span class="winner-name">crew4 name</span>
-                        </div>
-                    </div>
-                    <div class="winner-details"></div>
-                </div>
-            </div>
-            <div>
-                <div class="winner-item">
-                    <div class="winner-profile">
-                        <div class="winner-photo">
-                            <img width="100" height="100" src="http://sky360.in/mini_box_office/mini@1357admin/img/filmfestival/userform/cast-7.webp" class="attachment-noxe-thumbnail-2 size-noxe-thumbnail-2 winner-lazy-load loaded" alt="crew4 name" loading="lazy" data-ll-status="loaded">
-                        </div>
-                        <div class="winner-title">
-                            <span class="winner-subtitle">Actor</span>
-                            <span class="winner-name">crew4 name</span>
-                        </div>
-                    </div>
-                    <div class="winner-details"></div>
-                </div>
-            </div>
+            <?php endforeach; ?>
 
         </div>
     </div>
@@ -155,7 +124,7 @@
 </section>
 
 
-<div class="clearfix"></div>
+<!-- <div class="clearfix"></div> -->
 
 <div class="uk-container">
     <hr>
@@ -167,99 +136,196 @@
         <div class="uk-grid" data-ukgrid="">
             <div class="uk-width-1-4@m ">
                 <ul class="uk-tab-left left-tab uk-tab" uk-tab="connect: #component-tab-left; animation: uk-animation-fade" aria-expanded="true">
-                    <li class=""><a href="#" aria-expanded="false">Storyline</a></li>
-                    <li class=""><a href="#" aria-expanded="false">Box Office</a></li>
-                    <li class=""><a href="#" aria-expanded="false">Filming &amp; Production</a></li>
-                    <li class=""><a href="#" aria-expanded="false">Company Credits</a></li>
-                    <li class="uk-active"><a href="#" aria-expanded="true">Shooting Format </a></li>
-                    <li class=""><a href="#" aria-expanded="false">Screening </a></li>
-                    <li class=""><a href="#" aria-expanded="false">Sites</a></li>
+                    <li class="uk-active"><a href="#" aria-expanded="false">Storyline</a></li>
+                    <li class=""><a href="#" aria-expanded="false">Details</a></li>
+                    <li class=""><a href="#" aria-expanded="false">Producers</a></li>
+                    <li class=""><a href="#" aria-expanded="false">Writers</a></li>
+                    <li class=""><a href="#" aria-expanded="false">Composers</a></li>
+                    <li class=""><a href="#" aria-expanded="false">Cinematographers</a></li>
+                    <li class=""><a href="#" aria-expanded="false">Editors</a></li>
+                    <li class=""><a href="#" aria-expanded="false">Technical Specs</a></li>
                 </ul>
             </div>
             <div class="uk-width-3-4@m">
                 <ul id="component-tab-left" class="uk-switcher" style="touch-action: pan-y pinch-zoom;">
-                    <li class="" style="">
+                    <!-- storyline -->
+                    <li>
                         <div class="title-keywords">
                             <div class="title-keywords-content">
-                                <div class="keywords">Genres</div>
-                                <div class="key-list"> Crime, Drama, Horror</div>
+                                <div class="key-list">Storyline</div>
+                                <?= $movie['storyline'] ?>
                             </div>
                         </div>
                         <div class="title-keywords">
                             <div class="title-keywords-content">
+                                <div class="key-list">Genres</div>
                                 <div class="keywords">
-                                    Language</div>
-                                <div class="key-list"> Hindi </div>
-                            </div>
-                        </div>
-                        <div class="title-keywords">
-                            <div class="title-keywords-content">
-                                <div class="keywords">Countries</div>
-                                <div class="key-list"> India </div>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="" style="">
-                        <div class="title-keywords">
-                            <div class="title-keywords-content">
-                                <div class="keywords">
-                                    Budget</div>
-                                <div class="key-list"> ₹500</div>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="" style="">
-                        <div class="title-keywords">
-                            <div class="title-keywords-content">
-                                <div class="keywords">Filming Locations
+                                    <?php foreach (json_decode($movie['genres'], true) as $key => $genre) : ?>
+                                        <span class="commaSeparated"><?= $genre ?></span>
+                                    <?php endforeach; ?>
                                 </div>
-                                <div class="key-list">good </div>
                             </div>
                         </div>
-                    </li>
-                    <li class="" style="">
                         <div class="title-keywords">
                             <div class="title-keywords-content">
+                                <div class="key-list">Certificates/Ratings</div>
                                 <div class="keywords">
-                                    Counpany</div>
-                                <div class="key-list"> Fox Studio</div>
+                                    <?php foreach (json_decode($movie['certificates'], true) as $key => $certificate) : ?>
+                                        <span class="commaSeparated"><?= $certificate ?></span>
+                                    <?php endforeach; ?>
+                                </div>
                             </div>
                         </div>
                     </li>
+                    <!-- details -->
+                    <li>
+                        <div class="uk-child-width-1-2@m uk-grid-small" uk-grid>
+                            <div>
+                                <div class="title-keywords">
+                                    <div class="title-keywords-content">
+                                        <div class="key-list">Project type</div>
+                                        <div class="keywords">
+                                            <?= $movie['project'] ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="title-keywords">
+                                    <div class="title-keywords-content">
+                                        <div class="key-list">Production Company</div>
+                                        <div class="keywords">
+                                            <?= $movie['production_company'] ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="title-keywords">
+                                    <div class="title-keywords-content">
+                                        <div class="key-list">Languages</div>
+                                        <div class="keywords">
+                                            <?php foreach ($movie['languages'] as $key => $language) : ?>
+                                                <span class="commaSeparated"><?= $language['name'] ?><?= $language['attribute'] && !empty($language['attribute']) ? '(' . $language['attribute'] . ')' : '' ?></span>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="title-keywords">
+                                    <div class="title-keywords-content">
+                                        <div class="key-list">Budget</div>
+                                        <div class="keywords">
+                                            <?= number_to_currency($movie['budget_amount'], $movie['budget_currency'], 'en_us') ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <!-- producers -->
+                    <li>
+                        <div class="uk-child-width-1-3@m uk-grid-small uk-grid-match" uk-grid>
+                            <?php foreach ($movie['producers'] as $key => $producer) : ?>
+                                <div>
+                                    <div class="title-keywords">
+                                        <div class="title-keywords-content">
+                                            <div class="keywords"><?= $producer['name'] ?></div>
+                                            <div class="key-list"><?= $producer['attribute'] ?></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
 
-                    <li class="uk-active" style="">
-                        <div class="title-keywords">
-                            <div class="title-keywords-content">
-                                <div class="keywords">
-                                    Shooting Format</div>
-                                <div class="key-list"> mp3</div>
-                            </div>
-                        </div>
-                        <div class="title-keywords">
-                            <div class="title-keywords-content">
-                                <div class="keywords">
-                                    Sound</div>
-                                <div class="key-list"> good</div>
-                            </div>
                         </div>
                     </li>
-                    <li class="" style="">
-                        <div class="title-keywords">
-                            <div class="title-keywords-content">
-                                <div class="keywords">
-                                    Screening Detail</div>
-                                <div class="key-list"> good</div>
-                            </div>
+                    <!-- writers -->
+                    <li>
+                        <div class="uk-child-width-1-3@m uk-grid-small uk-grid-match" uk-grid>
+                            <?php foreach ($movie['writers'] as $key => $writer) : ?>
+                                <div>
+                                    <div class="title-keywords">
+                                        <div class="title-keywords-content">
+                                            <div class="keywords"><?= $writer['name'] ?></div>
+                                            <div class="key-list"><?= $writer['attribute'] ?></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+
                         </div>
                     </li>
-                    <li class="" style="">
+                    <!-- composers -->
+                    <li>
+                        <div class="uk-child-width-1-3@m uk-grid-small uk-grid-match" uk-grid>
+                            <?php foreach ($movie['composers'] as $key => $composer) : ?>
+                                <div>
+                                    <div class="title-keywords">
+                                        <div class="title-keywords-content">
+                                            <div class="keywords"><?= $composer['name'] ?></div>
+                                            <div class="key-list"><?= $composer['attribute'] ?></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+
+                        </div>
+                    </li>
+                    <!-- cinematographers -->
+                    <li>
+                        <div class="uk-child-width-1-3@m uk-grid-small uk-grid-match" uk-grid>
+                            <?php foreach ($movie['cinematographers'] as $key => $cinematographer) : ?>
+                                <div>
+                                    <div class="title-keywords">
+                                        <div class="title-keywords-content">
+                                            <div class="keywords"><?= $cinematographer['name'] ?></div>
+                                            <div class="key-list"><?= $cinematographer['attribute'] ?></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+
+                        </div>
+                    </li>
+                    <!-- editors -->
+                    <li>
+                        <div class="uk-child-width-1-3@m uk-grid-small uk-grid-match" uk-grid>
+                            <?php foreach ($movie['editors'] as $key => $editor) : ?>
+                                <div>
+                                    <div class="title-keywords">
+                                        <div class="title-keywords-content">
+                                            <div class="keywords"><?= $editor['name'] ?></div>
+                                            <div class="key-list"><?= $editor['attribute'] ?></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+
+                        </div>
+                    </li>
+                    <li>
                         <div class="title-keywords">
                             <div class="title-keywords-content">
+                                <div class="key-list">Sound Mix</div>
                                 <div class="keywords">
-                                    Website</div>
-                                <div class="key-list"> http://google.com/</div>
+                                    <?php foreach ($movie['sound_mix'] as $key => $sound_mix) : ?>
+                                        <span class="commaSeparated"><?= $sound_mix['name'] ?><?= $sound_mix['attribute'] && !empty($sound_mix['attribute']) ? '(' . $sound_mix['attribute'] . ')' : '' ?></span>
+                                    <?php endforeach; ?>
+                                </div>
                             </div>
                         </div>
+                        <div class="title-keywords">
+                            <div class="title-keywords-content">
+                                <div class="key-list">Axpect Ratio</div>
+                                <div class="keywords">
+                                    <?php foreach ($movie['aspect_ratio'] as $key => $aspect_ratio) : ?>
+                                        <span class="commaSeparated"><?= $aspect_ratio['name'] ?><?= $aspect_ratio['attribute'] && !empty($aspect_ratio['attribute']) ? '(' . $aspect_ratio['attribute'] . ')' : '' ?></span>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        </div>
+
                     </li>
                 </ul>
             </div>

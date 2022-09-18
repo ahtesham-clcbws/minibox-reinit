@@ -2271,3 +2271,27 @@ function isAdmin()
     }
     return false;
 }
+
+function getEntryFormHeaderIcon($value)
+{
+    // // <span uk-icon="icon: <?= $movie['step1'] == 'open' ? 'warning' : ($movie['step1'] == 'completed' ? 'check' : 'lock')
+    $icon = '';
+    $color = '';
+    $title = '';
+    if ($value == 'open') {
+        $icon = 'warning';
+        $color = '#ff9966';
+        $title = 'Update Needed!';
+    } else {
+        if ($value == 'completed') {
+            $icon = 'future';
+            $color = '#4BB543';
+            $title = 'In-Review, Please Wait!';
+        } else {
+            $icon = 'lock';
+            $color = '#0275d8';
+            $title = 'Listing locked & published.';
+        }
+    }
+    return '<span uk-icon="icon:' . $icon . ';ratio:0.7;" style="color:' . $color . ';" title="' . $title . '">';
+}
