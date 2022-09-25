@@ -762,10 +762,9 @@ class FilmFestival extends BaseController
                 $movieDb->save($movie);
 
                 $movieCastsDb = new MajorCasts();
+                $movieInfoDb = new OtherInfoModel();
 
                 $projectTypeDb = new FestivalTypeOfFilms();
-
-                $movieInfoDb = new OtherInfoModel();
 
                 $infoDataDB = new FilmInfosData();
 
@@ -1070,13 +1069,6 @@ class FilmFestival extends BaseController
                 }
 
                 $movie['project'] = $projectTypeDb->find($movie['project'])['type'] . ' Film';
-
-                $currencies = $infoDataDB->where('type', 'currency')->findAll();
-                $this->data['currencies'] = $currencies;
-                $genres = $infoDataDB->where('type', 'genres')->findAll();
-                $this->data['genres'] = $genres;
-                $certificates = $infoDataDB->where('type', 'certificates')->findAll();
-                $this->data['certificates'] = $certificates;
 
                 $openedStep = 'noStep';
                 $openedSteps = [];

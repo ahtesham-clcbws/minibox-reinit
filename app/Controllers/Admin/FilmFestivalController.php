@@ -24,7 +24,11 @@ use App\Models\Festival\FestivalJuryGallery;
 use App\Models\Festival\FestivalVolunteer;
 use App\Models\Festival\FestivalDelegatePackages;
 use App\Models\Festival\FestivalGallery;
+use App\Models\Festival\FestivalOfficialSubmission;
 use App\Models\Festival\FestivalPress;
+use App\Models\Films\FilmInfosData;
+use App\Models\Films\MajorCasts;
+use App\Models\Films\OtherInfoModel;
 use App\Models\Filmzine\NewsModel;
 
 class FilmFestivalController extends BaseController
@@ -1621,7 +1625,305 @@ class FilmFestivalController extends BaseController
         }
     }
 
-    public function checkout()
+    public function allOfficialSubmissions()
     {
+        if ($this->request->getPost()) {
+            $result = $this->allOfficialSubmissionsPostHandler($this->request->getPost());
+            return json_encode($result);
+        }
+        return view('Admin/Pages/filmfestivals/festivals_official_submissions', $this->data);
+    }
+    public function officialSubmissionsSingle($id)
+    {
+        // print_r(session()->get('user'));
+        // return;
+        $submissionsDb = new FestivalOfficialSubmission();
+        $movie = $submissionsDb->getSingleFestivalEntryAdmin($id);
+        $unique_id = $movie['unique_id'];
+        $response = ['success' => false, 'message' => 'In-Valid Request', 'data' => []];
+
+        if ($this->request->getPost()) {
+            if ($this->request->getPost('columnName') && $this->request->getPost('columnValue')) {
+                // return json_encode($this->request->getPost());
+                $dataToSave['id'] = $movie['id'];
+                if($this->request->getPost('columnName') == 'certificates' || $this->request->getPost('columnName') == 'genres') {
+                    $dataToSave[$this->request->getPost('columnName')] = json_encode($this->request->getPost('columnValue'));
+                } else {
+                    $dataToSave[$this->request->getPost('columnName')] = $this->request->getPost('columnValue');
+                }
+                if ($submissionsDb->save($dataToSave)) {
+                    $response['success'] = true;
+                    $response['message'] = "Update Succesfully";
+                }
+            } else if ($img = $this->request->getFile('banner')) {
+                if ($img->isValid() && !$img->hasMoved()) {
+                    $newName = $img->getRandomName();
+                    $img->move('uploads/movie_banner/' . $unique_id, $newName);
+                    $path = '/uploads/movie_banner/' . $unique_id . '/' . $newName;
+                    $postData['id'] = $movie['id'];
+                    $postData['banner'] = $path;
+                    if ($submissionsDb->save($postData)) {
+                        $response['success'] = true;
+                        $response['message'] = "Update Succesfully";
+                    }
+                }
+            } else if ($img = $this->request->getFile('poster')) {
+                if ($img->isValid() && !$img->hasMoved()) {
+                    $newName = $img->getRandomName();
+                    $img->move('uploads/movie_poster/' . $unique_id, $newName);
+                    $path = '/uploads/movie_poster/' . $unique_id . '/' . $newName;
+                    $postData['id'] = $movie['id'];
+                    $postData['poster'] = $path;
+                    if ($submissionsDb->save($postData)) {
+                        $response['success'] = true;
+                        $response['message'] = "Update Succesfully";
+                    }
+                }
+            } else if ($this->request->getPost('approveListing')) {
+                // return json_encode($movie['all_inputs']);
+
+                // $all_inputs = json_decode($movie['all_inputs']);
+                $allInputs = array();
+                foreach ($movie['all_inputs'] as $key => $blocks) {
+                    foreach ($blocks as $key => $input) {
+                        array_push($allInputs, $input);
+                    }
+                }
+
+                $dataToSave['id'] = $movie['id'];
+                $dataToSave['step1'] = 'locked';
+                $dataToSave['step2'] = 'locked';
+                $dataToSave['step3'] = 'locked';
+                $dataToSave['step4'] = 'locked';
+                $dataToSave['step5'] = 'locked';
+                $dataToSave['step6'] = 'locked';
+                $dataToSave['allsteps'] = 'locked';
+
+                $dataToSave['approved'] = 1;
+                $dataToSave['edit_status'] = 'completed';
+                $dataToSave['unlocked_inputs'] = json_encode([]);
+                $dataToSave['locked_inputs'] = json_encode($allInputs);
+                if ($submissionsDb->save($dataToSave)) {
+                    $response['success'] = true;
+                    $response['message'] = "Approved Succesfully";
+                }
+            } else if ($this->request->getPost('reject_reason')) {
+                $allInputs = array();
+                foreach ($movie['all_inputs'] as $key => $blocks) {
+                    foreach ($blocks as $key => $input) {
+                        array_push($allInputs, $input);
+                    }
+                }
+
+                $dataToSave['id'] = $movie['id'];
+                $dataToSave['step1'] = 'open';
+                $dataToSave['step2'] = 'open';
+                $dataToSave['step3'] = 'open';
+                $dataToSave['step4'] = 'open';
+                $dataToSave['step5'] = 'open';
+                $dataToSave['step6'] = 'open';
+                $dataToSave['allsteps'] = 'open';
+                $dataToSave['reason'] = $this->request->getPost('reject_reason');
+                $dataToSave['approved'] = 2;
+                $dataToSave['edit_status'] = 'update_needed';
+                $dataToSave['locked_inputs'] = json_encode([]);
+                $dataToSave['unlocked_inputs'] = json_encode($allInputs);
+
+                if ($submissionsDb->save($dataToSave)) {
+                    $response['success'] = true;
+                    $response['message'] = "Reject Succesfully";
+                }
+            } else if ($this->request->getPost('get_producers_type_data')) {
+                // datatables only producer attributes
+                $response['success'] = true;
+                $infoDataDB = new FilmInfosData();
+                $response['data'] = $infoDataDB->where('type', 'producer_type')->findAll();
+            } else if ($this->request->getPost('get_sound_mix_data')) {
+                // datatables only sound mix name & attributes
+                $response['success'] = true;
+                $infoDataDB = new FilmInfosData();
+                $response['data'] = [
+                    'sound_mixs' => $infoDataDB->where('type', 'sound_mix')->findAll(),
+                    'sound_mix_attributes' => $infoDataDB->where('type', 'sound_mix_attribute')->findAll(),
+                ];
+            } else if ($this->request->getPost('get_aspect_ratio_data')) {
+                // datatables only aspect ratio names
+                $response['success'] = true;
+                $infoDataDB = new FilmInfosData();
+                $response['data'] = $infoDataDB->where('type', 'aspect_ratio')->findAll();
+            } else if ($this->request->getPost('addMovieData')) {
+                // add movie data (producers, writers, composers, cinematographers, editors, languages, sound_mix, aspect_ratio)
+                $movieData = $this->request->getPost();
+                unset($movieData['addMovieData']);
+                $movieData['movie_id'] = $unique_id;
+                if ($movieData['id'] == 0) {
+                    unset($movieData['id']);
+                }
+                if (!$movieData['attribute']) {
+                    $movieData['attribute'] = NULL;
+                }
+                $movieInfoDb = new OtherInfoModel();
+                if ($movieInfoDb->save($movieData)) {
+                    $response['success'] = true;
+                } else {
+                    $response['success'] = false;
+                    $response['message'] = 'unable to save data, please try again after some time.';
+                }
+            } else if ($this->request->getPost('deleteMovieData')) {
+                $movieInfoDb = new OtherInfoModel();
+                // delete movie data (producers, writers, composers, cinematographers, editors, languages, sound_mix, aspect_ratio)
+                $movieDataId = $this->request->getPost('deleteMovieData');
+                if ($movieInfoDb->delete($movieDataId)) {
+                    $response['success'] = true;
+                } else {
+                    $response['success'] = false;
+                    $response['message'] = 'unable to delete data, please try again after some time.';
+                }
+            } else if ($this->request->getPost('addMovieCast')) {
+                // add mmajor caste only
+                $castData = $this->request->getPost();
+                unset($castData['addMovieCast']);
+
+                $castData['movie_id'] = $unique_id;
+
+                if ($castData['id'] == 0) {
+                    unset($castData['id']);
+                }
+                if (!$castData['attribute']) {
+                    $castData['attribute'] = NULL;
+                }
+                if (!$castData['gender']) {
+                    $castData['gender'] = NULL;
+                }
+
+                if ($img = $this->request->getFile('image')) {
+                    if ($img->isValid() && !$img->hasMoved()) {
+                        $newName = $img->getRandomName();
+                        $img->move('uploads/movie_casts/' . $unique_id, $newName);
+                        $path = '/uploads/movie_casts/' . $unique_id . '/' . $newName;
+                        $castData['image'] = $path;
+                    }
+                }
+
+                $movieCastsDb = new MajorCasts();
+                if ($movieCastsDb->save($castData)) {
+                    $response['success'] = true;
+                } else {
+                    $response['success'] = false;
+                    $response['message'] = 'unable to save cast, please try again after some time.';
+                }
+            } else if ($this->request->getPost('deleteMovieCast')) {
+                // delete major caste only
+                $movieCastsDb = new MajorCasts();
+                $castId = $this->request->getPost('deleteMovieCast');
+                if ($movieCastsDb->delete($castId)) {
+                    $response['success'] = true;
+                } else {
+                    $response['success'] = false;
+                    $response['message'] = 'unable to delete cast, please try again after some time.';
+                }
+            } else {
+                return json_encode($this->officialSubmissionsSinglePostHandler($this->request->getPost(), $id, $movie));
+            }
+            return json_encode($response);
+        }
+
+        $this->data['movie'] = $movie;
+        // echo json_encode(in_array('languages', $this->data['movie']['all_inputs']));
+        // echo json_encode(preg_match('/"'.preg_quote('languages', '/').'"/i' , json_encode($this->data['movie']['all_inputs'])));
+        // return;
+        // return print_r($this->data['movie']);
+        return view('Admin/Pages/filmfestivals/festivals_official_submission_view', $this->data);
+    }
+
+    private function allOfficialSubmissionsPostHandler($postData)
+    {
+        $response = ['success' => false, 'message' => 'No data found'];
+        if ($postData['draw']) {
+            $submissionsDb = new FestivalOfficialSubmission();
+            return $submissionsDb->getFestivalEntriesAdmin($postData);
+        }
+        return $response;
+    }
+    private function officialSubmissionsSinglePostHandler($postData, $id, $movie = null)
+    {
+        $response = ['success' => false, 'message' => 'No data found'];
+        if (isset($postData['draw'])) {
+            $start = $postData['start'];
+            $length = $postData['length'];
+
+            if (isset($postData['other_info_data'])) {
+                $dataType = $postData['other_info_data'];
+
+                $movieInfoDb = new OtherInfoModel();
+                $tableData = $movieInfoDb->getInfoDataWithCountAdmin($dataType, $movie['unique_id'], $start, $length);
+                $json_data = array(
+                    "draw" => intval($postData['draw']),
+                    "recordsTotal" => $tableData['countAll'],
+                    "recordsFiltered" => $tableData['countAll'],
+                    "data" => $tableData['list']
+                );
+            }
+            if (isset($postData['casts_data'])) {
+                $movieCastsDb = new MajorCasts();
+                $tableData = $movieCastsDb->getCastesWithCountAdmin($movie['unique_id'], $start, $length, $movie['step4']);
+                $json_data = array(
+                    "draw" => intval($postData['draw']),
+                    "recordsTotal" => $tableData['countAll'],
+                    "recordsFiltered" => $tableData['countAll'],
+                    "data" => $tableData['list']
+                );
+            }
+
+            return $json_data;
+        }
+
+
+        if (isset($postData['change_unlocked_inputs'])) {
+            $data['unlocked_inputs'] = $postData['change_unlocked_inputs'];
+        }
+        if (isset($postData['change_locked_inputs'])) {
+            $data['locked_inputs'] = $postData['change_locked_inputs'];
+        }
+        if (isset($postData['change_approved_inputs'])) {
+            $data['approved_inputs'] = $postData['change_approved_inputs'];
+        }
+        if (isset($postData['change_edit_status'])) {
+            $data['edit_status'] = $postData['change_edit_status'];
+        }
+        if (isset($postData['change_approved_status'])) {
+            $data['approved'] = $postData['change_approved_status'];
+        }
+        if (isset($postData['change_steps'])) {
+            $inputName = $postData['change_steps_input'];
+            $inputValue = $postData['change_steps_value'];
+            $data[$inputName] = $inputValue;
+        }
+        if (isset($postData['change_single_input'])) {
+            $inputName = $postData['change_single_input'];
+            $inputValue = $postData['change_single_input_value'];
+            $data[$inputName] = $inputValue;
+        }
+        if (isset($data)) {
+            // then save the inputs else show error message
+            $data['id'] = $id;
+            $submissionsDb = new FestivalOfficialSubmission();
+            $saveData = $submissionsDb->save($data);
+            if ($saveData) {
+                $response['success'] = true;
+                $response['message'] = 'Date updated succesfully.';
+            } else {
+                $response['message'] = 'Unable to save data.';
+            }
+        } else {
+            $response['message'] = 'Invalid request';
+        }
+        if (isset($postData['major_cast'])) {
+            $data['unlocked_inputs'] = $postData['change_unlocked_inputs'];
+        }
+        if (isset($postData['other_info'])) {
+            $data['unlocked_inputs'] = $postData['change_unlocked_inputs'];
+        }
+        return $response;
     }
 }

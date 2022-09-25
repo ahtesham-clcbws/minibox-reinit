@@ -3,9 +3,11 @@
 use App\Models\Common\CitiesModel;
 use App\Models\Common\CountriesModel;
 use App\Models\Common\LanguagesModel;
+use App\Models\Common\LogsModel;
 use App\Models\Common\SiteSettings;
 use App\Models\Common\StatesModel;
 use App\Models\Festival\FestivalModel;
+use App\Models\Festival\FestivalTypeOfFilms;
 use App\Models\Films\FilmInfosData;
 use App\Models\HomePageBannersModel;
 use App\Models\UserModel;
@@ -56,6 +58,9 @@ function getUrlSegment($number)
 function dontShowSidenav()
 {
     if (!getUrlSegment(2)) {
+        return true;
+    }
+    if (getUrlSegment(2) == 'film-festivals' && getUrlSegment(3) == 'official-submissions') {
         return true;
     }
     if (getUrlSegment(2) == 'film-festivals' && intval(getUrlSegment(4)) && getUrlSegment(5)) {
@@ -173,6 +178,11 @@ function user_login($userEmail, $userPassword, $device = 'web')
         }
     } else {
         $response['message'] = 'Password or email not matched. Or User not activated yet.';
+    }
+
+    $getRedirect = session()->get('auth_redirect');
+    if ($getRedirect) {
+        $response['auth_redirect'] = $getRedirect;
     }
     return $response;
 }
@@ -2294,4 +2304,32 @@ function getEntryFormHeaderIcon($value)
         }
     }
     return '<span uk-icon="icon:' . $icon . ';ratio:0.7;" style="color:' . $color . ';" title="' . $title . '">';
+}
+
+
+function saveLog($type, $task, $content, $status = 0)
+{
+    $LogsModel = new LogsModel();
+    return $LogsModel->createLog($type, $task, $content, $status = 0);
+}
+
+function getCurrencies()
+{
+    $infoDataDB = new FilmInfosData();
+    return $infoDataDB->where('type', 'currency')->findAll();
+}
+function getGenres()
+{
+    $infoDataDB = new FilmInfosData();
+    return $infoDataDB->where('type', 'genres')->findAll();
+}
+function getCertificates()
+{
+    $infoDataDB = new FilmInfosData();
+    return $infoDataDB->where('type', 'certificates')->findAll();
+}
+function getProjectTypes()
+{
+    $projectTypeDb = new FestivalTypeOfFilms();
+    return $projectTypeDb->findAll();
 }

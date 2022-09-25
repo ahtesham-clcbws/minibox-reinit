@@ -5,19 +5,6 @@
     .device-status-group {
         width: 95%;
     }
-
-    .device-status-data .amount {
-        /* font-size: 1.125rem; */
-        font-size: 12px;
-        color: #364a63;
-        font-weight: 500;
-    }
-
-    #festivalEntriesTable_moredata,
-    #festivalEntriesTable_loader,
-    #festivalEntriesTable_notfound {
-        display: none;
-    }
 </style>
 <?= $this->endSection() ?>
 
@@ -32,7 +19,7 @@
 <div class="nk-block">
     <div class="row g-gs">
 
-        <div class="col-md-3 col-12">
+        <div class="col-md-6 col-12">
             <div class="card card-bordered h-100">
                 <div class="card-inner h-100 stretch flex-column">
                     <div class="card-title-group">
@@ -81,7 +68,7 @@
             </div><!-- .card -->
         </div>
 
-        <div class="col-md-3 col-12">
+        <div class="col-md-6 col-12">
             <div class="card card-bordered h-100">
                 <div class="card-inner">
                     <div class="card-title-group">
@@ -129,95 +116,279 @@
                 </div>
             </div><!-- .card -->
         </div>
-        <div class="col-md-6 col-12">
-            <div class="row g-gs">
-                <!-- Official Selections -->
-                <div class="col-12">
-                    <div class="card card-bordered">
-                        <div class="card-inner">
-                            <div class="card-title-group align-start mb-2">
-                                <div class="card-title">
-                                    <h6 class="title">Official Selections</h6>
-                                </div>
-                                <div class="card-tools">
-                                    <em class="card-hint icon ni ni-help-fill" data-bs-toggle="tooltip" data-bs-placement="left" title="Daily Avg. subscription"></em>
-                                </div>
-                            </div>
-                            <div class="align-end flex-sm-wrap g-4 flex-md-nowrap">
-                                <div class="nk-sale-data">
-                                    <span class="amount">346.2</span>
-                                    <span class="sub-title"><span class="change up text-success"><em class="icon ni ni-arrow-long-up"></em>2.45%</span>since last week</span>
-                                </div>
-                                <div class="nk-sales-ck">
-                                    <canvas class="sales-bar-chart" id="totalSubscription"></canvas>
-                                </div>
-                            </div>
+
+        <!-- Official Selections -->
+        <div class="col-sm-6">
+            <div class="card card-bordered">
+                <div class="card-inner">
+                    <div class="card-title-group align-start mb-2">
+                        <div class="card-title">
+                            <h6 class="title">Official Selections</h6>
+                        </div>
+                        <div class="card-tools">
+                            <em class="card-hint icon ni ni-help-fill" data-bs-toggle="tooltip" data-bs-placement="left" title="Daily Avg. subscription"></em>
                         </div>
                     </div>
-                </div>
-                <!-- Festival Winners -->
-                <div class="col-12">
-                    <div class="card card-bordered">
-                        <div class="card-inner">
-                            <div class="card-title-group align-start mb-2">
-                                <div class="card-title">
-                                    <h6 class="title">Festival Winners</h6>
-                                </div>
-                                <div class="card-tools">
-                                    <em class="card-hint icon ni ni-help-fill" data-bs-toggle="tooltip" data-bs-placement="left" title="Daily Avg. subscription"></em>
-                                </div>
-                            </div>
-                            <div class="align-end flex-sm-wrap g-4 flex-md-nowrap">
-                                <div class="nk-sale-data">
-                                    <span class="amount">346.2</span>
-                                    <span class="sub-title"><span class="change up text-success"><em class="icon ni ni-arrow-long-up"></em>2.45%</span>since last week</span>
-                                </div>
-                                <div class="nk-sales-ck">
-                                    <canvas class="sales-bar-chart" id="totalSubscription"></canvas>
-                                </div>
-                            </div>
+                    <div class="align-end flex-sm-wrap g-4 flex-md-nowrap">
+                        <div class="nk-sale-data">
+                            <span class="amount">346.2</span>
+                            <span class="sub-title"><span class="change up text-success"><em class="icon ni ni-arrow-long-up"></em>2.45%</span>since last week</span>
+                        </div>
+                        <div class="nk-sales-ck">
+                            <canvas class="sales-bar-chart" id="totalSubscription"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
-
+        <!-- Festival Winners -->
+        <div class="col-sm-6">
+            <div class="card card-bordered">
+                <div class="card-inner">
+                    <div class="card-title-group align-start mb-2">
+                        <div class="card-title">
+                            <h6 class="title">Festival Winners</h6>
+                        </div>
+                        <div class="card-tools">
+                            <em class="card-hint icon ni ni-help-fill" data-bs-toggle="tooltip" data-bs-placement="left" title="Daily Avg. subscription"></em>
+                        </div>
+                    </div>
+                    <div class="align-end flex-sm-wrap g-4 flex-md-nowrap">
+                        <div class="nk-sale-data">
+                            <span class="amount">346.2</span>
+                            <span class="sub-title"><span class="change up text-success"><em class="icon ni ni-arrow-long-up"></em>2.45%</span>since last week</span>
+                        </div>
+                        <div class="nk-sales-ck">
+                            <canvas class="sales-bar-chart" id="totalSubscription"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <!-- Festival Entries -->
         <div class="col-12">
             <div class="card card-bordered card-full">
                 <div class="card-inner">
                     <div class="card-title-group">
                         <div class="card-title">
-                            <h6 class="title"><span class="me-2">Festival Entries (Official Selection)</span> <a href="<?= route_to('admin_film_festivals_official_submissions') ?>" class="link d-sm-inline">View All</a></h6>
-                        </div>
-                        <div class="card-tools">
-                            <ul class="card-tools-nav">
-                                <li onclick="getFetivalEntries('new', this)" class="festivalEntryButton"><a href="javascript:void(0);"><span>New</span></a></li>
-                                <li onclick="getFetivalEntries('approval', this)" class="festivalEntryButton"><a href="javascript:void(0);"><span>Awaiting Approval</span></a></li>
-                            </ul>
+                            <h6 class="title"><span class="me-2">Festival Entries</span></h6>
                         </div>
                     </div>
                 </div>
                 <div class="card-inner p-0 border-top">
-                    <div class="nk-tb-list nk-tb-orders" id="festivalEntriesTable">
+                    <div class="nk-tb-list nk-tb-orders">
+                        <div class="nk-tb-item nk-tb-head">
+                            <div class="nk-tb-col"><span>Order No.</span></div>
+                            <div class="nk-tb-col tb-col-sm"><span>Customer</span></div>
+                            <div class="nk-tb-col tb-col-md"><span>Date</span></div>
+                            <div class="nk-tb-col tb-col-lg"><span>Ref</span></div>
+                            <div class="nk-tb-col"><span>Amount</span></div>
+                            <div class="nk-tb-col"><span class="d-none d-sm-inline">Status</span></div>
+                            <div class="nk-tb-col"><span>&nbsp;</span></div>
+                        </div>
+                        <div class="nk-tb-item">
+                            <div class="nk-tb-col">
+                                <span class="tb-lead"><a href="#">#95954</a></span>
+                            </div>
+                            <div class="nk-tb-col tb-col-sm">
+                                <div class="user-card">
+                                    <div class="user-avatar user-avatar-sm bg-purple">
+                                        <span>AB</span>
+                                    </div>
+                                    <div class="user-name">
+                                        <span class="tb-lead">Abu Bin Ishtiyak</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="nk-tb-col tb-col-md">
+                                <span class="tb-sub">02/11/2020</span>
+                            </div>
+                            <div class="nk-tb-col tb-col-lg">
+                                <span class="tb-sub text-primary">SUB-2309232</span>
+                            </div>
+                            <div class="nk-tb-col">
+                                <span class="tb-sub tb-amount">4,596.75 <span>USD</span></span>
+                            </div>
+                            <div class="nk-tb-col">
+                                <span class="badge badge-dot badge-dot-xs bg-success">Paid</span>
+                            </div>
+                            <div class="nk-tb-col nk-tb-col-action">
+                                <div class="dropdown">
+                                    <a class="text-soft dropdown-toggle btn btn-icon btn-trigger" data-bs-toggle="dropdown"><em class="icon ni ni-more-h"></em></a>
+                                    <div class="dropdown-menu dropdown-menu-end dropdown-menu-xs">
+                                        <ul class="link-list-plain">
+                                            <li><a href="#">View</a></li>
+                                            <li><a href="#">Invoice</a></li>
+                                            <li><a href="#">Print</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="nk-tb-item">
+                            <div class="nk-tb-col">
+                                <span class="tb-lead"><a href="#">#95850</a></span>
+                            </div>
+                            <div class="nk-tb-col tb-col-sm">
+                                <div class="user-card">
+                                    <div class="user-avatar user-avatar-sm bg-azure">
+                                        <span>DE</span>
+                                    </div>
+                                    <div class="user-name">
+                                        <span class="tb-lead">Desiree Edwards</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="nk-tb-col tb-col-md">
+                                <span class="tb-sub">02/02/2020</span>
+                            </div>
+                            <div class="nk-tb-col tb-col-lg">
+                                <span class="tb-sub text-primary">SUB-2309154</span>
+                            </div>
+                            <div class="nk-tb-col">
+                                <span class="tb-sub tb-amount">596.75 <span>USD</span></span>
+                            </div>
+                            <div class="nk-tb-col">
+                                <span class="badge badge-dot badge-dot-xs bg-danger">Canceled</span>
+                            </div>
+                            <div class="nk-tb-col nk-tb-col-action">
+                                <div class="dropdown">
+                                    <a class="text-soft dropdown-toggle btn btn-icon btn-trigger" data-bs-toggle="dropdown"><em class="icon ni ni-more-h"></em></a>
+                                    <div class="dropdown-menu dropdown-menu-end dropdown-menu-xs">
+                                        <ul class="link-list-plain">
+                                            <li><a href="#">View</a></li>
+                                            <li><a href="#">Remove</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="nk-tb-item">
+                            <div class="nk-tb-col">
+                                <span class="tb-lead"><a href="#">#95812</a></span>
+                            </div>
+                            <div class="nk-tb-col tb-col-sm">
+                                <div class="user-card">
+                                    <div class="user-avatar user-avatar-sm bg-warning">
+                                        <img src="/public/admin/images/avatar/b-sm.jpg" alt="">
+                                    </div>
+                                    <div class="user-name">
+                                        <span class="tb-lead">Blanca Schultz</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="nk-tb-col tb-col-md">
+                                <span class="tb-sub">02/01/2020</span>
+                            </div>
+                            <div class="nk-tb-col tb-col-lg">
+                                <span class="tb-sub text-primary">SUB-2309143</span>
+                            </div>
+                            <div class="nk-tb-col">
+                                <span class="tb-sub tb-amount">199.99 <span>USD</span></span>
+                            </div>
+                            <div class="nk-tb-col">
+                                <span class="badge badge-dot badge-dot-xs bg-success">Paid</span>
+                            </div>
+                            <div class="nk-tb-col nk-tb-col-action">
+                                <div class="dropdown">
+                                    <a class="text-soft dropdown-toggle btn btn-icon btn-trigger" data-bs-toggle="dropdown"><em class="icon ni ni-more-h"></em></a>
+                                    <div class="dropdown-menu dropdown-menu-end dropdown-menu-xs">
+                                        <ul class="link-list-plain">
+                                            <li><a href="#">View</a></li>
+                                            <li><a href="#">Invoice</a></li>
+                                            <li><a href="#">Print</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="nk-tb-item">
+                            <div class="nk-tb-col">
+                                <span class="tb-lead"><a href="#">#95256</a></span>
+                            </div>
+                            <div class="nk-tb-col tb-col-sm">
+                                <div class="user-card">
+                                    <div class="user-avatar user-avatar-sm bg-purple">
+                                        <span>NL</span>
+                                    </div>
+                                    <div class="user-name">
+                                        <span class="tb-lead">Naomi Lawrence</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="nk-tb-col tb-col-md">
+                                <span class="tb-sub">01/29/2020</span>
+                            </div>
+                            <div class="nk-tb-col tb-col-lg">
+                                <span class="tb-sub text-primary">SUB-2305684</span>
+                            </div>
+                            <div class="nk-tb-col">
+                                <span class="tb-sub tb-amount">1099.99 <span>USD</span></span>
+                            </div>
+                            <div class="nk-tb-col">
+                                <span class="badge badge-dot badge-dot-xs bg-success">Paid</span>
+                            </div>
+                            <div class="nk-tb-col nk-tb-col-action">
+                                <div class="dropdown">
+                                    <a class="text-soft dropdown-toggle btn btn-icon btn-trigger" data-bs-toggle="dropdown"><em class="icon ni ni-more-h"></em></a>
+                                    <div class="dropdown-menu dropdown-menu-end dropdown-menu-xs">
+                                        <ul class="link-list-plain">
+                                            <li><a href="#">View</a></li>
+                                            <li><a href="#">Invoice</a></li>
+                                            <li><a href="#">Print</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="nk-tb-item">
+                            <div class="nk-tb-col">
+                                <span class="tb-lead"><a href="#">#95135</a></span>
+                            </div>
+                            <div class="nk-tb-col tb-col-sm">
+                                <div class="user-card">
+                                    <div class="user-avatar user-avatar-sm bg-success">
+                                        <span>CH</span>
+                                    </div>
+                                    <div class="user-name">
+                                        <span class="tb-lead">Cassandra Hogan</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="nk-tb-col tb-col-md">
+                                <span class="tb-sub">01/29/2020</span>
+                            </div>
+                            <div class="nk-tb-col tb-col-lg">
+                                <span class="tb-sub text-primary">SUB-2305564</span>
+                            </div>
+                            <div class="nk-tb-col">
+                                <span class="tb-sub tb-amount">1099.99 <span>USD</span></span>
+                            </div>
+                            <div class="nk-tb-col">
+                                <span class="badge badge-dot badge-dot-xs bg-warning">Due</span>
+                            </div>
+                            <div class="nk-tb-col nk-tb-col-action">
+                                <div class="dropdown">
+                                    <a class="text-soft dropdown-toggle btn btn-icon btn-trigger" data-bs-toggle="dropdown"><em class="icon ni ni-more-h"></em></a>
+                                    <div class="dropdown-menu dropdown-menu-end dropdown-menu-xs">
+                                        <ul class="link-list-plain">
+                                            <li><a href="#">View</a></li>
+                                            <li><a href="#">Invoice</a></li>
+                                            <li><a href="#">Notify</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="nk-tb-item d-flex justify-content-center w-100">
-                        <div class="m-5 h3" id="festivalEntriesTable_notfound">
-                            Data not found
-                        </div>
-                        <div class="spinner-border m-5" role="status" id="festivalEntriesTable_loader">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-                        <div class="p-4 h5 border-top w-100 text-center" id="festivalEntriesTable_moredata">
-                            There is more data to show, <a href="<?= route_to('admin_film_festivals_official_submissions') ?>">view all here</a>
-                        </div>
-                    </div>
+                </div>
+                <div class="card-inner-sm border-top text-center d-sm-none">
+                    <a href="#" class="btn btn-link btn-block">See History</a>
                 </div>
             </div>
         </div>
         <!-- Delegate Registrations -->
-        <div class="col-12 d-none">
+        <div class="col-12">
             <div class="card card-bordered card-full">
                 <div class="card-inner">
                     <div class="card-title-group">
@@ -439,7 +610,7 @@
             </div>
         </div>
         <!-- Volunteer Registration -->
-        <div class="col-lg-6 d-none">
+        <div class="col-lg-6">
             <div class="card card-bordered card-full">
                 <div class="card-inner border-bottom">
                     <div class="card-title-group">
@@ -495,7 +666,7 @@
             </div>
         </div>
         <!-- Support Requests -->
-        <div class="col-lg-6 d-none">
+        <div class="col-lg-6">
             <div class="card card-bordered h-100">
                 <div class="card-inner border-bottom">
                     <div class="card-title-group">
@@ -1099,132 +1270,5 @@
     NioApp.coms.docReady.push(function() {
         analyticsDoughnut();
     });
-
-    function getFetivalEntries($type = 'new', thisElement = null) {
-        // var festivalEntriesTable = $('#festivalEntriesTable');
-        startTableLoader('festivalEntriesTable');
-
-        $('.festivalEntryButton').each(function(index, element) {
-            $(element).removeClass('active');
-        })
-        if (thisElement) {
-            $(thisElement).addClass('active');
-        }
-
-        $.ajax({
-            url: '',
-            data: {
-                festivalEntries: $type
-            },
-            type: 'post',
-            success: function(response) {
-                // console.log(response);
-                try {
-                    const responseData = JSON.parse(response);
-                    if (responseData.success) {
-                        // console.log(responseData.data);
-                        getSetFetivalEntriesRow(responseData.data, 'festivalEntriesTable', responseData.count);
-                    } else {
-                        var dataType = $type == 'new' ? 'No new entries available.' : ($type == 'approval' ? 'No entries available for approval.' : 'Data not found.');
-                        // console.log('data not found')
-                        $('#festivalEntriesTable_notfound').html(dataType);
-                        $('#festivalEntriesTable_notfound').show();
-                        stopTableLoader('festivalEntriesTable');
-                    }
-                } catch (error) {
-                    console.log(error);
-                }
-            },
-            error: function(error) {
-                console.log(error);
-            }
-        })
-
-    }
-    getFetivalEntries();
-
-    function getSetFetivalEntriesRow($data, id, datacounts = 0) {
-        // console.log($data)
-        // console.log(id)
-        if ($data.length) {
-            $totalHtml = '';
-            $data.forEach(data => {
-                // console.log(data)
-                $totalHtml = $totalHtml + getTableRow(data);
-                // console.log($totalHtml)
-            });
-            // return $totalHtml;
-            $totalHtml = getTableHeader() + $totalHtml;
-            $('#' + id).html($totalHtml);
-
-            if (datacounts > 5) {
-                $('#' + id + '_moredata').show();
-            }
-            stopTableLoader(id);
-        } else {
-            $('#' + id + '_notfound').show();
-            // console.log('no data found')
-            stopTableLoader(id);
-        }
-        // $data.forEach(element => {
-        //     each
-        // });
-    }
-
-    function getTableRow($data) {
-
-        $html = '<div class="nk-tb-item"><div class="nk-tb-col tb-col-md"><span class="tb-lead">';
-        $html = $html + $data['festival_name'];
-        $html = $html + '</span> </div> <div class="nk-tb-col"> <span class="tb-lead">';
-        $html = $html + '<a href="' + $data['openingLink'] + '" target="_blank">';
-        $html = $html + $data['title'];
-        $html = $html + '</a></span> </div> <div class="nk-tb-col"> <span class="tb-sub text-primary">'
-        $html = $html + '<a href="' + $data['trailer'] + '" target="_blank">';
-
-        $html = $html + 'View Trailer</a> </span> </div> <div class="nk-tb-col"> <span class="tb-sub tb-amount">';
-
-        $html = $html + $data['year']
-
-        $html = $html + '<br>';
-
-        $html = $html + $data['country_name']
-
-        $html = $html + '</span> </div> <div class="nk-tb-col tb-col-md"> <span class="tb-sub">';
-
-        $data['genres'].forEach(genre => {
-            $html = $html + '<span class="commaSeperated">' + genre + '</span>';
-        });
-
-        $html = $html + ' </span>  </div>';
-        // $html = $html + '<div class="nk-tb-col"><span class="badge badge-dot badge-dot-xs bg-success">';
-        // $html = $html + 'Status'
-
-        // $html = $html + '</span> </div>';
-        $html = $html + '<div class="nk-tb-col tb-col-md"> <span class="tb-sub">';
-
-        $html = $html + $data['created_at']
-
-        $html = $html + '</span> </div> <div class="nk-tb-col tb-col-md"> <span class="tb-sub">';
-
-        $html = $html + $data['updated_at']
-
-        $html = $html + '</span></div></div>';
-        // $html = $html + '</span></div><div class="nk-tb-col nk-tb-col-action"><div class="dropdown"><a class="text-soft dropdown-toggle btn btn-icon btn-trigger" data-bs-toggle="dropdown"><em class="icon ni ni-more-h"></em></a><div class="dropdown-menu dropdown-menu-end dropdown-menu-xs"><ul class="link-list-plain"><li><a href="#">View</a></li><li><a href="#">Activate</a></li></ul></div></div></div></div>';
-
-        return $html;
-    }
-
-    function getTableHeader() {
-        return '<div class="nk-tb-item nk-tb-head"><div class="nk-tb-col tb-col-md"><span>Festival</span></div><div class="nk-tb-col"><span>Title</span></div><div class="nk-tb-col"><span>Trailer</span></div><div class="nk-tb-col"><span>Year/Country</span></div><div class="nk-tb-col tb-col-md"><span>Genres</span></div><div class="nk-tb-col tb-col-md"><span>Dated</span></div><div class="nk-tb-col tb-col-md"><span>Updated</span></div></div>';
-        // return '<div class="nk-tb-item nk-tb-head"><div class="nk-tb-col tb-col-md"><span>Festival</span></div><div class="nk-tb-col"><span>Title</span></div><div class="nk-tb-col"><span>Trailer</span></div><div class="nk-tb-col"><span>Year/Country</span></div><div class="nk-tb-col tb-col-md"><span>Genres</span></div><div class="nk-tb-col"><span class="d-none d-sm-inline">Status</span></div><div class="nk-tb-col tb-col-md"><span>Dated</span></div><div class="nk-tb-col tb-col-md"><span>Updated</span></div><div class="nk-tb-col"><span>&nbsp;</span></div></div>';
-    }
-
-    function startTableLoader(id) {
-        $('#' + id + '_loader').show();
-    }
-
-    function stopTableLoader(id) {
-        $('#' + id + '_loader').hide();
-    }
 </script>
 <?= $this->endSection() ?>

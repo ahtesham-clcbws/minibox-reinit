@@ -28,6 +28,9 @@ class Adminauth implements FilterInterface
         if (session()->get('userLoggedIn') && in_array(session()->get('loginType'), ['admin', 'staff'])) {
             return true;
         }
+        if($request->getServer() && isset($request->getServer()['REQUEST_URI'])) {
+            session()->set('auth_redirect', $request->getServer()['REQUEST_URI']);
+        }
         return redirect()->route('login');
     }
 

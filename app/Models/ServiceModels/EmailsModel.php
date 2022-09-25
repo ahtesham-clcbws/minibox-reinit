@@ -84,20 +84,13 @@ class EmailsModel extends Model
             // send email here
             $email = new Email();
 
-            $config['charset']  = 'utf-8';
-            $config['mailType'] = 'html';
+            helper('internalsettings');
 
-            $config['protocol'] = 'smtp';
-            $config['SMTPHost'] = 'mail.clcbws.online';
-            $config['SMTPPort'] = 587;
-            $config['SMTPUser'] = 'test@clcbws.online';
-            $config['SMTPPass'] = '23988725';
-
-            $email->initialize($config);
+            $email->initialize(getEmailConfigration());
 
             $email->setTo($to);
 
-            $email->setFrom('test@clcbws.online', 'Mini Box Office');
+            $email->setFrom('no-reply@miniboxoffice.com', 'Mini Box Office');
 
             $email->setSubject($subject);
             $email->setMessage(html_entity_decode($message2));
@@ -384,6 +377,28 @@ class EmailsModel extends Model
         // put html to email htmlPart
         // also put text email to textPart also if available
     }
-    // test url
-    // http://localhost:8080/service/online/backup
+
+    public function notifyAdmin($subject, $message)
+    {
+        helper('internalsettings');
+        $emails = getNotificationEmails();
+        if (!count($emails)) {
+            $emails = ADMIN_NOTIFICATION_EMAILS;
+        }
+        $email = new Email();
+
+        $email->initialize(getEmailConfigration());
+
+        $email->setTo($emails);
+
+        $email->setFrom('no-reply@miniboxoffice.com', 'Mini Box Office');
+
+        $email->setSubject($subject);
+        $email->setMessage(html_entity_decode($message));
+        $logStatus = 0;
+        if ($email->send()) {
+            $logStatus = 1;
+        }
+        saveLog('email', 'admin_notification', json_encode($subject), $logStatus);
+    }
 }

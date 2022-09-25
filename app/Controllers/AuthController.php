@@ -20,6 +20,9 @@ class AuthController extends BaseController
     }
     public function login()
     {
+        // return print_r(session()->get('auth_redirect'));
+        $getRedirect = session()->get('auth_redirect');
+        // session()->remove('auth_redirect');
         if ($this->request->getPost('login')) {
             // echo 'form submit';
             // return;
@@ -46,11 +49,16 @@ class AuthController extends BaseController
                 if ($requestGoBack) {
                     return redirect()->to($requestFrom);
                 } else {
-                    if (in_array($user['role'], ['admin', 'staff'])) {
-                        return redirect()->route('admin_index');
+                    if ($getRedirect) {
+                        return redirect()->to($getRedirect);
                     } else {
                         return redirect()->route('homepage');
                     }
+                    // if (in_array($user['role'], ['admin', 'staff'])) {
+                    //     return redirect()->route('admin_index');
+                    // } else {
+                    //     return redirect()->route('homepage');
+                    // }
                 }
             }
         }

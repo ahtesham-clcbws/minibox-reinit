@@ -55,15 +55,10 @@
                         icon: 'success',
                         title: 'Signed in successfully'
                     }).then((result) => {
-                        // auth_redirect
-                        if (data.auth_redirect && data.auth_redirect !== 'undefined') {
-                            return window.location = data.auth_redirect;
-                        } else {
-                            if (role == 'admin' || role == 'staff') {
-                                return window.location = '<?= route_to('admin_dashboard') ?>';
-                            }
-                            return window.location = '<?= route_to('homepage') ?>';
+                        if (role == 'admin' || role == 'staff') {
+                            return window.location = '<?= route_to('admin_dashboard') ?>';
                         }
+                        return window.location = '<?= route_to('homepage') ?>';
                     })
                     // alert('Success', 'Successfully logged in').then((result) => {
                     //     if (role == 'admin' || role == 'staff') {

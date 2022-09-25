@@ -427,7 +427,7 @@
 									<?php else : ?>
 										<select name="budget_currency" class="uk-select select2" data-placeholder="Select Currency" data-allow-clear="true" id="budget_currency" required>
 											<option value="" selected="" disabled=""></option>
-											<?php foreach ($currencies as $kkey => $budget_currency) : ?>
+											<?php foreach (getCurrencies() as $kkey => $budget_currency) : ?>
 												<option <?= $movie['budget_currency'] == substr($budget_currency['value'], 0, 3) ? 'selected' : '' ?> value="<?= substr($budget_currency['value'], 0, 3) ?>"><?= $budget_currency['value'] ?></option>
 											<?php endforeach; ?>
 										</select>
@@ -506,12 +506,12 @@
 								<label class="uk-form-label" for="color">Color</label>
 								<div class="uk-form-controls">
 									<?php if (in_array('color', $locked_inputs) || $movie['step2'] == 'locked') : ?>
-										<div class="uk-input disabled"><?= $movie['color'] == 'Yes' ? 'Color Film' : 'Black & White Film' ?></div>
+										<div class="uk-input disabled"><?= $movie['color'] == '1' ? 'Color Film' : 'Black & White Film' ?></div>
 									<?php else : ?>
 										<select name="color" class="uk-select select2" id="color" data-placeholder="Select" data-allow-clear="true" required>
 											<option value="" selected="" disabled=""></option>
-											<option <?= $movie['color'] == 'Yes' ? 'selected' : '' ?> value="Yes">Color Film</option>
-											<option <?= $movie['color'] == 'No' ? 'selected' : '' ?> value="No">Black & White</option>
+											<option <?= $movie['color'] == '1' ? 'selected' : '' ?> value="1">Color Film</option>
+											<option <?= $movie['color'] == '0' ? 'selected' : '' ?> value="0">Black & White</option>
 										</select>
 									<?php endif; ?>
 								</div>
@@ -527,7 +527,7 @@
 										</div>
 									<?php else : ?>
 										<select name="genres[]" multiple class="uk-select select2 " id="genres" data-placeholder="Select Genres" data-allow-clear="true" required>
-											<?php foreach ($genres as $key => $genre) : ?>
+											<?php foreach (getGenres() as $key => $genre) : ?>
 												<option <?= in_array($genre['value'], json_decode($movie['genres'])) ? 'selected' : '' ?> value="<?= $genre['value'] ?>"><?= $genre['value'] ?></option>
 											<?php endforeach; ?>
 										</select>
@@ -545,7 +545,7 @@
 										</div>
 									<?php else : ?>
 										<select name="certificates[]" multiple class="uk-select select2 " id="certificates" data-placeholder="Select certificate" data-allow-clear="true" required>
-											<?php foreach ($certificates as $key => $certificate) : ?>
+											<?php foreach (getCertificates() as $key => $certificate) : ?>
 												<option <?= in_array($certificate['value'], json_decode($movie['certificates'])) ? 'selected' : '' ?> value="<?= $certificate['value'] ?>"><?= $certificate['value'] ?></option>
 											<?php endforeach; ?>
 										</select>
@@ -667,7 +667,7 @@
 							</tbody>
 						</table>
 
-						<?= $movie['step4'] == 'locked' ? '' : '<div class="">
+						<?= $movie['step4'] == 'locked' ? '' : '<div class=""' ?>
 							<button class="uk-button uk-button-danger submitButton" type="submit">Save & Continue</button>
 						</div>'; ?>
 

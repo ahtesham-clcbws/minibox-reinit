@@ -72,8 +72,10 @@ class OtherInfoModel extends Model
 
         // $cache->save('cache_item_id', 'data_to_cache');
         // $foo = $cache->get('my_cached_item');
-        $cache->delete('getInfoDataWithCount' . $query);
-        $cache->delete('getInfoDataWithCountTime' . $query);
+        if (getenv('CI_ENVIRONMENT') == 'development') {
+            $cache->delete('getInfoDataWithCount' . $query);
+            $cache->delete('getInfoDataWithCountTime' . $query);
+        }
 
         if ($cache->get('getInfoDataWithCount' . $query)) {
             $date1 = date_create($cache->get('getInfoDataWithCountTime' . $query));
@@ -123,6 +125,77 @@ class OtherInfoModel extends Model
                 $infoList[$key]['actions'] .= "'" . $itemId . "'";
                 $infoList[$key]['actions'] .= ')" title="Delete"><span uk-icon="icon: trash;"></span></button></div>';
             }
+        }
+        $infoListCount = $this->where(['type' => $type, 'movie_id' => $unique_id])->countAllResults();
+        $data = [
+            "list" => $infoList,
+            "count" => count($infoList),
+            "countAll" => $infoListCount,
+        ];
+        return $data;
+    }
+
+    public function getInfoDataWithCountAdmin($type, $unique_id, $start, $length)
+    {
+        $cache = cache();
+        $currentTime = date('Y-m-d H:i:s');
+
+        $query = $type . $unique_id . $start . $length;
+
+        // $cache->save('cache_item_id', 'data_to_cache');
+        // $foo = $cache->get('my_cached_item');
+        if (getenv('CI_ENVIRONMENT') == 'development') {
+            $cache->delete('getInfoDataWithCountAdmin' . $query);
+            $cache->delete('getInfoDataWithCountAdminTime' . $query);
+        }
+
+        if ($cache->get('getInfoDataWithCountAdmin' . $query)) {
+            $date1 = date_create($cache->get('getInfoDataWithCountAdminTime' . $query));
+            $date2 = date_create($currentTime);
+            $diff = date_diff($date1, $date2);
+            if ($diff->h > 24) {
+                $data = $this->getInfoDataWithCountCurrentAdmin($type, $unique_id, $start, $length);
+                $cache->save('getInfoDataWithCountAdmin' . $query, $data);
+                $cache->save('getInfoDataWithCountAdminTime' . $query, $currentTime);
+            } else {
+                $data = $cache->get('getInfoDataWithCountAdmin' . $query);
+            }
+        } else {
+            $data = $this->getInfoDataWithCountCurrentAdmin($type, $unique_id, $start, $length);
+            $cache->save('getInfoDataWithCountAdmin' . $query, $data);
+            $cache->save('getInfoDataWithCountAdminTime' . $query, $currentTime);
+        }
+
+        return $data;
+    }
+    private function getInfoDataWithCountCurrentAdmin($type, $unique_id, $start, $length)
+    {
+        $infoList = $this->select('id, movie_id, name, attribute, type');
+        $infoList = $infoList->where(['type' => $type, 'movie_id' => $unique_id]);
+        if (intval($start) && intval($start) > 0) {
+            $infoList = $infoList->offset($start);
+        }
+        if ($length != null && intval($length) && intval($length) > 0) {
+            $infoList = $infoList->findAll($length);
+        } else {
+            $infoList = $infoList->findAll();
+        }
+        foreach ($infoList as $key => $listItem) {
+            $itemId = $listItem['id'];
+            $itemName = $listItem['name'];
+            $itemAttr = $listItem['attribute'];
+            $infoList[$key]['key'] = $key + 1;
+
+            $infoList[$key]['actions'] = '<div class="btn-group"><button class="addButton btn btn-secondary btn-sm" onclick="addInfoItem(';
+            $infoList[$key]['actions'] .= "'" . $type . "',";
+            $infoList[$key]['actions'] .= "true,";
+            $infoList[$key]['actions'] .= "'" . $itemId . "',";
+            $infoList[$key]['actions'] .= "'" . $itemName . "',";
+            $infoList[$key]['actions'] .= "'" . $itemAttr . "')";
+            $infoList[$key]['actions'] .= '" title="Edit">Edit</button><button class="deleteButton btn btn-danger btn-sm" onclick="deleteInfoItem(';
+            $infoList[$key]['actions'] .= "'" . $type . "',";
+            $infoList[$key]['actions'] .= "'" . $itemId . "'";
+            $infoList[$key]['actions'] .= ')" title="Delete">Delete</button></div>';
         }
         $infoListCount = $this->where(['type' => $type, 'movie_id' => $unique_id])->countAllResults();
         $data = [

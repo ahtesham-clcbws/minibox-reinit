@@ -86,6 +86,7 @@ phpunit
 # Composer
 #-------------------------
 vendor/
+adminHtml/
 
 #-------------------------
 # IDE / Development Files

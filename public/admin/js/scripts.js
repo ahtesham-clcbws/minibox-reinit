@@ -1224,3 +1224,53 @@ async function fileSizeValidation(inputId, maxHeight = 100, maxWidth = 100, fixe
   }
   return validated;
 }
+
+const Toast = Swal.mixin({
+  toast: true,
+  position: 'top-end',
+  showConfirmButton: false,
+  timer: 3000,
+  timerProgressBar: true,
+  didOpen: (toast) => {
+      toast.addEventListener('mouseenter', Swal.stopTimer)
+      toast.addEventListener('mouseleave', Swal.resumeTimer)
+  }
+})
+
+function numberToFloat(number) {
+  let f2 = parseFloat(number).toFixed(2);
+  // console.log(f2);
+
+  let decimal = f2.split('.')[1];
+  // console.log(decimal);
+  let decimal2 = decimal[1];
+  // console.log(decimal2);
+
+  let last = 0;
+  if (decimal2 >= 5) {
+      last = 1;
+  }
+
+  var firstNumber = parseInt(decimal[0], 10);
+  var newNumber = Math.floor(f2) + '.' + (firstNumber + last);
+  console.log(newNumber);
+  return parseFloat(newNumber).toFixed(2);
+}
+
+// const ratio1 = 1.89;
+// const ratio2 = 1.9
+
+// if(numberToFloat(ratio1) === numberToFloat(ratio2)) {
+//   console.log('equals')
+// } else {
+//   console.log('not equals')
+// }
+
+window.reset2 = function (e) {
+  e.wrap('<form>').closest('form').get(0).reset();
+  e.unwrap();
+}
+function resetImageInput2(inputId) {
+  $("#" + inputId).wrap('<form>').closest('form').get(0).reset();
+  $("#" + inputId).unwrap();
+}

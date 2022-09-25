@@ -11,6 +11,9 @@ define('CUSTOMER_SUPPORT_EMAIL', 'care@miniboxoffice.com');
 define('CUSTOMER_SUPPORT_PHONE', '+91 9999 999 999');
 define('MINIBOX_ADDRESS', 'Paste 1234 S. Broadway St. City, State 12345');
 
+define('ADMIN_NOTIFICATION_EMAILS', ['ahtesham2000@gmail.com']);
+
+
 //PAYMENT GATEWAY VARIABLES
 // razorpay variables
 define('RAZORPAY_KEY_ID', 'rzp_test_c8M3til0e98SDu');

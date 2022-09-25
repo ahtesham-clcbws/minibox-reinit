@@ -11,6 +11,8 @@ $routes->add('/', 'Admin\GlobalController::index', ['as' => 'admin_dashboard']);
 $routes->group('film-festivals', static function ($routes) {
     $routes->add('/', 'Admin\FilmFestivalController::index', ['as' => 'admin_film_festivals']);
     // $routes->post('/', 'Admin\FilmFestivalController::saveFestivalData', ['as' => 'admin_film_festivals_add']);
+    $routes->add('official-submissions', 'Admin\FilmFestivalController::allOfficialSubmissions', ['as' => 'admin_film_festivals_official_submissions']);
+    $routes->add('official-submissions/(:num)', 'Admin\FilmFestivalController::officialSubmissionsSingle/$1', ['as' => 'admin_film_festivals_official_submissions_single']);
 
     // very last
     $routes->group('/', static function ($routes) {
