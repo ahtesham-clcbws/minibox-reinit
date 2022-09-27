@@ -122,13 +122,11 @@
                 <div class="form-group">
                     <label class="form-label">Name</label>
                     <div class="form-control-wrap" id="nameInputBlock">
-                        <!-- <input type="text" class="form-control" id="default-01" placeholder="Input placeholder"> -->
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Attribute <span id="attributeExtraText"></span></label>
                     <div class="form-control-wrap" id="attributeInputBlock">
-                        <!-- <input type="text" class="form-control" id="default-01" placeholder="Input placeholder"> -->
                     </div>
                 </div>
             </div>
@@ -155,7 +153,7 @@
                     <div class="col-12">
                         <div class="form-group">
                             <div class="form-control-wrap">
-                                <textarea class="form-control no-resize" name="reject_reason" id="reject_reason"></textarea>
+                                <textarea class="form-control no-resize" name="reject_reason" id="reject_reason"><?= trim($movie['reason']) ?></textarea>
                             </div>
                         </div>
                     </div>
@@ -181,7 +179,7 @@
                     <div class="col-md-6 col-12">
 
                         <div class="form-group">
-                            <label class="form-label" for="default-01">Movie Name / Project Title</label>
+                            <label class="form-label">Movie Name / Project Title</label>
                             <div class="form-control-wrap">
                                 <div class="input-group">
                                     <div class="input-group-prepend">
@@ -204,7 +202,7 @@
                     <div class="col-md-6 col-12">
 
                         <div class="form-group">
-                            <label class="form-label" for="default-01">Movie / Project Type</label>
+                            <label class="form-label">Movie / Project Type</label>
                             <div class="form-control-wrap">
                                 <div class="input-group">
                                     <div class="input-group-prepend">
@@ -232,7 +230,7 @@
                     <div class="col-md-6 col-12">
 
                         <div class="form-group">
-                            <label class="form-label" for="default-01">Release Status</label>
+                            <label class="form-label">Release Status</label>
                             <div class="form-control-wrap">
                                 <div class="input-group">
                                     <div class="input-group-prepend">
@@ -260,7 +258,7 @@
                     <div class="col-md-6 col-12">
 
                         <div class="form-group">
-                            <label class="form-label" for="default-01">Year</label>
+                            <label class="form-label">Year</label>
                             <div class="form-control-wrap">
                                 <div class="input-group">
                                     <div class="input-group-prepend">
@@ -283,7 +281,7 @@
                     <div class="col-md-6 col-12">
 
                         <div class="form-group">
-                            <label class="form-label" for="default-01">Country</label>
+                            <label class="form-label">Country</label>
                             <div class="form-control-wrap">
                                 <div class="input-group">
                                     <div class="input-group-prepend">
@@ -311,7 +309,7 @@
                     <div class="col-md-6 col-12">
 
                         <div class="form-group">
-                            <label class="form-label" for="default-01">Budget Currency</label>
+                            <label class="form-label">Budget Currency</label>
                             <div class="form-control-wrap">
                                 <div class="input-group">
                                     <div class="input-group-prepend">
@@ -339,7 +337,7 @@
                     <div class="col-md-6 col-12">
 
                         <div class="form-group">
-                            <label class="form-label" for="default-01">Budget Amount</label>
+                            <label class="form-label">Budget Amount</label>
                             <div class="form-control-wrap">
                                 <div class="input-group">
                                     <div class="input-group-prepend">
@@ -375,7 +373,7 @@
 
                     <div class="col-md-6 col-12">
                         <div class="form-group">
-                            <label class="form-label" for="default-01">Director</label>
+                            <label class="form-label">Director</label>
                             <div class="form-control-wrap">
                                 <div class="input-group">
                                     <div class="input-group-prepend">
@@ -397,7 +395,7 @@
 
                     <div class="col-md-6 col-12">
                         <div class="form-group">
-                            <label class="form-label" for="default-01">Production Company</label>
+                            <label class="form-label">Production Company</label>
                             <div class="form-control-wrap">
                                 <div class="input-group">
                                     <div class="input-group-prepend">
@@ -419,7 +417,7 @@
 
                     <div class="col-md-4 col-12">
                         <div class="form-group">
-                            <label class="form-label" for="default-01">Duration (In Minutes)</label>
+                            <label class="form-label">Duration (In Minutes)</label>
                             <div class="form-control-wrap">
                                 <div class="input-group">
                                     <div class="input-group-prepend">
@@ -441,7 +439,7 @@
 
                     <div class="col-md-4 col-12">
                         <div class="form-group">
-                            <label class="form-label" for="default-01">Debut Film</label>
+                            <label class="form-label">Debut Film</label>
                             <div class="form-control-wrap">
                                 <div class="input-group">
                                     <div class="input-group-prepend">
@@ -467,7 +465,7 @@
 
                     <div class="col-md-4 col-12">
                         <div class="form-group">
-                            <label class="form-label" for="default-01">Color</label>
+                            <label class="form-label">Color</label>
                             <div class="form-control-wrap">
                                 <div class="input-group">
                                     <div class="input-group-prepend">
@@ -493,7 +491,7 @@
 
                     <div class="col-md-6 col-12">
                         <div class="form-group">
-                            <label class="form-label" for="default-01">Genres</label>
+                            <label class="form-label">Genres</label>
                             <div class="form-control-wrap">
                                 <div class="input-group">
                                     <div class="input-group-prepend">
@@ -519,7 +517,7 @@
 
                     <div class="col-md-6 col-12">
                         <div class="form-group">
-                            <label class="form-label" for="default-01">Certificates/Ratings</label>
+                            <label class="form-label">Certificates/Ratings</label>
                             <div class="form-control-wrap">
                                 <div class="input-group">
                                     <div class="input-group-prepend">
@@ -654,7 +652,7 @@
                         <div class="row g-3 mt-3">
                             <div class="col-md-6 col-12">
                                 <div class="form-group">
-                                    <label class="form-label" for="default-01">Distribution</label>
+                                    <label class="form-label">Distribution</label>
                                     <div class="form-control-wrap">
                                         <div class="input-group">
                                             <div class="input-group-prepend">
@@ -679,7 +677,7 @@
 
                             <div class="col-md-6 col-12">
                                 <div class="form-group">
-                                    <label class="form-label" for="default-01">Trailer Cloud</label>
+                                    <label class="form-label">Trailer Cloud</label>
                                     <div class="form-control-wrap">
                                         <div class="input-group">
                                             <div class="input-group-prepend">
@@ -705,7 +703,7 @@
 
                             <div class="col-12">
                                 <div class="form-group">
-                                    <label class="form-label" for="default-01">Trailer URL</label>
+                                    <label class="form-label">Trailer URL</label>
                                     <div class="form-control-wrap">
                                         <div class="input-group">
                                             <div class="input-group-prepend">
@@ -920,6 +918,74 @@
                         </table>
                     </div>
                 </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- Admin Inputs -->
+    <div class="accordion-item">
+        <a href="#" class="accordion-head" data-bs-toggle="collapse" data-bs-target="#admin-inputs">
+            <h6 class="title">Admin Inputs</h6>
+            <span class="accordion-icon"></span>
+        </a>
+        <div class="accordion-body collapse" id="admin-inputs" data-bs-parent="#accordion">
+            <div class="accordion-inner">
+                <form class="row g-4" method="post" id="subtitleForm">
+
+                    <div class="col-md-3 col-12">
+                        <div class="form-group">
+                            <label class="form-label">Subtitle</label>
+                            <div class="form-control-wrap">
+                                <input type="text" maxlength="60" class="form-control" name="subtitle" value="<?= $movie['subtitle'] ?>">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label class="form-label" for="movie_rating">Rating</label>
+                            <div class="form-control-wrap">
+                                <select name="rating" class="form-select js-select2" id="movie_rating">
+                                    <option value="" selected="" disabled=""></option>
+                                    <?php foreach ($movieratings as $kkey => $rating) : ?>
+                                        <option <?= $movie['rating'] == $rating ? 'selected' : '' ?> value="<?= $rating ?>"><?= $rating ?> Star</option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label class="form-label" for="movie_rating">Winner?</label>
+                            <div class="form-control-wrap">
+                                <select class="form-select js-select2" name="isWinner">
+                                    <option value="" selected="" disabled=""></option>
+                                    <option <?= $movie['isWinner'] == 1 ? 'selected' : '' ?> value="1">Yes</option>
+                                    <option <?= $movie['isWinner'] == 0 ? 'selected' : '' ?> value="0">No</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-12">
+                        <div class="form-group">
+                            <label class="form-label">Award</label>
+                            <div class="form-control-wrap">
+                                <input type="text" maxlength="40" class="form-control" name="awardName" value="<?= $movie['awardName'] ?>">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2 col-sm-6 col-12">
+                        <div class="form-group">
+                            <label class="form-label">&nbsp;</label>
+                            <div class="form-control-wrap btn-group w-100 d-block">
+                                <button class="btn btn-primary w-100 d-block" type="submit">Save</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
 
             </div>
         </div>
@@ -1905,6 +1971,7 @@
                             icon: 'success',
                             title: 'Approved Successfully'
                         })
+                        $('#reject_reason').val('');
                     } else {
                         var errorMessage = data.message ? data.message : 'Error happening, please try again later';
                         alert('Error', errorMessage, 'error').then((result) => {})
@@ -1924,7 +1991,7 @@
 
     var rejectListingModal = document.getElementById('rejectListingModal');
     rejectListingModal.addEventListener('hidden.bs.modal', function(event) {
-        $('#reject_reason').val('');
+        // $('#reject_reason').val('');
     })
 
     $('#rejectListingForm').submit(function(ev) {
@@ -1948,6 +2015,44 @@
                             title: 'Rejected Successfully'
                         })
                         modalClose('rejectListingModal');
+                    } else {
+                        var errorMessage = data.message ? data.message : 'Error happening, please try again later';
+                        alert('Error', errorMessage, 'error').then((result) => {})
+                    }
+                } catch (error) {
+                    console.log(error);
+                    var errorMessage = 'Error happening, please try again later';
+                    alert('Error', errorMessage, 'error').then((result) => {})
+                }
+            },
+            error: function(error) {
+                console.log(error);
+                alert('Error', 'There is some error into the server. Please try again later.', 'error');
+            }
+        })
+    })
+</script>
+<script>
+    $('#subtitleForm').submit(function(ev) {
+        ev.preventDefault();
+        var formData = new FormData($(this)[0]);
+        console.log(Array.from(formData))
+        $.ajax({
+            url: '',
+            type: 'post',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+                console.log(response);
+                try {
+                    var data = JSON.parse(response);
+                    console.log(data);
+                    if (data.success) {
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Saved Successfully'
+                        })
                     } else {
                         var errorMessage = data.message ? data.message : 'Error happening, please try again later';
                         alert('Error', errorMessage, 'error').then((result) => {})

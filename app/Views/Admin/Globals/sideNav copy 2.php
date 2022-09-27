@@ -12,16 +12,6 @@
             <?php if (getUrlSegment(2) == 'film-festivals') : ?>
 
                 <?php if (!getUrlSegment(3)) : ?>
-                    <li class="nk-menu-item">
-                        <a href="<?= route_to('admin_film_festivals_official_submissions') ?>" class="nk-menu-link">
-                            <span class="nk-menu-text">Movies Catalogue</span>
-                        </a>
-                    </li>
-                    <li class="nk-menu-heading">
-                        <h6 class="overline-title text-primary-alt">
-                            Festivals List
-                        </h6>
-                    </li>
                     <?php foreach (getFestivalsList() as $key => $festival) { ?>
                         <li class="nk-menu-item">
                             <a href="<?= route_to('admin_festival_details', $festival['id']) ?>" class="nk-menu-link">

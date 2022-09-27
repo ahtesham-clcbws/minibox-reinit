@@ -206,7 +206,12 @@ function saveTokenToUserTable($userId, $token, $device = 'web')
 function getFestivalsList()
 {
     $festivalDb = new FestivalModel();
-    return $festivalDb->select('id, name, slug')->findAll();
+    return $festivalDb->select('id, name, slug, edition, current_year')->findAll();
+}
+function getActiveFestivalsList()
+{
+    $festivalDb = new FestivalModel();
+    return $festivalDb->select('id, name, slug, edition, current_year')->where('status', '1')->findAll();
 }
 
 function getFestivalById($id)
@@ -236,42 +241,121 @@ function getHomepageBanners()
 
 // world data
 
+function getLanguages()
+{
+    $sessionData = session()->get('languages_list');
+    if ($sessionData) {
+        return $sessionData;
+    } else {
+        $db = new LanguagesModel();
+        $thisdata = $db->getAllLanguages();
+        session()->set('languages_list', $thisdata);
+        return $thisdata;
+    }
+}
 function getAllCountries()
 {
-    $countryDb = new CountriesModel();
-    return $countryDb->select('id, name')->findAll();
+    $sessionData = session()->get('countries_list');
+    if ($sessionData) {
+        return $sessionData;
+    } else {
+        $db = new CountriesModel();
+        $thisdata = $db->select('id, name')->findAll();
+        session()->set('languages_list', $thisdata);
+        return $thisdata;
+    }
 }
 
 function getStatesByCountryId($country_id)
 {
-    $statesDb = new StatesModel();
-    return $statesDb->select('id, name')->where(['country_id' => $country_id])->findAll();
+    // $statesDb = new StatesModel();
+    // return $statesDb->select('id, name')->where(['country_id' => $country_id])->findAll();
+
+    $sessionData = session()->get('states_by_country_id_' . $country_id);
+    if ($sessionData) {
+        return $sessionData;
+    } else {
+        $db = new StatesModel();
+        $thisdata = $db->select('id, name')->where(['country_id' => $country_id])->findAll();
+        session()->get('states_by_country_id_' . $country_id, $thisdata);
+        return $thisdata;
+    }
 }
 function getStatesByCountryCode($country_code)
 {
-    $statesDb = new StatesModel();
-    return $statesDb->select('id, name')->where(['country_code' => $country_code])->findAll();
+    // $statesDb = new StatesModel();
+    // return $statesDb->select('id, name')->where(['country_code' => $country_code])->findAll();
+
+    $sessionData = session()->get('states_by_country_code_' . $country_code);
+    if ($sessionData) {
+        return $sessionData;
+    } else {
+        $db = new StatesModel();
+        $thisdata = $db->select('id, name')->where(['country_code' => $country_code])->findAll();
+        session()->get('states_by_country_code_' . $country_code, $thisdata);
+        return $thisdata;
+    }
 }
 
 function getCitiesByCountryId($country_id)
 {
-    $cityDb = new CitiesModel();
-    return $cityDb->select('id, name')->where(['country_id' => $country_id])->findAll();
+    // $cityDb = new CitiesModel();
+    // return $cityDb->select('id, name')->where(['country_id' => $country_id])->findAll();
+
+    $sessionData = session()->get('cities_by_country_id_' . $country_id);
+    if ($sessionData) {
+        return $sessionData;
+    } else {
+        $db = new CitiesModel();
+        $thisdata = $db->select('id, name')->where(['country_id' => $country_id])->findAll();
+        session()->get('cities_by_country_id_' . $country_id, $thisdata);
+        return $thisdata;
+    }
 }
 function getCitiesByCountryCode($country_code)
 {
-    $cityDb = new CitiesModel();
-    return $cityDb->select('id, name')->where(['country_code' => $country_code])->findAll();
+    // $cityDb = new CitiesModel();
+    // return $cityDb->select('id, name')->where(['country_code' => $country_code])->findAll();
+
+    $sessionData = session()->get('cities_by_country_code_' . $country_code);
+    if ($sessionData) {
+        return $sessionData;
+    } else {
+        $db = new CitiesModel();
+        $thisdata = $db->select('id, name')->where(['country_code' => $country_code])->findAll();
+        session()->get('cities_by_country_code_' . $country_code, $thisdata);
+        return $thisdata;
+    }
 }
 function getCitiesByStateId($state_id)
 {
-    $cityDb = new CitiesModel();
-    return $cityDb->select('id, name')->where(['state_id' => $state_id])->findAll();
+    // $cityDb = new CitiesModel();
+    // return $cityDb->select('id, name')->where(['state_id' => $state_id])->findAll();
+
+    $sessionData = session()->get('cities_by_state_id_' . $state_id);
+    if ($sessionData) {
+        return $sessionData;
+    } else {
+        $db = new CitiesModel();
+        $thisdata = $db->select('id, name')->where(['state_id' => $state_id])->findAll();
+        session()->get('cities_by_state_id_' . $state_id, $thisdata);
+        return $thisdata;
+    }
 }
 function getCitiesByStateCode($state_code)
 {
     $cityDb = new CitiesModel();
     return $cityDb->select('id, name')->where(['state_code' => $state_code])->findAll();
+
+    $sessionData = session()->get('cities_by_state_code_' . $state_code);
+    if ($sessionData) {
+        return $sessionData;
+    } else {
+        $db = new CitiesModel();
+        $thisdata = $db->select('id, name')->where(['state_code' => $state_code])->findAll();
+        session()->get('cities_by_state_code_' . $state_code, $thisdata);
+        return $thisdata;
+    }
 }
 function getWorldName($id, $type = 'country')
 {
@@ -2080,11 +2164,6 @@ function deadlineClass($deadline, $current)
     return $classToShow;
 }
 
-function getLanguages()
-{
-    $langMd = new LanguagesModel();
-    return $langMd->getAllLanguages();
-}
 
 function isEmbeddableYoutubeURL($url)
 {
@@ -2332,4 +2411,67 @@ function getProjectTypes()
 {
     $projectTypeDb = new FestivalTypeOfFilms();
     return $projectTypeDb->findAll();
+}
+function ordinal($number)
+{
+    $ends = array('th', 'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th');
+    if ((($number % 100) >= 11) && (($number % 100) <= 13))
+        return $number . 'th';
+    else
+        return $number . $ends[$number % 10];
+}
+function getOrdinalHtml($ordinal)
+{
+    $getArrayOrdinal = explode(' ', $ordinal);
+    $array = array('th', 'st', 'nd', 'rd');
+    $newOrdinal = $getArrayOrdinal[0];
+    foreach ($array as $key => $value) {
+        if (strpos($getArrayOrdinal[0], $value) !== false) {
+            $newValue = '<sup>' . $value . '</sup>';
+            $newOrdinal = str_replace($value, $newValue, $getArrayOrdinal[0]);
+        }
+    }
+    $createOrdinal = '';
+    foreach ($getArrayOrdinal as $key => $value) {
+        if ($key == 0) {
+            $createOrdinal = $createOrdinal . ' ' . $newOrdinal;
+        } else {
+            $createOrdinal = $createOrdinal . ' ' . $value;
+        }
+    }
+    return $createOrdinal;
+}
+function removeOrdinalHtml($ordinal)
+{
+    $ordinal = str_replace('<sup>', '', $ordinal);
+    $ordinal = str_replace('</sup>', '', $ordinal);
+    return $ordinal;
+}
+
+
+function getFestivalNameSlug($id)
+{
+    $sessionFestivals = session()->get('festivals_list');
+
+    if ($sessionFestivals) {
+        $array_search = array_search($id, array_column($sessionFestivals, 'id'));
+        return $sessionFestivals[$array_search];
+    } else {
+        $festivalDb = new FestivalModel();
+        $festivals = $festivalDb->select('id, name, slug')->findAll();
+        session()->set('festivals_list', $festivals);
+
+        $array_search = array_search($id, array_column($festivals, 'id'));
+        return $festivals[$array_search];
+    }
+}
+function getCountryName($id)
+{
+    $sessionCountries = getAllCountries();
+
+    $array_search = array_search($id, array_column($sessionCountries, 'id'));
+    $country = $sessionCountries[$array_search];
+    $countryName = $country ? $country['name'] : 'N/A';
+
+    return $countryName;
 }

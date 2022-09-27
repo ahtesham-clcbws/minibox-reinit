@@ -17,15 +17,16 @@
 <section class="uk-section-small">
 	<div class="uk-container">
 
-		<form action="" method="post">
+		<form action="" method="get">
 			<div class=" uk-grid" data-uk-grid="">
 				<div class="uk-width-1-5@m uk-first-column">
 					<div class="uk-margin">
 						<div class="uk-form-controls">
 							<select name="edition" class="uk-select">
 								<option value="" disabled="" selected="">Select Edition </option>
-								<option value="1">5 Edtion | 2015</option>
-								<option value="2">2 Edtion | 2012</option>
+								<?php foreach ($festival_editions as $key => $festival_edition) : ?>
+									<option <?= isset($_GET['edition']) && @$_GET['edition'] == $festival_edition ? 'selected' : '' ?> value="<?= $festival_edition ?>"><?= ordinal(count($festival_editions) - $key) ?> Edtion | <?= $festival_edition ?></option>
+								<?php endforeach; ?>
 							</select>
 						</div>
 					</div>
@@ -33,7 +34,7 @@
 				<div class="uk-width-1-5@m">
 					<div class="uk-margin">
 						<div class="uk-form-controls">
-							<input class="uk-input uk-form-width-large" id="form-h-datalist" list="datalist" name="name" type="text" placeholder="Name search">
+							<input class="uk-input uk-form-width-large" id="form-h-datalist" list="datalist" name="title" type="text" placeholder="Name search">
 						</div>
 					</div>
 				</div>
@@ -42,7 +43,9 @@
 						<div class="uk-form-controls">
 							<select class="uk-select" name="country">
 								<option value="" disabled="" selected="">Select Country </option>
-								<option>Afghanistan</option>
+								<?php foreach (getAllCountries() as $key => $country) : ?>
+									<option <?= isset($_GET['country']) && @$_GET['country'] == $country['id'] ? 'selected' : '' ?> value="<?= $country['id'] ?>"><?= $country['name'] ?></option>
+								<?php endforeach; ?>
 							</select>
 						</div>
 					</div>
@@ -50,14 +53,11 @@
 				<div class="uk-width-1-5@m">
 					<div class="uk-margin">
 						<div class="uk-form-controls">
-							<select class="uk-select" name="project">
-								<option disabled="" selected="">Project Type</option>
-								<option value="8">Feature</option>
-								<option value="7">Short</option>
-								<option value="6">Animation</option>
-								<option value="5">Music video</option>
-								<option value="4">Ad film</option>
-								<option value="2">Screenplay</option>
+							<select class="uk-select" name="genre">
+								<option disabled="" selected="">Select Genre</option>
+								<?php foreach (getGenres() as $key => $genre) : ?>
+									<option <?= isset($_GET['genre']) && @$_GET['genre'] == $genre['value'] ? 'selected' : '' ?> value="<?= $genre['value'] ?>"><?= $genre['value'] ?></option>
+								<?php endforeach; ?>
 							</select>
 						</div>
 					</div>
@@ -65,7 +65,7 @@
 				<div class="uk-width-1-5@m">
 					<div class="uk-margin uk-height-1-1">
 						<div class="uk-form-controls uk-height-1-1">
-							<button class="uk-button uk-button-defualt btn-warning uk-height-1-1 uk-width-1-1">
+							<button class="uk-button uk-button-defualt btn-warning uk-height-1-1 uk-width-1-1" type="submit">
 								<i class="fa fa-search"></i> SEARCH
 							</button>
 							<!-- <button class="uk-button uk-button-defualt btn-warning" name="download_pdf_official_selection"><i class="fa fa-download" aria-hidden="true"></i></button> -->
@@ -73,291 +73,66 @@
 					</div>
 				</div>
 			</div>
+			<?php if (isset($_GET['edition']) || isset($_GET['title']) || isset($_GET['country']) || isset($_GET['genre'])) : ?>
+				<div class="uk-margin-small-top searchBadges uk-child-width-1-2" uk-grid>
+					<div class="uk-text-left@m uk-text-right@s">
+						<?php if (isset($_GET['edition']) && trim($_GET['edition']) && !empty($_GET['edition'])) : ?>
+							<span class="uk-badge searchTerm" searchType="edition"><?= $_GET['edition'] ?> Edition <span uk-icon="icon: close"></span></span>
+						<?php endif; ?>
+						<?php if (isset($_GET['title']) && trim($_GET['title']) && !empty($_GET['title'])) : ?>
+							<span class="uk-badge searchTerm" searchType="title"><?= $_GET['title'] ?> <span uk-icon="icon: close"></span></span>
+						<?php endif; ?>
+						<?php if (isset($_GET['country']) && trim($_GET['country']) && !empty($_GET['country'])) : ?>
+							<span class="uk-badge searchTerm" searchType="country"><?= getWorldName($_GET['country']) ?> <span uk-icon="icon: close"></span></span>
+						<?php endif; ?>
+						<?php if (isset($_GET['genre']) && trim($_GET['genre']) && !empty($_GET['genre'])) : ?>
+							<span class="uk-badge searchTerm" searchType="genre"><?= $_GET['genre'] ?> <span uk-icon="icon: close"></span></span>
+						<?php endif; ?>
+					</div>
+					<div class="uk-text-right">
+						<span class="uk-badge">Clear All <span onclick="clearAllSearch()" uk-icon="icon: close"></span></span>
+					</div>
+				</div>
+			<?php endif; ?>
 		</form>
 
 		<hr>
 		<div class=" uk-grid" data-uk-grid="">
-			<div class="uk-width-1-4@m">
-				<div class="schedule">
-					<a href="<?= route_to('festival_official_selection_details', $festivalSlug, base64_encode('something')) ?>"></a>
-					<img src="/public/images/list-box-3.jpg" alt="">
-					<div class="schedule-details">
-						<h3 class="schedule-title">
-							<a href="">movie name</a>
-						</h3>
-						<div class="schedule-list">Crime, Drama, Horror</div>
-						<div class="schedule-list">Feature</div>
-						<div class="schedule-list">India</div>
+			<?php if(count($movies)) : ?>
+			<?php foreach ($movies as $key => $movie) : ?>
+				<div class="uk-width-1-4@m">
+					<div class="schedule">
+						<a href="<?= route_to('festival_official_selection_details', $festivalSlug, base64_encode($movie['id'])) ?>"></a>
+						<img src="<?= $movie['poster'] ?>" alt="<?= $movie['title'] ?>">
+						<div class="schedule-details">
+							<h3 class="schedule-title">
+								<a href=""><?= $movie['title'] ?></a>
+							</h3>
+							<div class="schedule-list">
+								<?php
+								$genresArray = (array)json_decode($movie['genres'], true);
+								shuffle($genresArray);
+								foreach ($genresArray as $key => $genre) {
+									if ($key < 3) { ?>
+										<span class="commaSeparated"><?= $genre ?></span>
+									<?php } else { ?>
+										<span class="commaSeparatedDotes"> ...</span>
+								<?php }
+								} ?>
+							</div>
+							<div class="schedule-list"><?= getWorldName($movie['country']) ?></div>
+						</div>
 					</div>
 				</div>
-			</div>
-			<div class="uk-width-1-4@m">
-				<div class="schedule">
-					<a href="<?= route_to('festival_official_selection_details', $festivalSlug, base64_encode('something')) ?>"></a>
-					<img src="/public/images/list-box-3.jpg" alt="">
-					<div class="schedule-details">
-						<h3 class="schedule-title">
-							<a href="">movie name</a>
-						</h3>
-						<div class="schedule-list">Crime, Drama, Horror</div>
-						<div class="schedule-list">Feature</div>
-						<div class="schedule-list">India</div>
-					</div>
+			<?php endforeach; ?>
+			<?php else: ?>
+				<div class="uk-width-1-1 uk-text-center" style="padding: 50px;">
+					<h2>No results found, please your search or try again later</h2>
 				</div>
-			</div>
-			<div class="uk-width-1-4@m">
-				<div class="schedule">
-					<a href="<?= route_to('festival_official_selection_details', $festivalSlug, base64_encode('something')) ?>"></a>
-					<img src="/public/images/list-box-3.jpg" alt="">
-					<div class="schedule-details">
-						<h3 class="schedule-title">
-							<a href="">movie name</a>
-						</h3>
-						<div class="schedule-list">Crime, Drama, Horror</div>
-						<div class="schedule-list">Feature</div>
-						<div class="schedule-list">India</div>
-					</div>
-				</div>
-			</div>
-			<div class="uk-width-1-4@m">
-				<div class="schedule">
-					<a href="<?= route_to('festival_official_selection_details', $festivalSlug, base64_encode('something')) ?>"></a>
-					<img src="/public/images/list-box-3.jpg" alt="">
-					<div class="schedule-details">
-						<h3 class="schedule-title">
-							<a href="">movie name</a>
-						</h3>
-						<div class="schedule-list">Crime, Drama, Horror</div>
-						<div class="schedule-list">Feature</div>
-						<div class="schedule-list">India</div>
-					</div>
-				</div>
-			</div>
-			<div class="uk-width-1-4@m uk-grid-margin uk-first-column">
-				<div class="schedule">
-					<a href="<?= route_to('festival_official_selection_details', $festivalSlug, base64_encode('something')) ?>"></a>
-					<img src="/public/images/list-box-3.jpg" alt="">
-					<div class="schedule-details">
-						<h3 class="schedule-title">
-							<a href="">movie name</a>
-						</h3>
-						<div class="schedule-list">Crime, Drama, Horror</div>
-						<div class="schedule-list">Feature</div>
-						<div class="schedule-list">India</div>
-					</div>
-				</div>
-			</div>
-			<div class="uk-width-1-4@m uk-grid-margin">
-				<div class="schedule">
-					<a href="<?= route_to('festival_official_selection_details', $festivalSlug, base64_encode('something')) ?>"></a>
-					<img src="/public/images/list-box-3.jpg" alt="">
-					<div class="schedule-details">
-						<h3 class="schedule-title">
-							<a href="">movie name</a>
-						</h3>
-						<div class="schedule-list">Crime, Drama, Horror</div>
-						<div class="schedule-list">Feature</div>
-						<div class="schedule-list">India</div>
-					</div>
-				</div>
-			</div>
-			<div class="uk-width-1-4@m uk-grid-margin">
-				<div class="schedule">
-					<a href="<?= route_to('festival_official_selection_details', $festivalSlug, base64_encode('something')) ?>"></a>
-					<img src="/public/images/list-box-3.jpg" alt="">
-					<div class="schedule-details">
-						<h3 class="schedule-title">
-							<a href="">movie name</a>
-						</h3>
-						<div class="schedule-list">Crime, Drama, Horror</div>
-						<div class="schedule-list">Feature</div>
-						<div class="schedule-list">India</div>
-					</div>
-				</div>
-			</div>
-			<div class="uk-width-1-4@m uk-grid-margin">
-				<div class="schedule">
-					<a href="<?= route_to('festival_official_selection_details', $festivalSlug, base64_encode('something')) ?>"></a>
-					<img src="/public/images/list-box-3.jpg" alt="">
-					<div class="schedule-details">
-						<h3 class="schedule-title">
-							<a href="">movie name</a>
-						</h3>
-						<div class="schedule-list">Crime, Drama, Horror</div>
-						<div class="schedule-list">Feature</div>
-						<div class="schedule-list">India</div>
-					</div>
-				</div>
-			</div>
-			<div class="uk-width-1-4@m uk-grid-margin uk-first-column">
-				<div class="schedule">
-					<a href="<?= route_to('festival_official_selection_details', $festivalSlug, base64_encode('something')) ?>"></a>
-					<img src="/public/images/list-box-3.jpg" alt="">
-					<div class="schedule-details">
-						<h3 class="schedule-title">
-							<a href="">movie name</a>
-						</h3>
-						<div class="schedule-list">Crime, Drama, Horror</div>
-						<div class="schedule-list">Feature</div>
-						<div class="schedule-list">India</div>
-					</div>
-				</div>
-			</div>
-			<div class="uk-width-1-4@m uk-grid-margin">
-				<div class="schedule">
-					<a href="<?= route_to('festival_official_selection_details', $festivalSlug, base64_encode('something')) ?>"></a>
-					<img src="/public/images/list-box-3.jpg" alt="">
-					<div class="schedule-details">
-						<h3 class="schedule-title">
-							<a href="">movie name</a>
-						</h3>
-						<div class="schedule-list">Crime, Drama, Horror</div>
-						<div class="schedule-list">Feature</div>
-						<div class="schedule-list">India</div>
-					</div>
-				</div>
-			</div>
-			<div class="uk-width-1-4@m uk-grid-margin">
-				<div class="schedule">
-					<a href="<?= route_to('festival_official_selection_details', $festivalSlug, base64_encode('something')) ?>"></a>
-					<img src="/public/images/list-box-4.jpg" alt="">
-					<div class="schedule-details">
-						<h3 class="schedule-title">
-							<a href="">movie name 2</a>
-						</h3>
-						<div class="schedule-list">Crime, Drama, Horror</div>
-						<div class="schedule-list">Feature</div>
-						<div class="schedule-list">India</div>
-					</div>
-				</div>
-			</div>
-			<div class="uk-width-1-4@m uk-grid-margin">
-				<div class="schedule">
-					<a href="<?= route_to('festival_official_selection_details', $festivalSlug, base64_encode('something')) ?>"></a>
-					<img src="/public/images/list-box-3.jpg" alt="">
-					<div class="schedule-details">
-						<h3 class="schedule-title">
-							<a href="">movie name</a>
-						</h3>
-						<div class="schedule-list">Crime, Drama, Horror</div>
-						<div class="schedule-list">Feature</div>
-						<div class="schedule-list">India</div>
-					</div>
-				</div>
-			</div>
-			<div class="uk-width-1-4@m uk-grid-margin uk-first-column">
-				<div class="schedule">
-					<a href="<?= route_to('festival_official_selection_details', $festivalSlug, base64_encode('something')) ?>"></a>
-					<img src="/public/images/list-box-3.jpg" alt="">
-					<div class="schedule-details">
-						<h3 class="schedule-title">
-							<a href="">movie name</a>
-						</h3>
-						<div class="schedule-list">Crime, Drama, Horror</div>
-						<div class="schedule-list">Feature</div>
-						<div class="schedule-list">India</div>
-					</div>
-				</div>
-			</div>
-			<div class="uk-width-1-4@m uk-grid-margin">
-				<div class="schedule">
-					<a href="<?= route_to('festival_official_selection_details', $festivalSlug, base64_encode('something')) ?>"></a>
-					<img src="/public/images/list-box-3.jpg" alt="">
-					<div class="schedule-details">
-						<h3 class="schedule-title">
-							<a href="">movie name</a>
-						</h3>
-						<div class="schedule-list">Crime, Drama, Horror</div>
-						<div class="schedule-list">Feature</div>
-						<div class="schedule-list">India</div>
-					</div>
-				</div>
-			</div>
-			<div class="uk-width-1-4@m uk-grid-margin">
-				<div class="schedule">
-					<a href="<?= route_to('festival_official_selection_details', $festivalSlug, base64_encode('something')) ?>"></a>
-					<img src="/public/images/list-box-3.jpg" alt="">
-					<div class="schedule-details">
-						<h3 class="schedule-title">
-							<a href="">movie name</a>
-						</h3>
-						<div class="schedule-list">Crime, Drama, Horror</div>
-						<div class="schedule-list">Feature</div>
-						<div class="schedule-list">India</div>
-					</div>
-				</div>
-			</div>
-			<div class="uk-width-1-4@m uk-grid-margin">
-				<div class="schedule">
-					<a href="<?= route_to('festival_official_selection_details', $festivalSlug, base64_encode('something')) ?>"></a>
-					<img src="/public/images/list-box-3.jpg" alt="">
-					<div class="schedule-details">
-						<h3 class="schedule-title">
-							<a href="">movie name</a>
-						</h3>
-						<div class="schedule-list">Crime, Drama, Horror</div>
-						<div class="schedule-list">Feature</div>
-						<div class="schedule-list">India</div>
-					</div>
-				</div>
-			</div>
-			<div class="uk-width-1-4@m uk-grid-margin uk-first-column">
-				<div class="schedule">
-					<a href="<?= route_to('festival_official_selection_details', $festivalSlug, base64_encode('something')) ?>"></a>
-					<img src="/public/images/list-box-3.jpg" alt="">
-					<div class="schedule-details">
-						<h3 class="schedule-title">
-							<a href="">movie name</a>
-						</h3>
-						<div class="schedule-list">Crime, Drama, Horror</div>
-						<div class="schedule-list">Feature</div>
-						<div class="schedule-list">India</div>
-					</div>
-				</div>
-			</div>
-			<div class="uk-width-1-4@m uk-grid-margin">
-				<div class="schedule">
-					<a href="<?= route_to('festival_official_selection_details', $festivalSlug, base64_encode('something')) ?>"></a>
-					<img src="/public/images/list-box-3.jpg" alt="">
-					<div class="schedule-details">
-						<h3 class="schedule-title">
-							<a href="">movie name</a>
-						</h3>
-						<div class="schedule-list">Crime, Drama, Horror</div>
-						<div class="schedule-list">Feature</div>
-						<div class="schedule-list">India</div>
-					</div>
-				</div>
-			</div>
-			<div class="uk-width-1-4@m uk-grid-margin">
-				<div class="schedule">
-					<a href="<?= route_to('festival_official_selection_details', $festivalSlug, base64_encode('something')) ?>"></a>
-					<img src="/public/images/list-box-3.jpg" alt="">
-					<div class="schedule-details">
-						<h3 class="schedule-title">
-							<a href="">movie name</a>
-						</h3>
-						<div class="schedule-list">Crime, Drama, Horror</div>
-						<div class="schedule-list">Feature</div>
-						<div class="schedule-list">India</div>
-					</div>
-				</div>
-			</div>
-			<div class="uk-width-1-4@m uk-grid-margin">
-				<div class="schedule">
-					<a href="<?= route_to('festival_official_selection_details', $festivalSlug, base64_encode('something')) ?>"></a>
-					<img src="/public/images/list-box-3.jpg" alt="">
-					<div class="schedule-details">
-						<h3 class="schedule-title">
-							<a href="">movie name</a>
-						</h3>
-						<div class="schedule-list">Crime, Drama, Horror</div>
-						<div class="schedule-list">Feature</div>
-						<div class="schedule-list">India</div>
-					</div>
-				</div>
-			</div>
+			<?php endif; ?>
 		</div>
+
+		<?= $pager->links('paginate', 'uikit_pagination') ?>
 
 	</div>
 </section>
@@ -366,4 +141,28 @@
 
 
 <?= $this->section('js') ?>
+<script>
+	$('.searchTerm').on('click', function(ev) {
+		const searchType = $(this).attr('searchType');
+
+		let url = new URL(window.location.href);
+		let params = new URLSearchParams(url.search);
+
+		// Delete the foo parameter.
+		params.delete(searchType); //Query string is now: 'bar=2'
+
+		// console.log(url);
+		// console.log(window.location.href);
+
+		// var newUrl = location.pathname + location.search.replace(/[\?&]searchType=[^&]+/, '').replace(/^&/, '?')
+		var newUrl = window.location.pathname + '?' + params + window.location.hash;
+		// console.log(newUrl);
+
+		window.location = newUrl;
+	})
+	function clearAllSearch(){
+		var newUrl = window.location.pathname + window.location.hash;
+		window.location = newUrl;
+	}
+</script>
 <?= $this->endSection() ?>

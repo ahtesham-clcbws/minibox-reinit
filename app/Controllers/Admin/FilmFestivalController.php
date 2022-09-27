@@ -30,6 +30,8 @@ use App\Models\Films\FilmInfosData;
 use App\Models\Films\MajorCasts;
 use App\Models\Films\OtherInfoModel;
 use App\Models\Filmzine\NewsModel;
+use App\Models\ServiceModels\EmailsModel;
+use App\Models\UserModel;
 
 class FilmFestivalController extends BaseController
 {
@@ -1642,11 +1644,14 @@ class FilmFestivalController extends BaseController
         $unique_id = $movie['unique_id'];
         $response = ['success' => false, 'message' => 'In-Valid Request', 'data' => []];
 
+        $movieratings = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+        $this->data['movieratings'] = $movieratings;
+
         if ($this->request->getPost()) {
             if ($this->request->getPost('columnName') && $this->request->getPost('columnValue')) {
                 // return json_encode($this->request->getPost());
                 $dataToSave['id'] = $movie['id'];
-                if($this->request->getPost('columnName') == 'certificates' || $this->request->getPost('columnName') == 'genres') {
+                if ($this->request->getPost('columnName') == 'certificates' || $this->request->getPost('columnName') == 'genres') {
                     $dataToSave[$this->request->getPost('columnName')] = json_encode($this->request->getPost('columnValue'));
                 } else {
                     $dataToSave[$this->request->getPost('columnName')] = $this->request->getPost('columnValue');
@@ -1699,6 +1704,8 @@ class FilmFestivalController extends BaseController
                 $dataToSave['step6'] = 'locked';
                 $dataToSave['allsteps'] = 'locked';
 
+                $dataToSave['reason'] = NULL;
+
                 $dataToSave['approved'] = 1;
                 $dataToSave['edit_status'] = 'completed';
                 $dataToSave['unlocked_inputs'] = json_encode([]);
@@ -1706,6 +1713,28 @@ class FilmFestivalController extends BaseController
                 if ($submissionsDb->save($dataToSave)) {
                     $response['success'] = true;
                     $response['message'] = "Approved Succesfully";
+
+                    $emailMd = new EmailsModel();
+                    $emailSend = $emailMd->userFilmEntryStatusNotification($movie['id'], true, '');
+                    // return json_encode($emailSend);
+                }
+            } else if ($this->request->getPost('subtitle')) {
+
+                $dataToSave['id'] = $movie['id'];
+                $dataToSave['isWinner'] = $this->request->getPost('isWinner');
+                $dataToSave['rating'] = $this->request->getPost('rating');
+                $dataToSave['subtitle'] = trim($this->request->getPost('subtitle'));
+                $dataToSave['awardName'] = trim($this->request->getPost('awardName'));
+
+                if ($submissionsDb->save($dataToSave)) {
+                    $response['success'] = true;
+                    $response['message'] = "Approved Succesfully";
+
+                    // if winner send mail to user
+                    // if()
+                    // $emailMd = new EmailsModel();
+                    // $emailSend = $emailMd->userFilmEntryStatusNotification($movie['id'], true, '');
+                    // return json_encode($emailSend);
                 }
             } else if ($this->request->getPost('reject_reason')) {
                 $allInputs = array();
@@ -1732,6 +1761,10 @@ class FilmFestivalController extends BaseController
                 if ($submissionsDb->save($dataToSave)) {
                     $response['success'] = true;
                     $response['message'] = "Reject Succesfully";
+
+                    $emailMd = new EmailsModel();
+                    $emailSend = $emailMd->userFilmEntryStatusNotification($movie['id'], false, $this->request->getPost('reject_reason'));
+                    // return json_encode($emailSend);
                 }
             } else if ($this->request->getPost('get_producers_type_data')) {
                 // datatables only producer attributes
@@ -1839,7 +1872,58 @@ class FilmFestivalController extends BaseController
     private function allOfficialSubmissionsPostHandler($postData)
     {
         $response = ['success' => false, 'message' => 'No data found'];
-        if ($postData['draw']) {
+        if (isset($postData['sendEntryRequest'])) {
+            $uniqueId = uniqidReal();
+            // create new entry with unique_id & type=indirect
+            $movieDb = new FestivalOfficialSubmission();
+            $movieData = [
+                'festival_id' => $postData['festival_id'],
+                'festival_year' => $postData['festival_year'],
+                'user_email' => $postData['user_email'],
+                'source' => $postData['source'],
+                'unique_id' => $uniqueId
+            ];
+            $response['message'] = 'Unable to create form, please contact administrator.';
+            if ($movieDb->save($movieData)) {
+                // create new user with email, name and unique_id as password
+                $password = strtoupper($uniqueId);
+                $userPass = createPassword($password);
+                $fullname = explode(' ', $postData['user_name'] . 2);
+                $first_name = $fullname && $fullname[0] ? $fullname[0] : NULL;
+                $last_name = $fullname && isset($fullname[1]) ? $fullname[1] : NULL;
+
+                $userDb = new UserModel();
+                $userData = [
+                    'first_name' => $first_name,
+                    'last_name' => $last_name,
+                    'email' => $postData['user_email'],
+                    'password' => $userPass,
+                    'email_status' => 'verified',
+                    'status' => 1,
+                    'text_status' => 'verified'
+                ];
+
+                //////////////////////////////////////
+
+                $emailData = [
+                    'festival_id' => $postData['festival_id'],
+                    'full_name' => $postData['festival_year'],
+                    'user_email' => $postData['user_email'],
+                    'unique_id' => $uniqueId
+                ];
+
+                $emailModel = new EmailsModel();
+                if (!$userDb->where('email', $postData['user_email'])->first()) {
+                    $response['message'] = 'Unable to create user, please contact administrator.';
+                    if ($userDb->save($userData)) {
+                        $emailData['user_password'] = $password;
+                        return $emailModel->sendNewEntryEmail($emailData);
+                    }
+                }
+                return $emailModel->sendNewEntryEmail($emailData);
+            }
+        }
+        if (isset($postData['draw'])) {
             $submissionsDb = new FestivalOfficialSubmission();
             return $submissionsDb->getFestivalEntriesAdmin($postData);
         }

@@ -18,6 +18,7 @@ class FestivalOfficialSubmission extends Model
         // title & details
         'festival_id', // by entry form
         'festival_year', // by entry form
+        'user_email', // belongs to this user
         'unique_id', // receipl id of entry form if the entry form need to be connected
         'title', // by entry form
         'project', // by entry form - id
@@ -81,8 +82,12 @@ class FestivalOfficialSubmission extends Model
         // for internal purposes
         'likes', // 0
         'dislikes', // 0
-        'views' // 0
+        'views', // 0
 
+        'source', // only for admin or automatic (default Direct)
+        'subtitle',  // eg: 5th IFF-15 | Best Actor ( festival details | award name )
+        'awardName',
+        'isWinner',
     ];
 
     // Dates
@@ -136,16 +141,16 @@ class FestivalOfficialSubmission extends Model
 
         // <span class="badge bg-primary">...</span>
         // boolean status 0/1/2/4 (0=review/1=approved/2=reject/4=user_needs_review) (2 = see reason) // default=0
-        if($movie['approved'] == 0) {
+        if ($movie['approved'] == 0) {
             $movie['status_badge'] = '<span class="badge badge-dot bg-primary">In Admin Review</span>';
         }
-        if($movie['approved'] == 1) {
+        if ($movie['approved'] == 1) {
             $movie['status_badge'] = '<span class="badge badge-dot bg-success">Approved & Live</span>';
         }
-        if($movie['approved'] == 2) {
+        if ($movie['approved'] == 2) {
             $movie['status_badge'] = '<span class="badge badge-dot bg-danger">In User Review</span>';
         }
-        if($movie['approved'] == 4) {
+        if ($movie['approved'] == 4) {
             $movie['status_badge'] = '<span class="badge badge-dot bg-secondary">Re-Review in Admin</span>';
         }
         // edited_inputs
@@ -155,80 +160,116 @@ class FestivalOfficialSubmission extends Model
     }
     public function getFestivalEntriesAdmin($postData)
     {
+        $response = ['success' => false, 'message' => 'No data found'];
+
         $draw = @$postData['draw'];
-        $dataType = @$postData['dataType'];
+        // $dataType = @$postData['dataType'];
         $response['success'] = true;
         $response['draw'] = $draw;
 
         $start = isset($postData['start']) ? $postData['start'] : 0;
         $limit = isset($postData['length']) ? $postData['length'] : 0;
-        $type = isset($postData['dataType']) ? $postData['dataType'] : NULL;
+        $type = $postData['dataType'] ? $postData['dataType'] : 'new';
         $search_value = isset($postData['search']) ? $postData['search']['value'] : '';
 
-        $response = ['success' => false, 'message' => 'No data found'];
         $submissionsDb = new FestivalOfficialSubmission();
-        $select = 'official_submissions.id, official_submissions.festival_id, official_submissions.title, official_submissions.trailer, official_submissions.year, official_submissions.country, official_submissions.genres, official_submissions.created_at, official_submissions.updated_at, festivals.name as festival_name, countries.name as country_name';
+        $select = 'id, festival_id, title, trailer, year, country, genres, source, created_at, updated_at';
 
-        $submissions = $submissionsDb->distinct()->select($select)->join('festivals', 'festivals.id = official_submissions.festival_id')->join('countries', 'countries.id = official_submissions.country');
+        $submissions = $submissionsDb->select($select);
 
-        if (!empty($search_value)) {
-            $submissions = $submissions->like('festivals.name', $search_value);
-            $submissions = $submissions->orLike('official_submissions.title', $search_value);
-            $submissions = $submissions->orLike('official_submissions.year', $search_value);
-            $submissions = $submissions->orLike('official_submissions.genres', $search_value);
-        }
-        
-        $where = ['official_submissions.allsteps' => 'open', 'official_submissions.approved' => 0, 'official_submissions.edit_status' => 'update_needed'];
-
-        if ($type == 'approval') {
-            $where = ['official_submissions.allsteps' => 'locked', 'official_submissions.approved' => 0, 'official_submissions.edit_status' => 'completed'];
+        if ($type === 'approval') {
+            $where = ['allsteps' => 'locked', 'approved' => '0', 'edit_status' => 'completed'];
             $submissions = $submissions->where($where);
-        } elseif ($type == 'review_admin') {
-            $where = ['official_submissions.allsteps !=' => 'locked', 'official_submissions.edit_status !=' => 'completed'];
+        } elseif ($type === 'review_admin') {
+            $where = ['allsteps !=' => 'locked', 'edit_status !=' => 'completed'];
             $submissions = $submissions->where($where);
-            $submissions = $submissions->whereIn('official_submissions.approved', [0,4]);
-        } elseif ($type == 'review_user') {
-            $where = ['official_submissions.allsteps' => 'open', 'official_submissions.approved' => 2, 'official_submissions.edit_status' => 'update_needed'];
+            $submissions = $submissions->whereNotIn('approved', ['0', '4']);
+        } elseif ($type === 'review_user') {
+            $where = ['allsteps' => 'open', 'approved' => 2, 'edit_status' => 'update_needed'];
             $submissions = $submissions->where($where);
-        } elseif ($type == 'live') {
-            $where = ['official_submissions.allsteps' => 'locked', 'official_submissions.approved' => 1, 'official_submissions.edit_status' => 'completed'];
+        } elseif ($type === 'live') {
+            $where = ['approved' => '1', 'edit_status' => 'completed'];
             $submissions = $submissions->where($where);
         } else {
+            $where = ['approved' => '0', 'edit_status' => 'update_needed'];
             $submissions = $submissions->where($where);
         }
 
-        $submissions = $submissions->offset($start)->findAll($limit);
+        // if (!empty($search_value)) {
+        //     $submissions = $submissions->like('festivals.name', $search_value);
+        //     $submissions = $submissions->orLike('title', $search_value);
+        //     $submissions = $submissions->orLike('year', $search_value);
+        //     $submissions = $submissions->orLike('genres', $search_value);
+        // }
 
-        foreach ($submissions as $key => $submission) {
-            // $submissions[$key]['actions'] = '';
-            $submissions[$key]['key'] = $key + 1;
-            $submissions[$key]['status'] = 'status';
-            $submissions[$key]['trailer'] = '<a target="_blank" href="' . $submission['trailer'] . '">View trailer</a>';
+        // $countings = $submissions;
+        $allSubmissions = $submissions->offset($start)->findAll($limit);
+
+        foreach ($allSubmissions as $key => $submission) {
+            // $allSubmissions[$key]['actions'] = '';
+            $allSubmissions[$key]['key'] = $key + 1;
+            $allSubmissions[$key]['status'] = 'status';
+            $allSubmissions[$key]['trailer'] = trim($submission['trailer']) ? '<a target="_blank" href="' . $submission['trailer'] . '">View trailer</a>' : 'N/A';
 
             $genres = json_decode($submission['genres'], true);
-            $allGenres = '';
-            foreach ($genres as $genre) {
-                $allGenres = $allGenres . '<span class="commaSeperated">' . $genre . '</span>';
+            if (count($genres)) {
+                $allGenres = '';
+                foreach ($genres as $genre) {
+                    $allGenres = $allGenres . '<span class="commaSeperated">' . $genre . '</span>';
+                }
+                $allSubmissions[$key]['genres'] = $allGenres;
+            } else {
+                $allSubmissions[$key]['genres'] = 'N/A';
             }
-            $submissions[$key]['genres'] = $allGenres;
             $openingLink = route_to('admin_film_festivals_official_submissions_single', $submission['id']);
-            $submissions[$key]['actions'] = '<a class="btn btn-icon btn-dim btn-primary btn-sm" href="' . $openingLink . '"><em class="icon ni ni-external"></em></a>';
-            $submissions[$key]['title'] = '<a href="' . $openingLink . '">' . $submission['title'] . '</a>';
 
-            $submissions[$key]['created_at'] = date('d M, Y', strtotime($submission['created_at']));
-            $submissions[$key]['updated_at'] = date('d M, Y', strtotime($submission['updated_at']));
+            $festival = getFestivalNameSlug($submission['festival_id']);
+
+            $formLink = route_to('festival_official_selection_details', $festival['slug'], base64_encode($submission['id']));
+
+            $allSubmissions[$key]['actions'] = '<a class="btn btn-icon btn-dim btn-primary btn-sm" href="' . $openingLink . '"><em class="icon ni ni-row-mix"></em></a>';
+            $allSubmissions[$key]['actions'] .= '<a class="btn btn-icon btn-dim btn-primary btn-sm ms-2" href="' . $formLink . '"><em class="icon ni ni-external"></em></a>';
+            // $allSubmissions[$key]['title'] = '<a href="' . $openingLink . '">' . $submission['title'] ? $submission['title'] : 'N/A' . '</a>';
+            // $allSubmissions[$key]['title'] = '<a href="' . $openingLink . '">' . $submission['title'] . '</a>';
+            $allSubmissions[$key]['title'] = $submission['title'] ? $submission['title'] : 'N/A';
+            $allSubmissions[$key]['year'] = $submission['year'] ? $submission['year'] : 'N/A';
+
+            $allSubmissions[$key]['created_at'] = date('d M, Y', strtotime($submission['created_at']));
+            $allSubmissions[$key]['updated_at'] = date('d M, Y', strtotime($submission['updated_at']));
+
+            $allSubmissions[$key]['country_name'] = $submission['country'] != 0 ? getCountryName($submission['country']) : 'N/A';
+            $allSubmissions[$key]['festival_name'] = $festival['name'];
         }
-        $response['data'] = $submissions;
 
-        // countings
-        $submissionsDb = new FestivalOfficialSubmission();
-        $submissionsDb = $submissionsDb->distinct()->select($select)->join('festivals', 'festivals.id = official_submissions.festival_id')->join('countries', 'countries.id = official_submissions.country');
-        $submissionCount = $submissionsDb->where($where)->countAllResults();
+        // start counting here
+        $countings = $submissionsDb->select($select);
+        if ($type === 'approval') {
+            $where = ['allsteps' => 'locked', 'approved' => '0', 'edit_status' => 'completed'];
+            $countings = $countings->where($where);
+        } elseif ($type === 'review_admin') {
+            $where = ['allsteps !=' => 'locked', 'edit_status !=' => 'completed'];
+            $countings = $countings->where($where);
+            $countings = $countings->whereNotIn('approved', ['0', '4']);
+        } elseif ($type === 'review_user') {
+            $where = ['allsteps' => 'open', 'approved' => 2, 'edit_status' => 'update_needed'];
+            $countings = $countings->where($where);
+        } elseif ($type === 'live') {
+            $where = ['approved' => '1', 'edit_status' => 'completed'];
+            $countings = $countings->where($where);
+        } else {
+            $where = ['approved' => '0', 'edit_status' => 'update_needed'];
+            $countings = $countings->where($where);
+        }
+        $submissionCount = $countings->countAllResults();
 
-
+        $response['data'] = $allSubmissions;
         $response['recordsTotal'] = $submissionCount;
         $response['recordsFiltered'] = $submissionCount;
 
         return $response;
+
+        // countings
+        // $submissionsDb = new FestivalOfficialSubmission();
+        // $submissionsDb = $submissionsDb->distinct()->select($select)->join('festivals', 'festivals.id = festival_id')->join('countries', 'countries.id = country');
     }
 }

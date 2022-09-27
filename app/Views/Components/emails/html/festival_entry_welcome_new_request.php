@@ -139,7 +139,7 @@
               <h1 style="margin: 0 0 12px; font-size: 32px; font-weight: 400; line-height: 48px;">Welcome, <?= $user_name ?>!</h1>
               <p style="margin: 0;">
                 Thank you for signing up with us on <b>(<?= $festival_name ?>)</b>.<br />
-                You payment is successfull, please fill out all the details about your movie/film <b>(<?= $movie_name ?>)</b> for Festival Catalogue.<br /><br />
+                Please fill out all the details about your movie/film for Festival Catalogue.<br /><br />
                 <?php if (isset($user_email, $user_password)) : ?>
                   Please use email: <b><?= $user_email ?></b> & password: <b><?= $user_password ?></b> for login.
                 <?php else : ?>

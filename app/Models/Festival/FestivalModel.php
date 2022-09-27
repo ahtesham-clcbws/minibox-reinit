@@ -66,7 +66,13 @@ class FestivalModel extends Model
 
     public function getAdminList()
     {
-        $allFestivals = $this->findAll();
+        $allFestivals = $this->select('id, name, edition, current_year, status')->findAll();
+        foreach ($allFestivals as $key => $festival) {
+            $movieDb = new FestivalOfficialSubmission();
+            $allFestivals[$key]['submitions'] = $movieDb->where(['festival_id' => $festival['id']])->countAllResults();
+            $allFestivals[$key]['selections'] = $movieDb->where(['festival_id' => $festival['id'], 'approved' => 1])->countAllResults();
+            $allFestivals[$key]['winners'] = $movieDb->where(['festival_id' => $festival['id'], 'isWinner' => 1])->countAllResults();
+        }
         return $allFestivals;
     }
     public function getFestivalBySlugFrontend($slug)

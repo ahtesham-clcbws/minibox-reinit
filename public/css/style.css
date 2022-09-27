@@ -3138,7 +3138,7 @@ pointer-events: none;} */
   flex-wrap: wrap;
   align-items: flex-start;
 }
-.winner-item:after {
+.winner-item:not(:last-child):after {
   width: 3px;
   height: 3px;
   background: #fff;
@@ -3185,8 +3185,8 @@ pointer-events: none;} */
   padding: 15px;
   border-radius: 10px;
   background-color: whitesmoke;
-  box-shadow: 11.3px 5.1px 10px rgba(0, 0, 0, 0.035),
-    90px 41px 80px rgba(0, 0, 0, 0.07);
+  /* box-shadow: 11.3px 5.1px 10px rgba(0, 0, 0, 0.035),
+    90px 41px 80px rgba(0, 0, 0, 0.07); */
 
   /* box-shadow: 2.8px 2.8px 2.2px rgba(0, 0, 0, 0.02),
     6.7px 6.7px 5.3px rgba(0, 0, 0, 0.028),
@@ -3209,12 +3209,12 @@ pointer-events: none;} */
 		}
 .winner-cast-list .winner-item:hover {
   background-color: white;
-  box-shadow: 2.8px 2.8px 2.2px rgba(0, 0, 0, 0.02),
+  /* box-shadow: 2.8px 2.8px 2.2px rgba(0, 0, 0, 0.02),
     6.7px 6.7px 5.3px rgba(0, 0, 0, 0.028),
     12.5px 12.5px 10px rgba(0, 0, 0, 0.035),
     22.3px 22.3px 17.9px rgba(0, 0, 0, 0.042),
     41.8px 41.8px 33.4px rgba(0, 0, 0, 0.05),
-    100px 100px 80px rgba(0, 0, 0, 0.07);
+    100px 100px 80px rgba(0, 0, 0, 0.07); */
 }
 
 .winner-cast-list .winner-item .winner-profile .winner-photo img {
@@ -3282,6 +3282,9 @@ pointer-events: none;} */
 .commaSeparated:not(:last-child)::after {
   margin-right: 3px;
   content: ", ";
+}
+.commaSeparatedDotes:not(:last-child){
+  display: none;
 }
 
 .key-list {
@@ -4297,15 +4300,6 @@ pointer-events: none;} */
 /* .plan-item-wrap .plan-information li:last-child {
   border-bottom: 0;
 } */
-.plan-price {
-  /* position: absolute; */
-  /* margin-left: 42px; */
-  /* padding-bottom: 0; */
-  /* bottom: 22px; */
-  /* width: 100%; */
-  /* left: 28%; */
-  /* margin-bottom: 15px !important; */
-}
 .uk-form-controls .select2-selection {
   max-width: 100%;
   color: #666;
@@ -4796,4 +4790,25 @@ article.smallArticle a.uk-link-reset {
   height: 590px;
   background-size: cover;
   background-position: center center;
+}
+
+.defaultShadow {
+  -webkit-transition: 0.3s;
+    -moz-transition: 0.3s;
+    -ms-transition: 0.3s;
+    -o-transition: 0.3s;
+    transition: 0.3s;
+  box-shadow: 11.3px 5.1px 10px rgb(0 0 0 / 4%), 90px 41px 80px rgb(0 0 0 / 7%);
+}
+.defaultShadow:hover {
+  box-shadow: 2.8px 2.8px 2.2px rgb(0 0 0 / 2%), 6.7px 6.7px 5.3px rgb(0 0 0 / 3%), 12.5px 12.5px 10px rgb(0 0 0 / 4%), 22.3px 22.3px 17.9px rgb(0 0 0 / 4%), 41.8px 41.8px 33.4px rgb(0 0 0 / 5%), 100px 100px 80px rgb(0 0 0 / 7%);
+}
+.searchBadges .uk-badge {
+  color: #212529;
+  background-color: #e0a800;
+  padding-left:7px;
+  padding-right:7px;
+}
+.searchBadges .uk-badge .uk-icon {
+  cursor: pointer;
 }

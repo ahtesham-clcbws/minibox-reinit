@@ -38,9 +38,9 @@
                     <th>Festival</th>
                     <th>Years</th>
                     <th>Current</th>
+                    <th>Submitions</th>
                     <th>Selections</th>
                     <th>Winners</th>
-                    <th>Submitions</th>
                     <th>Status</th>
                 </tr>
             </thead>
@@ -55,10 +55,10 @@
                         </td>
                         <td class="nk-tb-col tb-col-md"><?= $festival['edition'] ?></td>
                         <td class="nk-tb-col tb-col-md"><?= $festival['current_year'] ?></td>
-                        <td class="nk-tb-col tb-col-md">0</td>
-                        <td class="nk-tb-col tb-col-md">0</td>
 
-                        <td class="nk-tb-col tb-col-md">0</td>
+                        <td class="nk-tb-col tb-col-md"><?= $festival['submitions'] ?></td>
+                        <td class="nk-tb-col tb-col-md"><?= $festival['selections'] ?></td>
+                        <td class="nk-tb-col tb-col-md"><?= $festival['winners'] ?></td>
 
                         <td class="nk-tb-col tb-col-md">
                             <div class="custom-control custom-switch">

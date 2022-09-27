@@ -235,8 +235,10 @@
 
 <?= $this->section('content') ?>
 <?php if (isUserLogin() && getFilmEditAuth($movie['user_email'])) : ?>
+
 	<!-- major cast modal -->
 	<!-- onchange="fileSizeValidation('banner', 519, 1211, 'bannerPreview', '/public/images/entry-form-banner.png')" -->
+
 	<div id="addCasteModal" class="uk-flex-top" uk-modal>
 		<div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
 			<button class="uk-modal-close-default" type="button" uk-close></button>
@@ -280,6 +282,7 @@
 			</form>
 		</div>
 	</div>
+
 	<!-- other information modal -->
 	<div id="addOtherInfoModal" class="uk-flex-top" uk-modal>
 		<form class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical" id="addOtherInfoForm">
@@ -304,6 +307,7 @@
 			</div>
 		</form>
 	</div>
+
 	<section class="about-section uk-section-small about-section-shadow" style="background-image:url(/public/images/pages-background.webp)">
 		<div class="cover-shadow"></div>
 		<div class="uk-container heading-section">
@@ -312,12 +316,13 @@
 			</div>
 		</div>
 	</section>
+
 	<div class="uk-section-small uk-background-default">
 		<div class="uk-container">
 			<div class="uk-card uk-card-default uk-card-body">
 				<?php if ($movie['allsteps'] == 'completed' && $movie['approved'] && $movie['edit_status'] == 'completed') : ?>
 					<div class="uk-text-center" style="background-color:darkcyan;color:#fff;" uk-alert>
-						<h3>Conratulations</h3>
+						<h3>Congratulations</h3>
 						<p>
 							Your movie is live on below link<br />
 							<a href="<?= base_url(route_to('festival_official_selection_details', $festivalSlug, base64_encode($movie['id']))) ?>"><?= base_url(route_to('festival_official_selection_details', $festivalSlug, base64_encode($movie['id']))) ?></a>
@@ -326,7 +331,7 @@
 				<?php endif; ?>
 				<?php if ($movie['allsteps'] == 'open') : ?>
 					<div style="background-color:lightcoral;color:#fff;" uk-alert>
-						<h3>Update Needed!</h3>
+						<h3>Update your movie details.</h3>
 						<p>You need to complete all the forms, add all data then submit all 6 forms for complete the submition process. If you have some questions, please mail us at (<?= CUSTOMER_SUPPORT_EMAIL ?>) OR call us at (<?= CUSTOMER_SUPPORT_PHONE ?>)</p>
 					</div>
 				<?php endif; ?>
@@ -375,7 +380,16 @@
 							<div class="uk-margin uk-width-1-3@m uk-width-1-2@s">
 								<label class="uk-form-label" for="project">Project Type</label>
 								<div class="uk-form-controls">
-									<div class="uk-input disabled"><?= $movie['project'] ?></div>
+									<?php if (in_array('project', $locked_inputs) || $movie['step1'] == 'locked') : ?>
+										<div class="uk-input disabled"><?= $movie['project'] ?></div>
+									<?php else : ?>
+										<select name="project" class="uk-select select2" id="project" data-placeholder="Select Project Type" data-allow-clear="true" required>
+											<option value="" selected="" disabled=""></option>
+											<?php foreach ($projectTypes as $projectType) : ?>
+												<option <?= $movie['project'] == $projectType['id'] ? 'selected' : '' ?> value="<?= $projectType['id'] ?>"><?= $projectType['name'] ?></option>
+											<?php endforeach; ?>
+										</select>
+									<?php endif; ?>
 								</div>
 							</div>
 							<div class="uk-margin uk-width-1-3@m uk-width-1-2@s">
@@ -558,7 +572,7 @@
 									<?php if (in_array('synopsis', $locked_inputs) || $movie['step2'] == 'locked') : ?>
 										<div class="uk-textarea disabled"><?= $movie['synopsis'] ?></div>
 									<?php else : ?>
-										<textarea class="uk-textarea" rows="5" placeholder="Synopsis" name="synopsis" id="synopsis"><?= $movie['synopsis'] ?></textarea>
+										<textarea class="uk-textarea" maxlength="300" rows="5" placeholder="Synopsis" name="synopsis" id="synopsis"><?= $movie['synopsis'] ?></textarea>
 									<?php endif; ?>
 								</div>
 							</div>
@@ -574,9 +588,7 @@
 							</div>
 
 						</div>
-						<?= $movie['step2'] == 'locked' ? '' : '<div class="">
-							<button class="uk-button uk-button-danger submitButton" type="submit">Save & Continue</button>
-						</div>'; ?>
+						<?= $movie['step2'] == 'locked' ? '' : '<div class=""><button class="uk-button uk-button-danger submitButton" type="submit">Save & Continue</button></div>'; ?>
 
 						<?= $movie['step2'] == 'locked' ? '</div>' : form_close(); ?>
 					</li>
@@ -667,7 +679,7 @@
 							</tbody>
 						</table>
 
-						<?= $movie['step4'] == 'locked' ? '' : '<div class=""' ?>
+						<?= $movie['step4'] == 'locked' ? '' : '<div class="">
 							<button class="uk-button uk-button-danger submitButton" type="submit">Save & Continue</button>
 						</div>'; ?>
 
@@ -851,7 +863,7 @@
 		<div class="uk-container">
 			<h4 class="uk-heading-line uk-text-bold uk-text-center uk-animation-slide-bottom-medium">
 				<span>
-					Locked Movie Submission
+					Login to continue
 				</span>
 			</h4>
 			<?php if (session()->get('authorizationWarning')) : ?>

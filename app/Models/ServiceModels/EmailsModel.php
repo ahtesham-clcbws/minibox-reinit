@@ -401,4 +401,104 @@ class EmailsModel extends Model
         }
         saveLog('email', 'admin_notification', json_encode($subject), $logStatus);
     }
+    public function userFilmEntryStatusNotification($id, $isApproved = false, $rejectMessage = NULL)
+    {
+        $entryDb = new FestivalOfficialSubmission();
+        $movie = $entryDb->select('id, unique_id, festival_id, user_email, title')->find($id);
+
+        $festivalDb = new FestivalModel();
+        $festival = $festivalDb->select('slug, name, title')->find($movie['festival_id']);
+        $slug = $festival['slug'];
+
+        $userDb = new UserModel();
+        $user = $userDb->select('first_name, last_name')->where('email', $movie['user_email'])->first();
+        if ($user) {
+            // return $user;
+            $receipt = array();
+
+            $receipt['movie_name'] = $movie['title'];
+            $receipt['festival_name'] = !empty($festival['title']) ? $festival['title'] : $festival['name'];
+            $receipt['user_name'] = $user['first_name'] . ' ' . $user['last_name'];
+
+            if ($isApproved) {
+                $receipt['link'] = base_url(route_to('festival_official_selection_details', $slug, base64_encode($movie['id'])));
+            } else {
+                $receipt['link'] = base_url(route_to('festival_entry_form_extended', $slug, base64_encode($movie['unique_id'])));
+            }
+
+            $receipt['isApproved'] = $isApproved;
+            $receipt['rejectMessage'] = $rejectMessage;
+
+            $htmlEmail = view('Components/emails/html/festival_entry_update', (array)$receipt);
+
+            $uniqueId = uniqidReal();
+
+            $email = new Email();
+
+            helper('internalsettings');
+
+            $email->initialize(getEmailConfigration());
+
+            $email->setTo($movie['user_email']);
+
+            $email->setFrom('test@clcbws.online', 'Mini Box Office');
+
+            $email->setSubject('Your movie/film update on MiniBoxOffice');
+            $email->setMessage($htmlEmail);
+            $emailSended = $email->send();
+            if ($emailSended) {
+                $thisEmailData = $this->where('unique_id', $uniqueId)->first();
+                $thisEmailData['send'] = 1;
+                $this->save($thisEmailData);
+            }
+            return $emailSended;
+        }
+        return false;
+    }
+    public function sendNewEntryEmail($data)
+    {
+        $response = ['success' => false, 'message' => 'Email send error, plese try again after some time.'];
+        $festivalDb = new FestivalModel();
+        $festival = $festivalDb->select('slug, name, title')->find($data['festival_id']);
+        $slug = $festival['slug'];
+
+        $receipt = array();
+
+        $receipt['movie_name'] = 'New Movie';
+        $receipt['festival_name'] = !empty($festival['title']) ? $festival['title'] : $festival['name'];
+        $receipt['type_of_action'] = 'New movie Entry';
+        $receipt['user_name'] = $data['full_name'];
+
+
+        if (isset($data['user_email'], $data['user_password'])) {
+            $receipt['user_email'] = $data['user_email'];
+            $receipt['user_password'] = $data['user_password'];
+        }
+
+        $receipt['entry_form_link'] = base_url(route_to('festival_entry_form_extended', $slug, base64_encode($data['unique_id'])));
+
+        $htmlEmail = view('Components/emails/html/festival_entry_welcome_new_request', (array)$receipt);
+
+        $email = new Email();
+
+        helper('internalsettings');
+
+        $email->initialize(getEmailConfigration());
+
+        $email->setTo($data['user_email']);
+
+        $email->setFrom('test@clcbws.online', 'Mini Box Office');
+
+        $email->setSubject('Entry Form | Mini Box Office');
+        $email->setMessage($htmlEmail);
+        $emailSended = $email->send();
+        if ($emailSended) {
+            $thisEmailData = $this->where('unique_id', $data['unique_id'])->first();
+            $thisEmailData['send'] = 1;
+            $this->save($thisEmailData);
+            $response['success'] = true;
+            $response['message'] = 'Request send successfully.';
+        }
+        return $response;
+    }
 }

@@ -224,7 +224,7 @@
 						<div class="uk-margin uk-width-1-1">
 							<label class="uk-form-label" for="synopsis">Synopsis</label>
 							<div class="uk-form-controls">
-								<textarea class="uk-textarea" rows="5" placeholder="Synopsis" name="synopsis" id="synopsis"></textarea>
+								<textarea class="uk-textarea" maxlength="300"rows="5" placeholder="Synopsis" name="synopsis" id="synopsis"></textarea>
 							</div>
 						</div>
 					</div>

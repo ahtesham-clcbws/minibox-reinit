@@ -1068,7 +1068,7 @@ class FilmFestival extends BaseController
                     return json_encode($response);
                 }
 
-                $movie['project'] = $projectTypeDb->find($movie['project'])['type'] . ' Film';
+                // $movie['project'] = $projectTypeDb->find($movie['project'])['type'] . ' Film';
 
                 $openedStep = 'noStep';
                 $openedSteps = [];
@@ -1148,7 +1148,8 @@ class FilmFestival extends BaseController
                 $pageData = $this->getPageData('entry_form', $this->festival_details['id']);
                 $this->data['pagedata'] = $pageData;
 
-
+                $projectTypes = $projectTypeDb->findAll();
+                $this->data['projectTypes'] = $projectTypes;
                 $this->data['movie'] = $movie;
             } else {
                 session()->destroy();
@@ -1526,14 +1527,86 @@ class FilmFestival extends BaseController
         $pageData = $this->getPageData('winners', $this->festival_details['id']);
         $this->data['pagedata'] = $pageData;
 
+        $yearSearch = $this->request->getGet('edition') && !empty($this->request->getGet('edition')) ? intval($this->request->getGet('edition')) : NULL;
+        $titleSearch = $this->request->getGet('title') && !empty($this->request->getGet('title')) ? $this->request->getGet('title') : NULL;
+        $countrySearch = $this->request->getGet('country') && !empty($this->request->getGet('country')) ? $this->request->getGet('country') : NULL;
+        $genreSearch = $this->request->getGet('genre') && !empty($this->request->getGet('genre')) ? $this->request->getGet('genre') : NULL;
+
+        $officialDb = new FestivalOfficialSubmission();
+        $select = 'id, title, country, poster, genres, certificates, festival_year, awardName';
+        $movies = $officialDb->select($select);
+        $movies = $movies->where('isWinner', 1);
+        $movies = $movies->where('approved', 1);
+        if ($yearSearch) {
+            $movies = $officialDb->where('festival_year', $yearSearch);
+        }
+        if($titleSearch) {
+            $movies = $officialDb->like('title', $titleSearch);
+        }
+        if($countrySearch) {
+            $movies = $officialDb->where('country', $countrySearch);
+        }
+        if($genreSearch) {
+            $movies = $officialDb->like('genres', $genreSearch);
+        }
+
+        $movies = $movies->orderBy('festival_year', 'DESC');
+        $movies = $movies->orderBy('id', 'DESC');
+        $this->data['movies']  = $movies->paginate(12, 'paginate');
+        $this->data['pager']  = $movies->pager;
+
         return view('Web/Filmfestival/festival_winners', $this->data);
     }
     public function festival_official_selection()
     {
+        // return print_r($this->data['data']);
         $this->data['pageName'] = 'Official Selection';
 
         $pageData = $this->getPageData('official_selection', $this->festival_details['id']);
         $this->data['pagedata'] = $pageData;
+
+        $yearSearch = $this->request->getGet('edition') && !empty($this->request->getGet('edition')) ? intval($this->request->getGet('edition')) : NULL;
+        $titleSearch = $this->request->getGet('title') && !empty($this->request->getGet('title')) ? $this->request->getGet('title') : NULL;
+        $countrySearch = $this->request->getGet('country') && !empty($this->request->getGet('country')) ? $this->request->getGet('country') : NULL;
+        $genreSearch = $this->request->getGet('genre') && !empty($this->request->getGet('genre')) ? $this->request->getGet('genre') : NULL;
+
+        $officialDb = new FestivalOfficialSubmission();
+        $select = 'id, title, country, poster, genres, certificates, festival_year';
+        $movies = $officialDb->select($select);
+        $movies = $movies->where('approved', 1);
+        if ($yearSearch) {
+            $movies = $officialDb->where('festival_year', $yearSearch);
+        } 
+        // else {
+        //     // first count results for current year
+        //     if ($officialDb->where('festival_year', $this->festival_details['current_year'])->countAllResults()) {
+        //         $movies->where('festival_year', $this->festival_details['current_year']);
+        //     } else {
+        //         $movies->whereIn('festival_year', $this->data['festival_editions']);
+        //     }
+        // }
+        if($titleSearch) {
+            $movies = $officialDb->like('title', $titleSearch);
+        }
+        if($countrySearch) {
+            $movies = $officialDb->where('country', $countrySearch);
+        }
+        if($genreSearch) {
+            $movies = $officialDb->like('genres', $genreSearch);
+        }
+
+        $movies = $movies->orderBy('festival_year', 'DESC');
+        $movies = $movies->orderBy('id', 'DESC');
+        $this->data['movies']  = $movies->paginate(12, 'paginate');
+        $this->data['pager']  = $movies->pager;
+        // return print_r($this->data['movies']);
+        // $data = [
+        //     'movies' => $movies->paginate(10),
+        //     'pager' => $movies->pager,
+        // ];
+        // $this->data['data'] = $data;
+        // return print_r(getGenres());
+        // return print_r($this->data['festival_editions']);
 
         return view('Web/Filmfestival/festival_official_selection', $this->data);
     }
@@ -1563,6 +1636,18 @@ class FilmFestival extends BaseController
             $movie['languages'] = $infoDb->where(['movie_id' => $movie['unique_id'], 'type' => 'languages'])->findAll();
 
             $this->data['movie'] = $movie;
+
+            // $genres = array();
+
+            $relatedTitles = $officialDb->select('id, title, poster, genres');
+            $relatedTitles = $relatedTitles->whereNotIn('id', [$movieId]);
+            foreach (json_decode($movie['genres'], true) as $key => $genre) {
+                $relatedTitles = $relatedTitles->like('genres', $genre);
+            }
+            $relatedTitles = $relatedTitles->orderBy('id', 'RANDOM')->findAll(4);
+            // return print_r($relatedTitles);
+            $this->data['relatedTitles'] = $relatedTitles;
+
             return view('Web/Filmfestival/festival_official_selection_details', $this->data);
         } else {
             return redirect()->route('festival_official_selection');
